@@ -1,8 +1,9 @@
 import intersectionDetails
 import colors
 
-intersections = []
-players = [colors.Colors.BLUE,colors.Colors.RED , colors.Colors.BLUE, colors.Colors.YELLOW]
+intersections_dict = {}
+players = [colors.Colors.BLUE, colors.Colors.RED, colors.Colors.BLUE, colors.Colors.YELLOW]
+
 
 # Each intersection slot will hold their own variables
 # the number of the slot, the identifiers of the edges around them
@@ -10,7 +11,7 @@ players = [colors.Colors.BLUE,colors.Colors.RED , colors.Colors.BLUE, colors.Col
 # The identifier(s) of the resources connected to them
 # The Player whose settlement/city is places on the spot
 class Intersection:
-    def __init__(self, number, edges, port, neighbors, resources, board):
+    def __init__(self, number, edges, port, neighbors, resources):
         self.number = number
         self.edges = edges
         self.port = port
@@ -33,7 +34,7 @@ class Intersection:
         for i in self.neighboring_intersections:
             # if the player is assigned and different than the player
             # trying to place the piece, return False to not allow
-            if intersections[i].player and not intersections[i].player == player:
+            if intersections_dict[i].player and not intersections_dict[i].player == player:
                 return False
         return True
 
@@ -62,35 +63,54 @@ class Edges:
     # def check_edges(self):
 
 
-def create_intersections(board):
+def create_intersections():
     for details in intersectionDetails.intersections:
         number, edges, port, neighbors, resources = details[0], details[1], details[2], details[3], details[4]
-        intersections.append(Intersection(number, edges, port, neighbors, resources))
-    return intersections
+        intersections_dict[number] = Intersection(number, edges, port, neighbors, resources)
+    return intersections_dict
+
+
+create_intersections()
 
 
 class Terrain:
-    def __init__(self, number, resource, board):
-        self.number = number
+    def __init__(self, identifier, roll_number, resource, ):#board):
+        self.identifier = identifier
+        self.roll_number = roll_number
         self.resource = resource,
         # filter the intersections who are associated with that terrain
-        self.board = board
-        self.intersections = filter(lambda x: self.number == x.resource,
-                                    self.board.intersections)
+        # self.board = board
+        self.intersections = intersectionDetails.terrain_edges[identifier]
         self.edges = []
 
+    def get_output_details(self, index, string_in):
+        intersection_id = self.intersections[index]
+        end_color = colors.Colors.BLACK
+        if intersections_dict[intersection_id].player is not None:
+            color = players[self.intersections[index].player]
+            settlement_text = "s"
+        else:
+            color = colors.Colors.BLACK
+            settlement_text = "_"
+        string_output = string_in.format(color, settlement_text, end_color)
+        return string_output
+
     def __str__(self):
-        for intersection in self.intersections:
-            if intersection.player is not None:
-                color = players[intersection.player]
-                settlement_text = "s"
-            else:
-                color = colors.Colors.BLACK
-                settlement_text = "_"
-            string_output = (f" _{color}{settlement_text}{color.Colors.BLACK}_ ")
-            string_output += "\n/"
- # /\\ /\\ /\\ \n'
- #        s += '  |01|02|03| \n'
- #        s += '   \\/ \\/ \\/ \n'
+        output = ''
+        # List of terrains that have more than 3 corners
+        exclusion_list = [1, 4, 8, 13, 17, 18, 19]
+        if self.identifier in exclusion_list:
+            # line # 1 (edge 1)
+            output += self.get_output_details(1, " \\_{}{}{}_/ ")
 
+            # line 2 (edges 0, 2)
+            output += self.get_output_details(0, "\n{}{}{}/   \\")
+            output += self.get_output_details(2, "{}{}{}")
 
+            # line 3
+            output += "\n| {}-{} |".format(self.roll_number, self.resource[0])
+
+        return output
+
+t = Terrain( 1, 1, "O")
+print(t)

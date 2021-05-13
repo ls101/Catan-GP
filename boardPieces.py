@@ -1,7 +1,8 @@
 import intersectionDetails
+import colors
 
 intersections = []
-
+players = [colors.Colors.BLUE,colors.Colors.RED , colors.Colors.BLUE, colors.Colors.YELLOW]
 
 # Each intersection slot will hold their own variables
 # the number of the slot, the identifiers of the edges around them
@@ -9,7 +10,7 @@ intersections = []
 # The identifier(s) of the resources connected to them
 # The Player whose settlement/city is places on the spot
 class Intersection:
-    def __init__(self, number, edges, port, neighbors, resources):
+    def __init__(self, number, edges, port, neighbors, resources, board):
         self.number = number
         self.edges = edges
         self.port = port
@@ -66,3 +67,30 @@ def create_intersections(board):
         number, edges, port, neighbors, resources = details[0], details[1], details[2], details[3], details[4]
         intersections.append(Intersection(number, edges, port, neighbors, resources))
     return intersections
+
+
+class Terrain:
+    def __init__(self, number, resource, board):
+        self.number = number
+        self.resource = resource,
+        # filter the intersections who are associated with that terrain
+        self.board = board
+        self.intersections = filter(lambda x: self.number == x.resource,
+                                    self.board.intersections)
+        self.edges = []
+
+    def __str__(self):
+        for intersection in self.intersections:
+            if intersection.player is not None:
+                color = players[intersection.player]
+                settlement_text = "s"
+            else:
+                color = colors.Colors.BLACK
+                settlement_text = "_"
+            string_output = (f" _{color}{settlement_text}{color.Colors.BLACK}_ ")
+            string_output += "\n/"
+ # /\\ /\\ /\\ \n'
+ #        s += '  |01|02|03| \n'
+ #        s += '   \\/ \\/ \\/ \n'
+
+

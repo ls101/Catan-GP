@@ -58,5 +58,11 @@ intersections = [
     [54, (66, 0, 72), None, (53, 46), 19]
 ]
 
+# edges of each terrain from top left corner
+terrain_edges = {
+        1: [1, 2, 3, 11, 10, 9]
+    }
+
+
 
 

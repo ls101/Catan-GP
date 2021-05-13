@@ -47,13 +47,12 @@ class CatanBoard:
         self.number_of_tiles = len(self.board_resources)
         # Settlements and roads need to be tracked.
 
-        # set up an intersection object for each intersection (54)
-        # Intersection - input: number, roads (0 is none), port number, resources
-        self.intersections = boardPieces.create_intersections(self)
-
         # Set up edges - each edge will have a number and status (available, non-existant - 0, player #)
         for i in range(73):
             self.edges.append(boardPieces.Edge(i))
+        # set up an intersection object for each intersection (54)
+        # Intersection - input: number, roads (0 is none), port number, resources
+        self.intersections = boardPieces.create_intersections(self)
 
         # Zero_tile_nr will represent where the 0 number exists
         zero_tile_nr = np.where(self.roll_numbers == 0)

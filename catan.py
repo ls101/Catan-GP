@@ -1,4 +1,6 @@
 import numpy as np
+import boardPieces
+import intersectionDetails
 
 # List of resources available to be distributed on the board
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
@@ -44,8 +46,14 @@ class CatanBoard:
         # This number is the same length as the available resources
         self.number_of_tiles = len(self.board_resources)
         # Settlements and roads need to be tracked.
-        self.settlements = np.array([0] * (30 + 18 + 6))
-        self.roads = np.array([0] * (12 * 5 + 6 + 6))
+
+        # set up an intersection object for each intersection (54)
+        # Intersection - input: number, roads (0 is none), port number, resources
+        self.intersections = boardPieces.create_intersections(self)
+
+        # Set up edges - each edge will have a number and status (available, non-existant - 0, player #)
+        for i in range(73):
+            self.edges.append(boardPieces.Edge(i))
 
         # Zero_tile_nr will represent where the 0 number exists
         zero_tile_nr = np.where(self.roll_numbers == 0)

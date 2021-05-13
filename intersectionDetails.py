@@ -19,7 +19,7 @@
 # In short:
 # identifying number, edges, port (or None), neighbors, resource identifyer
 intersections = [
-    None,
+    # None,
     [1, (0, 1, 7), 8, (0, 2, 9), (1,)],
     [2, (0, 2, 1), 8, (0, 1, 3), (1,)],
     [3, (2, 3, 8), None, (2, 4, 11), (1, 2)],

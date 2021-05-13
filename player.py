@@ -6,6 +6,50 @@ class CatanPlayer:
     # settlements/roads, port options
     def __init__(self, player_nr):
         self.player_nr = player_nr
+        self.unused_items = {
+            'roads': 15,
+            'settlements': 5,
+            'cities': 4
+        }
+        # Items placed onthe board will be an array containg the index numbers
+        # of those items, which are stored in arrays. The index numbers match
+        # the numbers on the diagram.
+        self.roads = []
+        self.settlements = []
+        # Note that cities are added by removing said item from the settlements list
+        self.cities = []
+
+        # All items owned by the player, but not on the board:
+        self.resource_cards = []
+        self.development_cards = []
+        
+        # Game statistics, regarding this player:
+        self.road_length = 0
+        self.army = 0
+        self.victory_points = 0
+
+    def get_input(self, lis) -> int:
+        # Will prompt player for a valid number, and return it. If the input is
+        # not valid, it will return None. This will be called in a loop, until
+        # a valid index is received.
+        # the player gets the option to see the board etc.
+        print('Please enter the location for placement, as an integer.')
+        print('input "s" to [s]how the list')
+        position = input()
+        # If the player wants to see info, print it
+        if position == 's':
+            print(lis)
+        # Otherwise, validate the input data: must be a digit, and a  valid
+        # index for this list.
+        elif not position.isdigit:
+            print('Input must be an integer. Please try again.')
+        elif not 0 < int(position) < len(lis):
+            print('Input must be greater than zero and less than {0}. Please try again'.format(len(lis)))
+        else:
+            # The other issue: if the player can place there because of game
+            # rules, will be dealt with outside this method.
+            return int(position)
+
 
     def set_settlement(self, board):
         """
@@ -13,8 +57,25 @@ class CatanPlayer:
 
         generate buy_settlement input:
         output -- position -- integer 0-54 """
+            
         ################################ Insert/Modify CODE HERE ##################################
-        position = int(input('insert argument'))
+        # position = int(input('insert argument'))
+
+        # Get, and validate, an integer input. The method will return none for
+        # invalid input. A valid index that cannot be used will be reassigned
+        # as None. A loop will request an input until a valid one is received.
+        position = self.get_input(board.intersections)
+        if board.intersections[position] is not None:
+            print('That location is not available. Please choose another location.')
+            position = None
+
+        while position is None:
+            position = self.get_input(board.intersections)
+            if board.intersections[position] is not None:
+                print('That location is not available. Please choose another location.')
+                position = None
+
+        # check if player can place settlement there. Meaning, s/he has a road there
         return position
 
     def set_city(self, board):
@@ -26,7 +87,20 @@ class CatanPlayer:
         """
         ################################ Insert/Modify CODE HERE ##################################
 
-        position = int(input('insert argument'))
+        # position = int(input('insert argument'))
+
+        position = self.get_input(self.settlements)
+        if not position in self.settlements:
+            print('You do not have a settlement over there. Please choose another location.')
+            position = None
+
+        while position is None:
+            position = self.get_input(self.settlements)
+            if not position in self.settlements:
+                print('You do not have a settlement over there. Please choose another location.')
+                position = None
+
+        # check if player can place road there. Meaning, s/he has a road next to it
         return position
 
     def set_road(self, board):
@@ -37,7 +111,20 @@ class CatanPlayer:
         position -- integer 0-71
         """
         ################################ Insert/Modify CODE HERE ##################################
-        position = int(input('insert argument'))
+        # position = int(input('insert argument'))
+
+        position = self.get_input(board.edges)
+        if board.intersections[position] is not None:
+            print('That location is already taken. Please choose another location.')
+            position = None
+
+        while position is None:
+            position = self.get_input(board.edges)
+            if board.intersections[position] is not None:
+                print('That location is already taken. Please choose another location.')
+                position = None
+
+        # check if player can place road there. Meaning, s/he has a road next to it
         return position
 
     def turn_choice(self, board):

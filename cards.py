@@ -1,5 +1,5 @@
 #create a class for cards and anything card related 
-class cards():
+class Cards():
     def __init__(self,player):
       self.player=player
       self.cards=[]
@@ -10,6 +10,7 @@ class cards():
            cards_iterated+=card
        return cards_iterated
     
+
     def cards_length(self):
         return len(self.cards)
     
@@ -19,3 +20,26 @@ class cards():
             if card==card_test:
                 return True
         return False
+    
+    def cards_insert(self,*cards):
+        for card in cards:
+         self.cards.append(cards)
+    
+    #this function removes cards
+    def cards_remove(self,*cards):
+        pass
+
+
+player1_cards=Cards()
+player2_cards=Cards()
+player3_cards=Cards()
+player4_cards=Cards()
+
+#this class will can contain a dictionary with objects of cards all the players 
+#this will corespond to players... for easy reference 
+class AllCards(self):
+    def __init__(self):
+        self.card_store={}
+
+       
+

@@ -174,6 +174,7 @@ class CatanPlayer:
         return 0
 
     def discard_half(self, board):
+        
         """
         ################################ Insert/Modify Comments HERE ##################################
         discard_half output arguments:

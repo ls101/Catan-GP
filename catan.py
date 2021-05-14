@@ -2,6 +2,8 @@ import numpy as np
 import boardPieces
 import intersectionDetails
 import random 
+import cards
+from cards import AllCards
 
 # List of resources available to be distributed on the board
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
@@ -111,6 +113,19 @@ class CatanBoard:
         Also, I think the output could use better formatting to differentiate between ports and resources and to 
         be easier to look at. """
         return out
+    
+    def can_buy(self,item_wanted,player_nr):
+        #this seems if a user has the means to buy a card at hand 
+        #one of the parametes that it should take is a list of the cards needed to buy these properties 
+        can_buy=False
+        buy_ability=0
+        settlement=['wheat','brick','sheep','wood']
+        for item in item_wanted:
+         if AllCards.cardstore[player_nr].__contains__(item):
+          buy_ability+=1
+        if buy_ability==len(settlement):
+            can_buy=True
+        return can_buy
 
     def start_settelment_first(self, player_nr, settle_position, road_position):
         """changes CatanBoard()/self if possible according to the rules of
@@ -152,6 +167,7 @@ class CatanBoard:
         return game_end, winner
 
     def buy_settlement(self, player_nr, position):
+    
         """changes CatanBoard()/self if possible according to the rules of building a settelment:
 
         ################################ Insert/Modify Comments HERE ##################################
@@ -162,6 +178,16 @@ class CatanBoard:
         position -- integer 0-53
 
         """
+       
+        settlement=['wheat','brick','sheep','wood']
+        buy=can_buy(self,settlement,player_nr)
+        if buy:
+            location=input("please enter of the location where you want to place your settlement")
+        else:
+            print('sorry you do not have the means to purchase a settlement')
+            #now need to remove these cards from the players cards 
+            #not sure how to access the players object need to figure that out 
+
         ################################ Insert/Modify CODE HERE ##################################
 
     def buy_city(self, player_nr, position):
@@ -175,6 +201,9 @@ class CatanBoard:
         position -- integer 0-53
         """
         ################################ Insert/Modify CODE HERE ##################################
+        city=['wheat','wheat','ore','ore','ore']
+        buy=can_buy(self,city,player_nr)
+        #need to see if the item has a settlement there that they want to replace 
 
     def buy_road(self, player_nr, position):
         """changes CatanBoard()/self if possible according to the rules of building a road:

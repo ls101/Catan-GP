@@ -7,7 +7,7 @@ class Cards():
     def __str__(self):
        cards_iterated=""
        for card in cards :
-           cards_iterated+=card
+           cards_iterated+=" ,"+card
        return cards_iterated
     
 
@@ -21,25 +21,31 @@ class Cards():
                 return True
         return False
     
-    def cards_insert(self,*cards):
-        for card in cards:
+    def cards_insert(self,*cards_insert):
+        for card in cards_insert:
          self.cards.append(cards)
     
     #this function removes cards
-    def cards_remove(self,*cards):
+    def cards_remove(self,*cards_remove):
         pass
+            
 
 
-player1_cards=Cards()
-player2_cards=Cards()
-player3_cards=Cards()
-player4_cards=Cards()
+player1_cards=str(Cards())
+player2_cards=str(Cards())
+player3_cards=str(Cards())
+player4_cards=str(Cards())
 
 #this class will can contain a dictionary with objects of cards all the players 
 #this will corespond to players... for easy reference 
 class AllCards(self):
     def __init__(self):
-        self.card_store={}
+        self.card_store={
+            0:player1_cards,
+            1:player2_cards,
+            2:player3_cards,
+            3:player4_cards
+        }
 
        
 

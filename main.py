@@ -17,17 +17,51 @@ MAXIMUM_ROUNDS = 30
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
+    def menu():
+     print('MENU')
+     print('2. Roll the Dice')
+     print('3. Buy a settlement')
+     print('4. buy a city ')
+     print('5. buy a road ')
+     print('6. Buy a development card')
+     print('8. play a knight ')
+     print('9. play a road ')
+     print('10.play a plenty')
+     print('11. play mono')
+     print('12. trade')
+     print('13. target ')
+     choice=input('Enter Choice: \n')
+     try :
+         choice=int(choice)
+     except:
+         ('your choice must be numeric ')
+         menu()
+     while choice <0 or choice >13:
+         choice=input("You must enter a choice between 1 and 13 : \n ")
+         try :
+          choice=int(choice)
+         except:
+          ('your choice must be numeric ')
+          menu()
+    
+     return choice
+
     # build catan board
     board = catan.CatanBoard()
 
     # insert players
     players = list()
-    for player_nr in range(4):
+    num_players=int(input("Number of players: \n"))
+    
+    
+    for player_nr in range(1,num_players) :
         players.append(player.CatanPlayer(player_nr))
+    
+    
 
     # game set up of the two settelment
     # first settelment with road
-    for player_nr in range(4):
+    for player_nr in range(1,num_players):
         current_player = players[player_nr]
         board_safety_copy = copy.deepcopy(board)
         settle_position, road_position = current_player.start_settelment_first(board_safety_copy)
@@ -35,7 +69,7 @@ if __name__ == '__main__':
 
 
     # second settelment with road
-    for player_nr in range(3, 0, -1):
+    for player_nr in range(num_players, 0, -1):
         current_player = players[player_nr]
         board_safety_copy = copy.deepcopy(board)
         settle_position, road_position = current_player.start_settelment_second(board_safety_copy)
@@ -46,12 +80,16 @@ if __name__ == '__main__':
         # print statements for debugging
         print(game_round)
         # in each round each player has his turn
-        for player_nr in range(4):
+        for player_nr in range(1,num_players):
             current_player = players[player_nr]
             # print statements for debugging
             print('It is turn of player number:{0}'.format(current_player.player_nr))
-            choice = 42  # random positive number for initialisation
-            while choice > 0:
+            choice = menu()
+            
+            winner=False
+            
+            turns =0
+            while winner==False or turns <31:
                 # making safety working copy of board (can be changed in later
                 # implementation to only visible data)
                 board_safety_copy = copy.deepcopy(board)
@@ -103,10 +141,12 @@ if __name__ == '__main__':
                     board.trade_offer(player_nr, resources_own, target_player_nr, resources_target,
                                       answer_target)
 
-            game_end, winner = board.check_points()
-            if game_end:
-                print("player {0} won".format(winner))
-                break
+                game_end, winner = board.check_points()
+                if game_end:
+                 print("player {0} won".format(winner))
+                 break 
+                turns+=1
+
     print('game ended')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

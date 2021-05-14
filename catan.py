@@ -1,6 +1,7 @@
 import numpy as np
 import boardPieces
 import intersectionDetails
+import random 
 
 # List of resources available to be distributed on the board
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
@@ -200,6 +201,12 @@ class CatanBoard:
         """
         ################################ Insert/Modify CODE HERE ##################################
 
+    def roll():
+        min=1
+        max=6
+        value=random.randint(min,max)
+        return value 
+
     def roll_dice(self, player_nr):
         """changes CatanBoard()/self if possible according to the rules of rolling dice in catan:
 
@@ -208,8 +215,12 @@ class CatanBoard:
         """
         # output roll_numer of dice
         ################################ Insert/Modify CODE HERE ##################################
-        roll_number = 7
-        return 7
+        dye1=roll()
+        dye2=roll()
+        dice_values=dye1+dye2
+        return dice_values
+
+    
 
     def discard_half(self, player_nr, resourses):
         """changes CatanBoard()/self if possible according to the rules of discarding cards if 7 rolled

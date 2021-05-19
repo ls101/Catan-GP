@@ -1,4 +1,5 @@
 import numpy as np
+from cards import *
 
 
 class CatanPlayer:
@@ -23,8 +24,8 @@ class CatanPlayer:
         self.valid_settlements = []
 
         # All items owned by the player, but not on the board:
-        self.resource_cards = []
-        self.development_cards = []
+        self.resource_cards = ResourceCards()
+        self.development_cards = Cards()
         
         # Game statistics, regarding this player:
         self.road_length = 0
@@ -42,12 +43,15 @@ class CatanPlayer:
         # If the player wants to see info, print it
         if position == 's':
             print(lis)
+            return self.get_input_by_index(lis)
         # Otherwise, validate the input data: must be a digit, and a  valid
         # index for this list.
-        elif not position.isdigit:
+        elif not position.isdigit():
             print('Input must be an integer. Please try again.')
+            return self.get_input_by_index(lis)
         elif not 0 < int(position) < len(lis):
             print('Input must be greater than zero and less than {0}. Please try again'.format(len(lis)))
+            return self.get_input_by_index(lis)
         else:
             return int(position)
 
@@ -63,12 +67,15 @@ class CatanPlayer:
         # If the player wants to see info, print it
         if position == 's':
             print(lis)
+            return self.get_input_by_value(lis)
         # Otherwise, validate the input data: must be a digit, and an integer
         # that is in this list.
-        elif not position.isdigit:
+        elif not position.isdigit():
             print('Input must be an integer. Please try again.')
+            return self.get_input_by_value(lis)
         elif not int(position) in lis:
             print('Your chosen number is not in the list. Please try again.')
+            return self.get_input_by_value(lis)
         else:
             return int(position)
 
@@ -112,15 +119,7 @@ class CatanPlayer:
         # position = int(input('insert argument'))
 
         position = self.get_input_by_value(self.settlements)
-        if not position in self.settlements:
-            print('You do not have a settlement over there. Please choose another location.')
-            position = None
-
-        while position is None:
-            position = self.get_input_by_value(self.settlements)
-            if not position in self.settlements:
-                print('You do not have a settlement over there. Please choose another location.')
-                position = None
+        
 
         # check if player can place road there. Meaning, s/he has a road next to it
         return position
@@ -149,15 +148,6 @@ class CatanPlayer:
 
         # Get a valid position where to place the road
         position = self.get_input_by_value(lis)
-        if board.intersections[position] is not None:
-            print('That location is already taken. Please choose another location.')
-            position = None
-
-        while position is None:
-            position = self.get_input_by_value(lis)
-            if board.intersections[position] is not None:
-                print('That location is already taken. Please choose another location.')
-                position = None
 
         return position
 
@@ -173,6 +163,38 @@ class CatanPlayer:
         ################################ Insert/Modify CODE HERE ##################################
         return 0
 
+    def offer_input(self, key, value):
+        try:
+            offer = int(input('How many {0} cards?'.format(key)))
+        except:
+            print('Input must be numeric. Try again.')
+            return self.offer_input(key, value)
+        else:
+            # No exception, meaning input is an integer, now check if it's a valid number.
+            if not 0 <= offer <= value:
+                print('You must submit a non-negative number, not greater than {0}'.format(value))
+                return self.offer_input(key, value)
+            else:
+                # A valid number is returned
+                return offer
+
+
+    def offer_cards(self):
+        # For trade offers and for discarding
+        print(self.resource_cards)
+        offering = {}
+        for key, value in self.resource_cards.resource_cards.items():
+            # Iterate over the dictionary, but only offer to trade/discard
+            # cards the player has. Meaning, value is not zero.
+            if value > 0:
+                # get a valid offer, meaning how many cards of that type to discard/trade
+                offer = self.offer_input(key, value)
+                print(offer)
+                if offer > 0:
+                    offering[key] = offer
+        return offering
+
+
     def discard_half(self, board):
         
         """
@@ -187,9 +209,12 @@ class CatanPlayer:
                 sheep --integer 0-19
         """
         ################################ Insert/Modify CODE HERE ##################################
+        print('Robber activated!')
+        if self.resource_cards.get_discard_num() > 0:
+            return self.offer_cards()
 
-        return np.array([int(input('insert argument')), int(input('insert argument')), int(input('insert argument')),
-                         int(input('insert argument')), int(input('insert argument'))])
+        # return np.array([int(input('insert argument')), int(input('insert argument')), int(input('insert argument')),
+        #                  int(input('insert argument')), int(input('insert argument'))])
 
     def steal_card(self, board):
         """
@@ -334,6 +359,25 @@ class CatanPlayer:
         return settle_position, road_position
 
 
+    def can_buy(self, dict, item):
+        for key, value in dict.items():
+            if value < self.resource_cards[key]:
+                return False
+            return True
+
+    prices = {
+        'dev_card': {
+            'brick': 1,
+            'ore': 1,
+            'sheep': 1
+        },
+        'city': {
+            'ore': 2,
+            'wheat': 3
+        }
+    }
+
+
 if __name__ == '__main__':
     """
     ################################ Insert/Modify Comments HERE ##################################
@@ -342,4 +386,8 @@ if __name__ == '__main__':
     ################################ Insert/Modify CODE HERE ##################################
     p = CatanPlayer(0)
     print(p.player_nr)
+    # print(p.discard_half())
+    # test_list = [10,20,30,40,50]
+    # p.get_input_by_index(test_list)
+    # p.get_input_by_value(test_list)
     print('Debug complete')

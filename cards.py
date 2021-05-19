@@ -1,15 +1,13 @@
 #create a class for cards and anything card related 
 class Cards():
-    def __init__(self,player):
-      self.player=player
+    def __init__(self):
       self.cards=[]
 
     def __str__(self):
-    #    cards_iterated=""
-    #    for card in cards :
-    #        cards_iterated+=" ,"+card
-    #    return cards_iterated
-       return ', '.join(self.cards)
+       cards_iterated=""
+       for card in range(len(self.cards)):
+           cards_iterated+="{0}: {1} , ".format(card, self.cards[card])
+       return cards_iterated
     
 
     def cards_length(self):
@@ -39,23 +37,38 @@ class Cards():
 class ResourceCards:
     # Ideally, the RESOURCE_NAMES list should be coded ONCE for the entire game
     # and then imported. It is here temporarily.
-    RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
+    # Note: dessert was removed from this list.
+    RESOURCE_NAMES = ["brick", "ore", "hay", "wood", "sheep"]
 
     def __init__(self, num=0):
         # The object is initialized with a dictionary as mentioned above.  The
         # players start with no cards; the bank starts with 19 of each.
         self.resource_cards = {}
         for item in self.RESOURCE_NAMES:
-            self.resource_cards[item] = (num if item != 'desert' else 0) 
-        # To avoid errors, the total will not be an attribute. It will need
-        # to be calculated every time it's needed.
-        # self.total_cards = self.get_total_cards()
+            self.resource_cards[item] = num 
 
     def __str__(self):
-        pass
+        if self.get_total_cards() == 0:
+            return 'You have no resource cards.'
+        s = 'You have:\n'
+        for key, value in self.resource_cards.items():
+            if value > 0:
+                s += str(value) + ' ' + key + '\n'
+        return s
 
     def get_total_cards(self):
         return sum(self.resource_cards.values())
+
+    def get_discard_num(self):
+        # when the robber is activated, all players who have more than seven
+        # cards need to discard half. (Those will be returned to the bank.)
+        # For odd numbers, we round down. I used integer division to get a whole number.
+        total = self.get_total_cards()
+        if total <= 7:
+            discard = 0
+        else:
+            discard = total//2
+        return discard
 
     def move_cards(self, other, what):
         # For receiving cards from the bank, or for trading:
@@ -65,18 +78,18 @@ class ResourceCards:
         # in a dictionary format.
         s = self.resource_cards
         o = other.resource_cards
-        # print(what)
         for key, value in what.items():
             s[key] += value
             o[key] -= value
 
     def resources_list(self):
-        # For operations that work better on list objects, such as stealing a random card
-        # Presumably, this should be a Cards object.
+        # For operations that work better on list objects, such as choosing a
+        # random card to steal. The actual stealing should be done on the dictionary.
         lis = []
         for key, value in self.resource_cards.items():
-            for x in range(value):
-                lis.append(key)
+            lis += [key] * value
+            # for x in range(value):
+            #     lis.append(key)
         return lis
 
 
@@ -103,4 +116,5 @@ class AllCards(self):
 if __name__ == '__main__':
     c = ResourceCards()
     d = ResourceCards(19)
-print()       
+    cc = Cards()
+print(cc)       

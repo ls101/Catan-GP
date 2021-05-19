@@ -21,6 +21,7 @@ class CatanBoard:
     # Initialize the Catan Board with all the options for resources, numbers to be rolled,
     # settlements/roads, port options
     def __init__(self):
+        self.bank = cards.ResourceCards(19)
         """initiates CatanBoard()/self according to catan rules:
 
         ################################ Insert/Modify Comments HERE ##################################

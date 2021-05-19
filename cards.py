@@ -47,7 +47,9 @@ class ResourceCards:
         self.resource_cards = {}
         for item in self.RESOURCE_NAMES:
             self.resource_cards[item] = (num if item != 'desert' else 0) 
-        self.total_cards = self.get_total_cards()
+        # To avoid errors, the total will not be an attribute. It will need
+        # to be calculated every time it's needed.
+        # self.total_cards = self.get_total_cards()
 
     def __str__(self):
         pass
@@ -67,9 +69,15 @@ class ResourceCards:
         for key, value in what.items():
             s[key] += value
             o[key] -= value
-        # Update total for the two objects
-        self.total_cards = self.get_total_cards()
-        other.total_cards = other.get_total_cards()
+
+    def resources_list(self):
+        # For operations that work better on list objects, such as stealing a random card
+        # Presumably, this should be a Cards object.
+        lis = []
+        for key, value in self.resource_cards.items():
+            for x in range(value):
+                lis.append(key)
+        return lis
 
 
 

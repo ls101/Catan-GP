@@ -5,10 +5,11 @@ class Cards():
       self.cards=[]
 
     def __str__(self):
-       cards_iterated=""
-       for card in cards :
-           cards_iterated+=" ,"+card
-       return cards_iterated
+    #    cards_iterated=""
+    #    for card in cards :
+    #        cards_iterated+=" ,"+card
+    #    return cards_iterated
+       return ', '.join(self.cards)
     
 
     def cards_length(self):
@@ -31,10 +32,48 @@ class Cards():
             
 
 
+
+# The resource cards should rather be stored as a dictionary. The resources
+# will be keys, mapped to the number of that card type owned by the object.
+# This object will be initialized for each player, as well as one for the bank.
+class ResourceCards:
+    # Ideally, the RESOURCE_NAMES list should be coded ONCE for the entire game
+    # and then imported. It is here temporarily.
+    RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
+
+    def __init__(self, num=0):
+        # The object is initialized with a dictionary as mentioned above.  The
+        # players start with no cards; the bank starts with 19 of each.
+        self.resource_cards = {}
+        for item in self.RESOURCE_NAMES:
+            self.resource_cards[item] = num
+        self.total_cards = self.get_total_cards()
+
+    def __str__(self):
+        pass
+
+    def get_total_cards(self):
+        return sum(self.resource_cards.values())
+
+    def move_cards(self, other, what):
+        # For receiving cards from the bank, or for trading:
+        # "self" (the object that calls the method) is RECEIVING cards to "other".
+        # For receiving cards, other refers to the bank.
+        # "what" refers to which cards are moved, and should be in a dictionary
+        # format.
+        for item in what:
+            self[item] +=what[item]
+            other[item] -=what[item]
+
+
+
+""" 
+These should be initialized from the player class, as it belongs to the player
 player1_cards=str(Cards())
 player2_cards=str(Cards())
 player3_cards=str(Cards())
 player4_cards=str(Cards())
+ """
 
 #this class will can contain a dictionary with objects of cards all the players 
 #this will corespond to players... for easy reference 
@@ -48,4 +87,3 @@ class AllCards(self):
         }
 
        
-

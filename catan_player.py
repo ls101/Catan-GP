@@ -120,35 +120,26 @@ class CatanPlayer:
             return self.offer_cards()
 
 
-    def can_buy(self, dict, item):
+    def can_buy(self, dict):
+        # The dict refers to whatever the player wants to buy. It is whether
+        # the price of a settlement/city/development card/road. The dict can
+        # also refer to cards that the player wants to trade away.
         for key, value in dict.items():
-            if value < self.resource_cards[key]:
+            # If the player wants to give more than s/he has, it returns false.
+            # If it exits the loop without raising a flag, it returns true.
+            if value > self.resource_cards.resource_cards[key]:
                 return False
             return True
 
-    prices = {
-        'dev_card': {
-            'brick': 1,
-            'ore': 1,
-            'sheep': 1
-        },
-        'city': {
-            'ore': 2,
-            'wheat': 3
-        }
-    }
+
 
 
 if __name__ == '__main__':
-    """
-    ################################ Insert/Modify Comments HERE ##################################
-    """
-
-    ################################ Insert/Modify CODE HERE ##################################
+    
     p = CatanPlayer(0)
     print(p.player_nr)
     # print(p.discard_half())
-    test_list = [10,20,30,40,50]
-    p.get_input_by_index(test_list)
-    p.get_input_by_value(test_list)
+    # test_list = [10,20,30,40,50]
+    # p.get_input_by_index(test_list)
+    # p.get_input_by_value(test_list)
     print('Debug complete')

@@ -88,19 +88,38 @@ class ResourceCards:
         lis = []
         for key, value in self.resource_cards.items():
             lis += [key] * value
-            # for x in range(value):
-            #     lis.append(key)
         return lis
 
 
 
-""" 
-These should be initialized from the player class, as it belongs to the player
-player1_cards=str(Cards())
-player2_cards=str(Cards())
-player3_cards=str(Cards())
-player4_cards=str(Cards())
- """
+# This does not belong here; it's here temporarily. It can be used as the
+# "what" argument for the move method, moving cards to the bank. It's also used
+# to check if a player can buy a resource, before attempting to move.
+# Really, this should use indices from the RESOURCE_NAMES list.
+PRICES = {
+    'dev_card': {
+        'brick': 1,
+        'ore': 1,
+        'sheep': 1
+    },
+
+    'road': {
+        'wood': 1,
+        'brick': 1
+    },
+
+    'settlement': {
+        'wood': 1,
+        'brick': 1,
+        'sheep': 1,
+        'hay': 1
+    },
+    
+    'city': {
+        'ore': 3,
+        'hay': 2
+    }
+}
 
 """ #this class will can contain a dictionary with objects of cards all the players 
 #this will corespond to players... for easy reference 
@@ -117,4 +136,4 @@ if __name__ == '__main__':
     c = ResourceCards()
     d = ResourceCards(19)
     cc = Cards()
-print(cc)       
+print()       

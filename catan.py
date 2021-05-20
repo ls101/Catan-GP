@@ -4,6 +4,7 @@ import intersectionDetails
 import random 
 import cards
 from cards import AllCards
+import player
 
 # List of resources available to be distributed on the board
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
@@ -115,7 +116,7 @@ class CatanBoard:
         be easier to look at. """
         return out
     
-    def can_buy(self,item_wanted,player_nr):
+    """def can_buy(self,item_wanted,player_nr):
         #this seems if a user has the means to buy a card at hand 
         #one of the parametes that it should take is a list of the cards needed to buy these properties 
         can_buy=False
@@ -126,7 +127,7 @@ class CatanBoard:
           buy_ability+=1
         if buy_ability==len(settlement):
             can_buy=True
-        return can_buy
+        return can_buy"""
 
     def start_settelment_first(self, player_nr, settle_position, road_position):
         """changes CatanBoard()/self if possible according to the rules of
@@ -180,8 +181,8 @@ class CatanBoard:
 
         """
        
-        settlement=['wheat','brick','sheep','wood']
-        buy=can_buy(self,settlement,player_nr)
+        
+        buy=player.can_buy(self,'settlement')
         if buy:
             location=input("please enter of the location where you want to place your settlement")
         else:
@@ -203,7 +204,10 @@ class CatanBoard:
         """
         ################################ Insert/Modify CODE HERE ##################################
         city=['wheat','wheat','ore','ore','ore']
-        buy=can_buy(self,city,player_nr)
+        buy=player.can_buy(self,'city')
+        if not buy:
+            print('you are unable to purchase a city')
+
         #need to see if the item has a settlement there that they want to replace 
 
     def buy_road(self, player_nr, position):
@@ -218,6 +222,11 @@ class CatanBoard:
 
         """
         ################################ Insert/Modify CODE HERE ##################################
+        buy=player.can_buy(self,'road')
+        try:
+            placement=int(input('where do you want to place the road ?'))
+        except:
+            print("you must enter a numeric value!")
 
     def buy_dev_card(self, player_nr):
         """changes CatanBoard()/self if possible according to the rules of buying a development card card:
@@ -230,8 +239,11 @@ class CatanBoard:
 
         """
         ################################ Insert/Modify CODE HERE ##################################
+        buy=player.can_buy(self,'dev_card')
+        if not buy:
+            print('you are unable to purchase a development card')
 
-    def roll():
+    def roll(self):
         min=1
         max=6
         value=random.randint(min,max)
@@ -268,7 +280,20 @@ class CatanBoard:
 
         """
         ################################ Insert/Modify CODE HERE ##################################
+        print(self.cards.resources_list(self))
+        discard_num=cards.get_discard_num(self)
+        cards_remove=[]
+        print('You need to remove '+discard_num+" cards")
+        #will give the player the dictionary numbers ....
+        for num in range(1,discard_num+1):
+            try:
+                card=int(input("card"+num+" which card do you want to remove ?"))
+            except:
+                print("you must enter a numeric card!")
+            #also need to make sure that it is a proper card is this being a dictionary ?
 
+        
+            
     def steal_card(self, player_nr, position, target_player_nr):
         """changes CatanBoard()/self if possible according to the rules of discarding cards if 7 rolled
 

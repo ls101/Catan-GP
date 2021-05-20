@@ -27,7 +27,9 @@ class Cards():
     #this function removes cards
     def cards_remove(self,*cards_remove):
         pass
-            
+
+    
+
 
 
 
@@ -89,6 +91,8 @@ class ResourceCards:
         for key, value in self.resource_cards.items():
             lis += [key] * value
         return lis
+    
+    def development
 
 
 
@@ -121,16 +125,7 @@ PRICES = {
     }
 }
 
-""" #this class will can contain a dictionary with objects of cards all the players 
-#this will corespond to players... for easy reference 
-class AllCards(self):
-    def __init__(self):
-        self.card_store={
-            0:player1_cards,
-            1:player2_cards,
-            2:player3_cards,
-            3:player4_cards
-        } """
+
 
 if __name__ == '__main__':
     c = ResourceCards()

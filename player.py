@@ -359,13 +359,8 @@ class CatanPlayer:
         return settle_position, road_position
 
 
-    def can_buy(self, dict, item):
-        for key, value in dict.items():
-            if value < self.resource_cards[key]:
-                return False
-            return True
-
-    prices = {
+    def can_buy(self, item):
+        prices = {
         'dev_card': {
             'brick': 1,
             'ore': 1,
@@ -374,8 +369,25 @@ class CatanPlayer:
         'city': {
             'ore': 2,
             'wheat': 3
-        }
-    }
+        },
+        'settlement':{
+            'brick':1,
+            'wheat':1,
+            'sheep':1,
+            'wood':1
+        },
+        'road':{
+            'wood':1,
+            'brick':1
+        }}
+
+        for key, value in item():
+            if value < self.resource_cards[key]:
+                return False
+            return True
+
+    
+    
 
 
 if __name__ == '__main__':

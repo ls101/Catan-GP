@@ -1,7 +1,7 @@
 import numpy as np
 import random
 from board_specs import *
-from board_components import Terrain, Edge, Intersection, ports
+from board_components import Terrain, Edge, Intersection
 
 
 # List of resources available to be distributed on the board
@@ -44,6 +44,8 @@ class Board:
         # as the desert tile and replace whatever was already in the desert tile into the empty zero tile
         self.roll_numbers[zero_tile_nr], self.roll_numbers[desert_tile_nr] =\
             (self.roll_numbers[desert_tile_nr], self.roll_numbers[zero_tile_nr])
+        
+        # The following code create the board objects: terrains, edges, intersections.
         
         # Initialize a list for each attribute type.
         self.edges = self.initialize_edges()
@@ -137,7 +139,7 @@ class Board:
             self.intersections[item[0]].edges = (tuple(local_egdes))
             # If that item contains a port, assign it here.
             if len(item) == 3:
-                self.intersections[item[0]].ports = item[2]
+                self.intersections[item[0]].ports = self.ports[item[2]]
 
     def assign_terrain(self) -> None:
         for item in terrains_specs:

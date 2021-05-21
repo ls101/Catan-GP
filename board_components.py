@@ -2,6 +2,7 @@ import numpy as np
 import random
 
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
+PORTS_NAMES = ["3:1", "2brick:1", "2ore:1", "2hay:1", "2wood:1", "2sheep:1"]
 
 # This module defines the components of the board: terrains, edges
 # between the terrains, and intersections connecting the edges.  To
@@ -70,10 +71,7 @@ class Intersection:
         else:
             s = self.occupier
         if self.ports is not None:
-            if self.ports == 3:
-                s += ' [General port 3:1]'
-            else:
-                s += ' [{0} port 2:1]'.format(self.ports)
+            s += ' [{0} port]'.format(PORTS_NAMES[self.ports])
         return s
 
     def get_next():
@@ -89,18 +87,16 @@ class Terrain:
         resource,
         edges=(0, 0, 0, 0, 0, 0),
         intersections=(0, 0, 0, 0, 0, 0),
-        has_robber=False
     ) -> None:
         self.identifier = identifier
         self.resource_num = resource_num
         self.resource = resource
         self.edges = edges
         self.intersections = intersections
-        self.has_robber = has_robber
 
     def __str__(self) -> str:
         s = str(self.identifier) + '\n'
-        s += 'Landscape: {0}\n'.format(
+        s += 'Resource: {0}\n'.format(
             RESOURCE_NAMES[self.resource],
         )
         s += 'Resource number: {0}\n'.format(
@@ -113,14 +109,8 @@ class Terrain:
         s += '\n'
         return s
 
-
-# The ports are just a list now, although it really should be an object.
-# For now, if it's a number 3, it's a general port; otherwise, its
-# number is 2.  It should be changed eventually to an object containing
-# two attributes: number and type.  I shuffle the ports, since this is
-# how I see it in the game link you sent and it's not a big deal.
-ports = [3, 3, 3, 3, 'Brick', 'Lumber', 'Ore', 'Grain', 'Wool']
-random.shuffle(ports)
+    def get_neighbors(self):
+        pass
 
 
 def main():
@@ -129,6 +119,7 @@ def main():
     e = Edge(0)
     print(e)
     t = Terrain(0, 0, 1)
+    print(t)
     print(RESOURCE_NAMES[t.resource])
 
 

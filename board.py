@@ -85,25 +85,23 @@ class Board:
     # arguments; their attribute objects will be reassigned later.  This
     # is because the objects refer each other as attributes, and they
     # must exist before being assigned.  The objects will be stored in a
-    # dictionary, with reference numbers as keys.  Since some edges and
-    # intersections border the ocean, a key #0 is initialized with a
-    # string (instead of an object.)
+    # dictionary, with reference numbers as keys.
     def initialize_edges(self):
-        edges = {0: 'ocean'}
+        edges = {}
         for x in range(1, 73):
             edges[x] = Edge(x)
         return edges
 
     def initialize_intersections(self):
-        intersections = {0: 'ocean'}
+        intersections = {}
         for x in range(1, 55):
             intersections[x] = Intersection(x)
         return intersections
 
     def initialize_terrains(self):
-        terrains = {0: 'ocean'}
+        terrains = {}
         for x in range(1, 20):
-            terrains[x] = Terrain(x, x, 'Dessert')
+            terrains[x] = Terrain(x, x, 0)
         return terrains
 
     # The following methods will assign the correct attributes for each
@@ -168,6 +166,14 @@ class Board:
 def main():
     b = Board()
     print(b)
+    # for item in b.edges[29].get_neighbors():
+    #     print(item.identifier, end=', ')
+    # # for key, val in b.edges.items():
+    # #     item = val.get_neighbors()
+    # #     print(item)
+
+    # for key, val in b.edges.items():
+        # print(str(key) + ': ' + str(type(val)))
 
 
 if __name__ == '__main__':

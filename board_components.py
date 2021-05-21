@@ -26,8 +26,8 @@ class Edge:
     def __init__(
         self,
         identifier,
-        intersections=(0, 0),
-        terrains=(0, 0),
+        intersections=(0,),
+        terrains=(0,),
         occupier=None
     ) -> None:
         self.identifier = identifier
@@ -65,7 +65,7 @@ class Intersection:
     def __init__(
         self,
         identifier,
-        edges=(0, 0, 0),
+        edges=(0,),
         occupier=None,
         ports=None
     ) -> None:

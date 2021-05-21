@@ -42,9 +42,18 @@ class Edge:
             return self.occupier
 
     def get_neighbors(self):
-        for edge in self.intersections:
-            # return all neighboring roads
-            pass
+        neighbors = []
+        print()
+        print('working on: {0}\n'.format(self.identifier))
+        # return all neighboring roads
+        for intersection in self.intersections:
+            for edge in intersection.edges:
+                if edge != self:
+                    neighbors.append(edge)
+                    print('added {0}\n'.format(edge.identifier))
+                else:
+                    print('same: {0}\n'.format(edge.identifier))
+        return neighbors
 
 
 class Intersection:

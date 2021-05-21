@@ -113,32 +113,50 @@ class Board:
     # object.
     def assign_edge(self) -> None:
         for item in edges_specs:
-            # index = item[0]
+            # Identify the correct objects from the initialized lists, based
+            # on the values of the tuple parameters.
+            local_intersections = []
+            for subitem in item[1]:
+                local_intersections.append(self.intersections[subitem])
+            local_terrains = []
+            for subitem in item[2]:
+                local_terrains.append(self.terrains[subitem])
             # Pass the objects, as tuples, to reassign the attributes of the
             # object.
-            self.edges[item[0]].intersections = (item[1])
-            self.edges[item[0]].terrains = (item[2])
+            # index = item[0]
+            self.edges[item[0]].intersections = (tuple(local_intersections))
+            self.edges[item[0]].terrains = (tuple(local_terrains))
 
     def assign_intersection(self) -> None:
         for item in intersections_specs:
+            local_egdes = []
+            for subitem in item[1]:
+                local_egdes.append(self.edges[subitem])
             # Pass the objects, as tuples, to reassign the attributes of the
             # object.
-            self.intersections[item[0]].edges = (item[1])
+            self.intersections[item[0]].edges = (tuple(local_egdes))
             # If that item contains a port, assign it here.
             if len(item) == 3:
                 self.intersections[item[0]].ports = item[2]
 
     def assign_terrain(self) -> None:
         for item in terrains_specs:
+            # Identify the correct objects from the initialized lists, based
+            # on the values of the tuple parameters.
+            local_egdes = []
+            for subitem in item[1]:
+                local_egdes.append(self.edges[subitem])
+            local_intersections = []
+            for subitem in item[2]:
+                local_intersections.append(self.intersections[subitem])
 
             # Pass the objects, as tuples, to reassign the attributes of the
             # object.
-            self.terrains[item[0]].edges = item[1]
-            self.terrains[item[0]].intersections = item[2]
+            self.terrains[item[0]].edges = (tuple(local_egdes))
+            self.terrains[item[0]].intersections = (tuple(local_intersections))
 
             # Assign the last landscape and resource number.  (The lists
-            # were shuffled, so it's random.)  The dessert doesn't have a
-            # resource number, and it has the robber.
+            # were shuffled, so it's random.)
             self.terrains[item[0]].resource = self.board_resources[item[0]-1]
             self.terrains[item[0]].resource_num = self.roll_numbers[item[0]-1]
 

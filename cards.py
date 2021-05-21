@@ -92,7 +92,8 @@ class ResourceCards:
             lis += [key] * value
         return lis
     
-    def development
+    def development(self):
+        pass
 
 
 

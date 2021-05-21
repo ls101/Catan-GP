@@ -1,4 +1,7 @@
+import numpy as np
 import random
+
+RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
 
 # This module defines the components of the board: terrains, edges
 # between the terrains, and intersections connecting the edges.  To
@@ -23,12 +26,12 @@ class Edge:
         self,
         identifier,
         intersections=(0, 0),
-        terrain=(0, 0),
+        terrains=(0, 0),
         occupier=None
     ) -> None:
         self.identifier = identifier
         self.intersections = intersections
-        self.terrain = terrain
+        self.terrains = terrains
         self.occupier = occupier
 
     def __str__(self) -> str:
@@ -78,38 +81,27 @@ class Intersection:
 
 
 class Terrain:
-    # A dictionary pairs the landscapes to the corresponding resources.
-    resources = {
-        'Hills': 'Brick',
-        'Forest': 'Lumber',
-        'Mountains': 'Ore',
-        'Fields': 'Grain',
-        'Pasture': 'Wool',
-        'Dessert': None
-    }
 
     def __init__(
         self,
         identifier,
         resource_num,
-        landscape,
+        resource,
         edges=(0, 0, 0, 0, 0, 0),
         intersections=(0, 0, 0, 0, 0, 0),
         has_robber=False
     ) -> None:
         self.identifier = identifier
         self.resource_num = resource_num
-        self.landscape = landscape
-        self.resource = self.resources[landscape]
+        self.resource = resource
         self.edges = edges
         self.intersections = intersections
         self.has_robber = has_robber
 
     def __str__(self) -> str:
         s = str(self.identifier) + '\n'
-        s += 'Landscape: {0}, producing {1}\n'.format(
-            self.landscape,
-            self.resource,
+        s += 'Landscape: {0}\n'.format(
+            RESOURCE_NAMES[self.resource],
         )
         s += 'Resource number: {0}\n'.format(
             self.resource_num
@@ -136,8 +128,8 @@ def main():
     print(i)
     e = Edge(0)
     print(e)
-    t = Terrain(0, 0, 'Dessert')
-    print(t)
+    t = Terrain(0, 0, 1)
+    print(RESOURCE_NAMES[t.resource])
 
 
 if __name__ == '__main__':

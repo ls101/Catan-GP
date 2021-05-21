@@ -1,20 +1,9 @@
 import numpy as np
-import boardPieces
-import intersectionDetails
 import random 
+from board import Board
 import cards
-from cards import AllCards
 import player
 
-# List of resources available to be distributed on the board
-RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
-# Create a dictionary of each resource and a corresponding number id
-res_dict = dict(zip(RESOURCE_NAMES, np.arange(0, len(RESOURCE_NAMES))))
-# List of available ports that can be distributed around the board
-PORTS_NAMES = ["3:1", "2brick:1", "2ore:1", "2hay:1", "2wood:1", "2sheep:1"]
-# Create a dictionary of each port and a corresponding number id
-port_dict = dict(zip(PORTS_NAMES, np.arange(0, len(PORTS_NAMES))))
-# Create a dictionary of each dev card and a corresponding number id
 DEVELOPMENT_CARD_NAMES = ["knight","victory point", "road building", "year of plenty",  "monopoly"]
 dev_dict = dict(zip(DEVELOPMENT_CARD_NAMES,np.arange(0, len(DEVELOPMENT_CARD_NAMES))))
 
@@ -22,54 +11,19 @@ class CatanBoard:
     # Initialize the Catan Board with all the options for resources, numbers to be rolled,
     # settlements/roads, port options
     def __init__(self):
+        self.board = Board()
         self.bank = cards.ResourceCards(19)
-        """initiates CatanBoard()/self according to catan rules:
-
-        ################################ Insert/Modify Comments HERE ##################################
-
-        Do not forget to ensure 6 and 8 are not next to each other: no 6-6 no 6-8 no 8-8
-        """
+        self.robber = self.board.robber
         ################################ Insert/Modify CODE HERE ##################################
-        # Array of each resource id number repeated the amount of times that the resource is available on the board
-        # This will be used to distribute the resources into slots on the board
-        self.board_resources = np.array(
-            [res_dict["desert"]] + [res_dict["brick"]] * 3 + [res_dict["ore"]] * 3 + [res_dict["hay"]] * 4 + [
-                res_dict["wood"]] * 4 + [res_dict["sheep"]] * 4)
-        # Shuffle the resource array for randomized distribution
-        np.random.shuffle(self.board_resources)
-        # number associated with the desert and 0 can not actually be rolled
-        self.roll_numbers = np.array([0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12])
-        # shuffle number options
-        np.random.shuffle(self.roll_numbers)
-        # Array of the port ids, amount of times each port is available -
-        self.ports = np.array(
-            [port_dict["3:1"]] * 4 + [port_dict["2brick:1"]] + [port_dict["2ore:1"]] + [port_dict["2hay:1"]] +
-            [port_dict["2wood:1"]] + [port_dict["2sheep:1"]])
-        # shuffle the ports for randomized distribution
-        np.random.shuffle(self.ports)
         # Number_of_tiles represents the slots on the board available to receive a resource and number
         # This number is the same length as the available resources
-        self.number_of_tiles = len(self.board_resources)
+
+        # self.number_of_tiles = len(self.board_resources)
+        
         # Settlements and roads need to be tracked.
 
-        # Set up edges - each edge will have a number and status (available, non-existant - 0, player #)
-        for i in range(73):
-            self.edges.append(boardPieces.Edge(i))
-        # set up an intersection object for each intersection (54)
-        # Intersection - input: number, roads (0 is none), port number, resources
-        self.intersections = boardPieces.create_intersections(self)
 
-        # Zero_tile_nr will represent where the 0 number exists
-        zero_tile_nr = np.where(self.roll_numbers == 0)
-        # Desert_tile_nr will represent where the desert resource exists
-        desert_tile_nr = np.where(self.board_resources == res_dict["desert"])
-        # Robber will keep track of where the robber is and it starts in the desert
-        self.robber = desert_tile_nr
-        # as the desert tile and replace whatever was already in the desert tile into the empty zero tile
-        self.roll_numbers[zero_tile_nr], self.roll_numbers[desert_tile_nr] = (self.roll_numbers[desert_tile_nr],
-                                                                              self.roll_numbers[zero_tile_nr])
-        # bank resources  "brick", "ore", "hay", "wood", "sheep"
-        self.bank = np.array([19,19,19,19])
+
         # player_points player0, player1, player2, player3
         self.player_points = [0,0,0,0]
         # longest road player_number initialisation with -1
@@ -90,31 +44,32 @@ class CatanBoard:
 
     # String output for printing the board
     def __str__(self):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
+        # """
+        # ################################ Insert/Modify Comments HERE ##################################
 
-        output -- str
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        out = "\n"
-        # Port pointer starts at zero and will be incremented as ports are used
-        port_nr = 0
-        # For each slot in the board - add the resource and roll_number at the corresponding index
-        for tile_nr in range(self.number_of_tiles):
-            out += RESOURCE_NAMES[self.board_resources[tile_nr]] + "-" + str(self.roll_numbers[tile_nr]) + " "
-            # if the current tile is next to a port - add in the port
-            if tile_nr in [2, 6, 11, 15, 18]:
-                out += " " + PORTS_NAMES[self.ports[port_nr]] + "\n"
-                # if the tile is not at the end of the board - add in a second port on the next line
-                if tile_nr < 18:
-                    out += PORTS_NAMES[self.ports[port_nr + 1]] + " "
-                # Increment the port pointer by 2
-                port_nr += 2
-        """ Return the output string with all the resources, numbers, and ports to be printed when needed.
-        The robber should be added to this output to keep track of where it is.
-        Also, I think the output could use better formatting to differentiate between ports and resources and to 
-        be easier to look at. """
-        return out
+        # output -- str
+        # """
+        # ################################ Insert/Modify CODE HERE ##################################
+        # out = "\n"
+        # # Port pointer starts at zero and will be incremented as ports are used
+        # port_nr = 0
+        # # For each slot in the board - add the resource and roll_number at the corresponding index
+        # for tile_nr in range(self.number_of_tiles):
+        #     out += RESOURCE_NAMES[self.board_resources[tile_nr]] + "-" + str(self.roll_numbers[tile_nr]) + " "
+        #     # if the current tile is next to a port - add in the port
+        #     if tile_nr in [2, 6, 11, 15, 18]:
+        #         out += " " + PORTS_NAMES[self.ports[port_nr]] + "\n"
+        #         # if the tile is not at the end of the board - add in a second port on the next line
+        #         if tile_nr < 18:
+        #             out += PORTS_NAMES[self.ports[port_nr + 1]] + " "
+        #         # Increment the port pointer by 2
+        #         port_nr += 2
+        # """ Return the output string with all the resources, numbers, and ports to be printed when needed.
+        # The robber should be added to this output to keep track of where it is.
+        # Also, I think the output could use better formatting to differentiate between ports and resources and to 
+        # be easier to look at. """
+        # return out
+        return str(self.board)
     
     """def can_buy(self,item_wanted,player_nr):
         #this seems if a user has the means to buy a card at hand 

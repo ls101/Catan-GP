@@ -45,17 +45,15 @@ class Edge:
 
     def get_neighbors(self):
         neighbors = []
-        print()
-        print('working on: {0}\n'.format(self.identifier))
         # return all neighboring roads
         for intersection in self.intersections:
             for edge in intersection.edges:
                 if edge != self:
                     neighbors.append(edge)
-                    print('added {0}\n'.format(edge.identifier))
-                else:
-                    print('same: {0}\n'.format(edge.identifier))
-        return neighbors
+                #     print('added edge {0} to \n'.format(edge.identifier, self.identifier))
+                # else:
+                #     print('same: {0}\n'.format(edge.identifier))
+        return set(neighbors)
 
 
 class Intersection:
@@ -88,8 +86,17 @@ class Intersection:
             s += ' [{0} port]'.format(PORTS_NAMES[self.port])
         return s
 
-    def get_next():
-        pass
+    def get_neighbors(self):
+        neighbors = []
+        # return all neighboring roads
+        for edge in self.edges:
+            for intersection in edge.intersections:
+                if intersection != self:
+                    neighbors.append(intersection)
+                    # print('added intersection {0} to {1}\n'.format(intersection.identifier, self.identifier))
+                # else:
+                    # print('same: {0}\n'.format(intersection.identifier))
+        return set(neighbors)
 
 
 class Terrain:
@@ -124,7 +131,18 @@ class Terrain:
         return s
 
     def get_neighbors(self):
-        pass
+        neighbors = []
+        # return all neighboring roads
+        for edge in self.edges:
+            # print('edge: '+str(edge.identifier))
+            for terrain in edge.terrains:
+                # print('terrain: '+str(terrain.identifier))
+                if terrain != self:
+                    neighbors.append(terrain)
+                #     print('added terrain {0} to {1}\n'.format(terrain.identifier, self.identifier))
+                # else:
+                #     print('same: {0}\n'.format(terrain.identifier))
+        return set(neighbors)
 
 
 def main():
@@ -135,6 +153,9 @@ def main():
     t = Terrain(0, 0, 1)
     print(t)
     print(RESOURCE_NAMES[t.resource])
+    e.get_neighbors()
+    i.get_neighbors()
+    t.get_neighbors()
 
 
 if __name__ == '__main__':

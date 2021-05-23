@@ -1,7 +1,7 @@
 import numpy as np
 import random
 from board_specs import *
-from board_components import Terrain, Edge, Intersection
+from board_components import *
 
 
 # List of resources available to be distributed on the board
@@ -89,13 +89,13 @@ class Board:
     def initialize_edges(self):
         edges = {}
         for x in range(1, 73):
-            edges[x] = Edge(x)
+            edges[x] = Edge(x, intersections=[], terrains=[])
         return edges
 
     def initialize_intersections(self):
         intersections = {}
         for x in range(1, 55):
-            intersections[x] = Intersection(x)
+            intersections[x] = Intersection(x, edges=[], terrains=[])
         return intersections
 
     def initialize_terrains(self):
@@ -126,7 +126,15 @@ class Board:
             local_egdes = []
             for subitem in item[1]:
                 local_egdes.append(self.edges[subitem])
+                # print(self.edges[subitem])
+                # print(self.edges[subitem].terrains)
                 self.edges[subitem].terrains.append(self.terrains[item[0]])
+                # print('adding {0} to {1}: {2}'.format(
+                #     self.terrains[item[0]].identifier,
+                #     self.edges[subitem],                    
+                #     self.edges[subitem].terrains                    
+                # ))
+                # print('\n\n\n')
             local_intersections = []
             for subitem in item[2]:
                 local_intersections.append(self.intersections[subitem])
@@ -144,7 +152,7 @@ class Board:
 
     def assign_ports(self):
         for port_list in range(len(ports_specs)):
-            print(port_list)
+            # print(port_list)
             for intersection in ports_specs[port_list]:
                 self.intersections[intersection].port = self.ports[port_list]
 
@@ -152,16 +160,17 @@ class Board:
 # Create and display the board object.
 def main():
     b = Board()
-    print(b)
-    # print(b.edges[1].terrains)
-    # for item in b.edges[29].get_neighbors():
-    #     print(item.identifier, end=', ')
-    # # for key, val in b.edges.items():
-    # #     item = val.get_neighbors()
-    # #     print(item)
-
-    # for key, val in b.edges.items():
-        # print(str(key) + ': ' + str(type(val)))
+    # print(b)
+    # for item in b.edges[1].get_neighbors():
+    #     print(item.identifier, end = ', ')
+    # print('\ndone with\n\n')
+    for item in b.intersections[1].get_neighbors():
+        print(item.identifier, end = ', ')
+    # print('\ndone with\n\n')
+    # for item in b.terrains[1].get_neighbors():
+    #     print(item.identifier, end = ', ')
+    # print(b.terrains[1].edges[0].terrains)
+    print('\ndone with\n\n')
 
 
 if __name__ == '__main__':

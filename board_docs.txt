@@ -1,0 +1,28 @@
+The board class contains all properties that belong to the board.
+It is initialized from the CatanBoard. (That should really be called CatanGame.)
+Development cards etc. belong to the game, not the board, so they're initialized there.
+The robber's start position is defined in the board, but tracked in the game.
+(See line 16 in catan.py)
+The robber position in board.py is not used further.
+
+The board has three types of objects:
+Terrain, Edge, Intersection.
+These are stored in dictionaries in the board: edges, intersections, terrains.
+Each object has an "identifier" attribute, which is the same as the key for the object.
+
+Edges and Intersections have an "occupier" attribute; it's initialized as None.
+To place a road/settlement/city, change the occupier value.
+An edge/intersection is available if occupier is None.
+Edges and Intersections have a list of terrains and a list of Edges or Intersections.
+Intersections have a port attribute. If no port is there, the port is None.
+The port is an integer, to match the index in the PORTS_NAMES list.
+
+Terrains have tuples for the intersections and edges.
+They have a resource, which is an integer to match the index in the RESOURCE_NAMES list.
+They also have a resource number, from the roll_numbers list.
+
+All 3 object types have a get get_neighbors method that returns the neighboring
+objects of that same type. For intersections, it's the next intersection. Meaning,
+those that are connected to this intersection's edges.
+For the edges, it's the next (connected) edges.
+For the terrains, its the neighboring terrains.This is needed to ensure 6 and 8 are not next to each other.

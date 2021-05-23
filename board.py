@@ -52,9 +52,9 @@ class Board:
         self.intersections = self.initialize_intersections()
         self.terrains = self.initialize_terrains()
         # Assign the correct attributes for each attribute.
-        self.assign_edge()
-        self.assign_intersection()
-        self.assign_terrain()
+        # self.assign_intersection()
+        self.assign_specs()
+        self.assign_ports()
 
     def __str__(self):
         # A message, of how the board is displayed.
@@ -111,44 +111,26 @@ class Board:
     # will have their proper attributes.  This circular relationship is
     # interesting.  An object's attribute's attribute can be the initial
     # object.
-    def assign_edge(self) -> None:
-        for item in edges_specs:
-            # Identify the correct objects from the initialized lists, based
-            # on the values of the tuple parameters.
-            local_intersections = []
-            for subitem in item[1]:
-                local_intersections.append(self.intersections[subitem])
-            local_terrains = []
-            for subitem in item[2]:
-                local_terrains.append(self.terrains[subitem])
-            # Pass the objects, as tuples, to reassign the attributes of the
-            # object.
-            # index = item[0]
-            self.edges[item[0]].intersections = (tuple(local_intersections))
-            self.edges[item[0]].terrains = (tuple(local_terrains))
 
-    def assign_intersection(self) -> None:
-        for item in intersections_specs:
-            local_egdes = []
-            for subitem in item[1]:
-                local_egdes.append(self.edges[subitem])
-            # Pass the objects, as tuples, to reassign the attributes of the
-            # object.
-            self.intersections[item[0]].edges = (tuple(local_egdes))
-            # If that item contains a port, assign it here.
-            if len(item) == 3:
-                self.intersections[item[0]].ports = self.ports[item[2]]
+    # def assign_intersection(self) -> None:
+    #     for item in intersections_specs:
+    #         # If that item contains a port, assign it here.
+    #         if len(item) == 3:
+    #             self.intersections[item[0]].ports = self.ports[item[2]]
 
-    def assign_terrain(self) -> None:
+    
+    def assign_specs(self) -> None:
         for item in terrains_specs:
             # Identify the correct objects from the initialized lists, based
             # on the values of the tuple parameters.
             local_egdes = []
             for subitem in item[1]:
                 local_egdes.append(self.edges[subitem])
+                self.edges[subitem].terrains.append(self.terrains[item[0]])
             local_intersections = []
             for subitem in item[2]:
                 local_intersections.append(self.intersections[subitem])
+                self.intersections[subitem].terrains.append(self.terrains[item[0]])
 
             # Pass the objects, as tuples, to reassign the attributes of the
             # object.
@@ -160,12 +142,18 @@ class Board:
             self.terrains[item[0]].resource = self.board_resources[item[0]-1]
             self.terrains[item[0]].resource_num = self.roll_numbers[item[0]-1]
 
+    def assign_ports(self):
+        for port_list in range(len(ports_specs)):
+            print(port_list)
+            for intersection in ports_specs[port_list]:
+                self.intersections[intersection].port = self.ports[port_list]
 
 
 # Create and display the board object.
 def main():
     b = Board()
     print(b)
+    # print(b.edges[1].terrains)
     # for item in b.edges[29].get_neighbors():
     #     print(item.identifier, end=', ')
     # # for key, val in b.edges.items():

@@ -26,8 +26,8 @@ class Edge:
     def __init__(
         self,
         identifier,
-        intersections=(0,),
-        terrains=(0,),
+        intersections=[],
+        terrains=[],
         occupier=None
     ) -> None:
         self.identifier = identifier
@@ -36,10 +36,12 @@ class Edge:
         self.occupier = occupier
 
     def __str__(self) -> str:
+        s = str(self.identifier) + ': '
         if self.occupier is None:
-            return 'available'
+            s += 'available'
         else:
-            return self.occupier
+            s += self.occupier
+        return s
 
     def get_neighbors(self):
         neighbors = []
@@ -61,26 +63,29 @@ class Intersection:
     # place on the intersection during the game.  And intersection that
     # cannot have a new settlement (because an adjacent intersection is
     # settled) will be marked as restricted.  The string method returns
-    # this info, as well as any ports.
+    # this info, as well as any port.
     def __init__(
         self,
         identifier,
-        edges=(0,),
+        edges=[],
+        terrains=[],
         occupier=None,
-        ports=None
+        port=None
     ) -> None:
         self.identifier = identifier
         self.edges = edges
+        self.terrains = terrains
         self.occupier = occupier
-        self.ports = ports
+        self.port = port
 
     def __str__(self) -> str:
+        s = str(self.identifier) + ': '
         if self.occupier is None:
-            s = 'available'
+            s += 'available'
         else:
-            s = self.occupier
-        if self.ports is not None:
-            s += ' [{0} port]'.format(PORTS_NAMES[self.ports])
+            s += self.occupier
+        if self.port is not None:
+            s += ' [{0} port]'.format(PORTS_NAMES[self.port])
         return s
 
     def get_next():

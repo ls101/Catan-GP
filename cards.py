@@ -103,4 +103,5 @@ if __name__ == '__main__':
     c = ResourceCards()
     d = ResourceCards(19)
     cc = Cards()
+    print(d)
 print()       

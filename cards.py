@@ -1,3 +1,4 @@
+import random
 import constants
 
 #create a class for cards and anything card related 
@@ -49,7 +50,6 @@ class ResourceCards:
         # players start with no cards; the bank starts with 19 of each.
         self.resource_cards = {}
         for item in self.RESOURCE_NAMES:
-            self.resource_cards[item] = num 
             if item != "desert":
                 self.resource_cards[item] = num 
 
@@ -88,13 +88,17 @@ class ResourceCards:
             s[key] += value
             o[key] -= value
 
-    def resources_list(self):
-        # For operations that work better on list objects, such as choosing a
-        # random card to steal. The actual stealing should be done on the dictionary.
+    def get_random_card(self):
+        # For  choosing a random card to steal. The actual stealing should be done on the dictionary.
+
+        # Create a local list, to enable choosing a random card.
         lis = []
         for key, value in self.resource_cards.items():
             lis += [key] * value
-        return lis
+        # Get a random card
+        card = random.choice(lis)
+        # return the card in dictionary format, to be used in the move_cards method
+        return {card: 1}
     
     def development(self):
         pass
@@ -104,4 +108,5 @@ if __name__ == '__main__':
     d = ResourceCards(19)
     cc = Cards()
     print(d)
+    print(d.get_random_card())
 print()       

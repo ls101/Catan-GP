@@ -1,3 +1,5 @@
+import constants
+
 #create a class for cards and anything card related 
 class Cards():
     def __init__(self):
@@ -22,7 +24,7 @@ class Cards():
     
     def cards_insert(self,*cards_insert):
         for card in cards_insert:
-         self.cards.append(cards)
+         self.cards.append(self.cards)
     
     #this function removes cards
     def cards_remove(self,*cards_remove):
@@ -40,7 +42,7 @@ class ResourceCards:
     # Ideally, the RESOURCE_NAMES list should be coded ONCE for the entire game
     # and then imported. It is here temporarily.
     # Note: dessert was removed from this list.
-    RESOURCE_NAMES = ["brick", "ore", "hay", "wood", "sheep"]
+    RESOURCE_NAMES = constants.RESOURCE_NAMES
 
     def __init__(self, num=0):
         # The object is initialized with a dictionary as mentioned above.  The
@@ -48,6 +50,8 @@ class ResourceCards:
         self.resource_cards = {}
         for item in self.RESOURCE_NAMES:
             self.resource_cards[item] = num 
+            if item != "desert":
+                self.resource_cards[item] = num 
 
     def __str__(self):
         if self.get_total_cards() == 0:
@@ -94,39 +98,6 @@ class ResourceCards:
     
     def development(self):
         pass
-
-
-
-# This does not belong here; it's here temporarily. It can be used as the
-# "what" argument for the move method, moving cards to the bank. It's also used
-# to check if a player can buy a resource, before attempting to move.
-# Really, this should use indices from the RESOURCE_NAMES list.
-PRICES = {
-    'dev_card': {
-        'brick': 1,
-        'ore': 1,
-        'sheep': 1
-    },
-
-    'road': {
-        'wood': 1,
-        'brick': 1
-    },
-
-    'settlement': {
-        'wood': 1,
-        'brick': 1,
-        'sheep': 1,
-        'hay': 1
-    },
-    
-    'city': {
-        'ore': 3,
-        'hay': 2
-    }
-}
-
-
 
 if __name__ == '__main__':
     c = ResourceCards()

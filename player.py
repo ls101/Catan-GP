@@ -1,7 +1,8 @@
 import numpy as np
 from cards import *
+import constants
 
-
+prices = constants.PRICES
 class CatanPlayer:
     # Initialize the Catan Board with all the options for resources, numbers to be rolled,
     # settlements/roads, port options
@@ -21,7 +22,7 @@ class CatanPlayer:
         self.cities = []
         # Players can place settlements only where they have a road. This will
         # be tracked here.
-        self.valid_settlements = []
+        # self.valid_settlements = []
 
         # All items owned by the player, but not on the board:
         self.resource_cards = ResourceCards()
@@ -93,13 +94,20 @@ class CatanPlayer:
         # Get, and validate, an integer input. The method will return none for
         # invalid input. A valid index that cannot be used will be reassigned
         # as None. A loop will request an input until a valid one is received.
-        position = self.get_input_by_value(self.valid_settlements)
+        valid_settlements = []
+        for road in self.roads:
+            for s in road.intersections:
+                if s is None:
+                    valid_settlements.append(s.identifier)
+
+
+        position = self.get_input_by_value(valid_settlements)
         if board.intersections[position] is not None:
             print('That location is not available. Please choose another location.')
             position = None
 
         while position is None:
-            position = self.get_input_by_value(self.valid_settlements)
+            position = self.get_input_by_value(valid_settlements)
             if board.intersections[position] is not None:
                 print('That location is not available. Please choose another location.')
                 position = None
@@ -360,26 +368,7 @@ class CatanPlayer:
 
 
     def can_buy(self, item):
-        prices = {
-        'dev_card': {
-            'brick': 1,
-            'ore': 1,
-            'sheep': 1
-        },
-        'city': {
-            'ore': 2,
-            'wheat': 3
-        },
-        'settlement':{
-            'brick':1,
-            'wheat':1,
-            'sheep':1,
-            'wood':1
-        },
-        'road':{
-            'wood':1,
-            'brick':1
-        }}
+
 
         for key, value in item():
             if value < self.resource_cards[key]:

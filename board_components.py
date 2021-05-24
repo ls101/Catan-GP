@@ -1,9 +1,9 @@
 import numpy as np
 import random
+import constants
 
-RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
-PORTS_NAMES = ["3:1", "2brick:1", "2ore:1", "2hay:1", "2wood:1", "2sheep:1"]
-
+RESOURCE_NAMES = constants.RESOURCE_NAMES
+PORTS_NAMES = constants.PORTS_NAMES
 # This module defines the components of the board: terrains, edges
 # between the terrains, and intersections connecting the edges.  To
 # enable all game functions, each component is an object, and has the

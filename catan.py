@@ -3,9 +3,10 @@ import random
 from board import Board
 import cards
 import player
+import constants
 
-RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
-DEVELOPMENT_CARD_NAMES = ["knight","victory point", "road building", "year of plenty",  "monopoly"]
+RESOURCE_NAMES = constants.RESOURCE_NAMES
+DEVELOPMENT_CARD_NAMES = constants.DEVELOPMENT_CARD_NAMES
 dev_dict = dict(zip(DEVELOPMENT_CARD_NAMES,np.arange(0, len(DEVELOPMENT_CARD_NAMES))))
 
 class CatanBoard:
@@ -213,8 +214,8 @@ class CatanBoard:
         """
         # output roll_numer of dice
         ################################ Insert/Modify CODE HERE ##################################
-        dye1=roll()
-        dye2=roll()
+        dye1=self.roll()
+        dye2=self.roll()
         dice_values=dye1+dye2
         return dice_values
 
@@ -236,17 +237,18 @@ class CatanBoard:
 
         """
         ################################ Insert/Modify CODE HERE ##################################
-        print(self.cards.resources_list(self))
-        discard_num=cards.get_discard_num(self)
-        cards_remove=[]
-        print('You need to remove '+discard_num+" cards")
-        #will give the player the dictionary numbers ....
-        for num in range(1,discard_num+1):
-            try:
-                card=int(input("card"+num+" which card do you want to remove ?"))
-            except:
-                print("you must enter a numeric card!")
-            #also need to make sure that it is a proper card is this being a dictionary ?
+        # print(self.cards.resources_list(self))
+        # discard_num=cards.get_discard_num(self)
+        # cards_remove=[]
+        # print('You need to remove '+discard_num+" cards")
+        # #will give the player the dictionary numbers ....
+        # for num in range(1,discard_num+1):
+        #     try:
+        #         card=int(input("card"+num+" which card do you want to remove ?"))
+        #     except:
+        #         print("you must enter a numeric card!")
+        #     #also need to make sure that it is a proper card is this being a dictionary ?
+        player_nr.resource_cards.move_cards(self.bank, resourses)
 
         
             

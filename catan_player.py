@@ -1,4 +1,7 @@
 from cards import *
+import constants
+
+prices = constants.PRICES
 
 
 class CatanPlayer:
@@ -116,8 +119,15 @@ class CatanPlayer:
         The output is a dictionary, NOT an np array
          """
         print('Robber activated!')
-        if self.resource_cards.get_discard_num() > 0:
-            return self.offer_cards()
+        num = self.resource_cards.get_discard_num()
+        if num > 0:
+            offer = self.offer_cards()
+            if sum(offer.values()) == num:
+                return offer
+            else:
+                pass
+        else:
+            return None
 
 
     def can_buy(self, dict):

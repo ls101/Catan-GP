@@ -2,14 +2,15 @@ import numpy as np
 import random
 from board_specs import *
 from board_components import *
+import constants
 
 
 # List of resources available to be distributed on the board
-RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
+RESOURCE_NAMES = constants.RESOURCE_NAMES
 # Create a dictionary of each resource and a corresponding number id
 res_dict = dict(zip(RESOURCE_NAMES, np.arange(0, len(RESOURCE_NAMES))))
 # List of available ports that can be distributed around the board
-PORTS_NAMES = ["3:1", "2brick:1", "2ore:1", "2hay:1", "2wood:1", "2sheep:1"]
+PORTS_NAMES = constants.PORTS_NAMES
 # Create a dictionary of each port and a corresponding number id
 port_dict = dict(zip(PORTS_NAMES, np.arange(0, len(PORTS_NAMES))))
 
@@ -158,16 +159,16 @@ class Board:
 # Create and display the board object.
 def main():
     b = Board()
-    # print(b)
-    for item in b.edges[10].get_neighbors():
-        print(item.identifier, end = ', ')
-    print('\ndone with\n\n')
-    for item in b.intersections[10].get_neighbors():
-        print(item.identifier, end = ', ')
-    print('\ndone with\n\n')
-    for item in b.terrains[10].get_neighbors():
-        print(item.identifier, end = ', ')
-    print('\ndone with\n\n')
+    print(b)
+    # for item in b.edges[10].get_neighbors():
+    #     print(item.identifier, end = ', ')
+    # print('\ndone with\n\n')
+    # for item in b.intersections[10].get_neighbors():
+    #     print(item.identifier, end = ', ')
+    # print('\ndone with\n\n')
+    # for item in b.terrains[10].get_neighbors():
+    #     print(item.identifier, end = ', ')
+    # print('\ndone with\n\n')
 
 
 if __name__ == '__main__':

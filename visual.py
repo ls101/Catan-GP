@@ -10,8 +10,8 @@ import board
 
 # constant Hexagon radius for catan GUI
 HEX_RADIUS = 5/60*1080
-SCREEN_HIGHT = HEX_RADIUS*8
-SCREEN_WIDTH = HEX_RADIUS*10*.875
+SCREEN_HIGHT = HEX_RADIUS*8 +10
+SCREEN_WIDTH = HEX_RADIUS*10*.875 +10
 
 # RESOURCE_COLORS correspond the RESOURCE_NAMES constant from the Catan class
 RESOURCE_COLORS = ["khaki", "saddle brown", "gray", "gold2", "dark green", "lawn green"]
@@ -36,9 +36,10 @@ def hexagon_coordinates2(a, center_x=0, center_y=0):
         ⇒  The coordinates of vertex  F  are  (acos300o,asin300o)=(a2,−3√a2)."""
     x_angle = a / 2
     y_angle = np.sqrt(3) * a / 2
-    return [a + center_x, 0 + center_y, x_angle + + center_x, y_angle + center_y, -x_angle + + center_x,
-            y_angle + center_y, -a + center_x, 0 + center_y, -x_angle + + center_x,
-            -y_angle + center_y, x_angle + + center_x, -y_angle + center_y]
+    return [-x_angle + + center_x,
+            -y_angle + center_y, x_angle + + center_x, -y_angle + center_y,
+             a + center_x, 0 + center_y, x_angle + center_x, y_angle + center_y, -x_angle + center_x,
+            y_angle + center_y, -a + center_x, 0 + center_y]
 
     # return [a + center_x, 0 + center_y, a / 2 + center_x, np.sqrt(3) * a / 2 + center_y, -a / 2 + center_x,
     #         np.sqrt(3) * a / 2 + center_y, -a + center_x, 0 + center_y, -a / 2 + center_x,
@@ -48,7 +49,10 @@ def hexagon_coordinates2(a, center_x=0, center_y=0):
 def hexagon_coordinates(a, center_x, center_y):
     """Hexagon with vertical edges"""
     cor = hexagon_coordinates2(a, center_y, center_x)
-    return [cor[1], cor[0], cor[3], cor[2], cor[5], cor[4], cor[7], cor[6], cor[9], cor[8], cor[11], cor[10]]
+    # return [cor[1], cor[0], cor[3], cor[2], cor[5], cor[4], cor[7], cor[6], cor[9], cor[8], cor[11], cor[10]]
+    # return [cor[1], cor[0], cor[3], cor[2], cor[5], cor[4], cor[7], cor[6], cor[9], cor[8], cor[11], cor[10]]
+    cor.reverse()
+    return cor
 
 
 def visualize(board):
@@ -93,11 +97,42 @@ def visualize(board):
         y = ys[i]
         tile = board.terrains[i+1]
         t = str(tile.resource_num) + ' ' + catan.RESOURCE_NAMES[tile.resource]
-        coord = hexagon_coordinates(HEX_RADIUS, x, y)
+        # added +5 to move it right and down; to give space at sides
+        coord = hexagon_coordinates(HEX_RADIUS, x+5, y+5)
         C.create_polygon(coord, fill= RESOURCE_COLORS[tile.resource])
         C.create_text(x, y, font="Times 15 italic bold",
                       text=t)
+        
+        # pass the coordinates to the edges and intersections
+        coord_i = 0
+        OFFSET = 4
+        for i in tile.intersections:
+            if not hasattr(i, 'coords'):
+                # x, y, x, y
+                i.coords = [coord[coord_i] - OFFSET, coord[coord_i + 1] - OFFSET, coord[coord_i] + OFFSET, coord[coord_i + 1] + OFFSET]
+            coord_i += 2
+        
+        coord_e = 0
+        for e in tile.edges:
+            if not hasattr(e, 'coords'):
+                # x, y, x, y
+                e.coords = [coord[coord_e], coord[coord_e + 1]]
+                if coord_e+2 >= len(coord):
+                    e.coords += [coord[0], coord[1]]
+                else:
+                    e.coords += [coord[coord_e + 2], coord[coord_e + 3]]
+            coord_e += 2
+
         # C.update
+    # display the edges and intersections
+    for i in board.intersections.values():
+        C.create_oval(i.coords, fill='black')
+    for e in board.edges.values():
+        C.create_line(e.coords, fill='black', width=4)
+    
+    # test:
+    # C.create_oval(board.intersections[30].coords, fill='purple')
+    # C.create_line(board.edges[30].coords, fill='purple', width=4)
     C.pack()
    
     window.mainloop()

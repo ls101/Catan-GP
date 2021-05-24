@@ -4,6 +4,7 @@ from board import Board
 import cards
 import player
 
+RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
 DEVELOPMENT_CARD_NAMES = ["knight","victory point", "road building", "year of plenty",  "monopoly"]
 dev_dict = dict(zip(DEVELOPMENT_CARD_NAMES,np.arange(0, len(DEVELOPMENT_CARD_NAMES))))
 

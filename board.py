@@ -132,7 +132,8 @@ class Board:
             self.terrains[item[0]].intersections = (tuple(local_intersections))
 
             # Assign the last landscape and resource number.  (The lists
-            # were shuffled, so it's random.)
+            # were shuffled, so it's random.) I deduct 1 from the list index,
+            # since the dictionaryuses keys starting at 1, and lists start at 0.
             self.terrains[item[0]].resource = self.board_resources[item[0]-1]
             self.terrains[item[0]].resource_num = self.roll_numbers[item[0]-1]
 

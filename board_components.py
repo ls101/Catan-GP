@@ -50,9 +50,6 @@ class Edge:
             for edge in intersection.edges:
                 if edge != self:
                     neighbors.append(edge)
-                #     print('added edge {0} to \n'.format(edge.identifier, self.identifier))
-                # else:
-                #     print('same: {0}\n'.format(edge.identifier))
         return set(neighbors)
 
 
@@ -93,9 +90,6 @@ class Intersection:
             for intersection in edge.intersections:
                 if intersection != self:
                     neighbors.append(intersection)
-                    # print('added intersection {0} to {1}\n'.format(intersection.identifier, self.identifier))
-                # else:
-                    # print('same: {0}\n'.format(intersection.identifier))
         return set(neighbors)
 
 
@@ -134,14 +128,9 @@ class Terrain:
         neighbors = []
         # return all neighboring roads
         for edge in self.edges:
-            # print('edge: '+str(edge.identifier))
             for terrain in edge.terrains:
-                # print('terrain: '+str(terrain.identifier))
                 if terrain != self:
                     neighbors.append(terrain)
-                #     print('added terrain {0} to {1}\n'.format(terrain.identifier, self.identifier))
-                # else:
-                #     print('same: {0}\n'.format(terrain.identifier))
         return set(neighbors)
 
 

@@ -4,6 +4,7 @@ from board import Board
 import cards
 import player
 import constants
+import visual
 
 RESOURCE_NAMES = constants.RESOURCE_NAMES
 DEVELOPMENT_CARD_NAMES = constants.DEVELOPMENT_CARD_NAMES
@@ -16,6 +17,10 @@ class CatanBoard:
         self.board = Board()
         self.bank = cards.ResourceCards(19)
         self.robber = self.board.robber
+
+        # get a GUI
+        self.gui = visual.GUIboard(self.board)
+
         ################################ Insert/Modify CODE HERE ##################################
         # Number_of_tiles represents the slots on the board available to receive a resource and number
         # This number is the same length as the available resources
@@ -347,4 +352,5 @@ if __name__ == '__main__':
     ################################ Insert/Modify CODE HERE ##################################
     b = CatanBoard()
     print(b)
+    b.gui.window.mainloop()
     print('Debug complete')

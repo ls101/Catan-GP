@@ -148,5 +148,7 @@ if __name__ == '__main__':
                 turns+=1
 
     print('game ended')
+    board.board.gui.window.mainloop()
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

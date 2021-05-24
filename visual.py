@@ -2,7 +2,9 @@ import tkinter as tk
 import numpy as np
 import catan
 import board
+import constants
 
+PLAYER_COLORS = constants.PLAYER_COLORS
 
 
 # SCREEN_HIGHT = 1080
@@ -144,11 +146,18 @@ class GUIboard:
         self.C.create_line(board.edges[30].coords, fill='purple', width=4)
         self.C.update()
 
+    # def buy_road(self, edge_num, player):
+    #     self.C.create_line(board.edges[edge_num], fill=player_colors[player], width=4)
+        self.C.update()
+
 if __name__ == '__main__':
     board = catan.CatanBoard().board
     g = GUIboard(board)
     input('continue')
-    g.update_GUI(board)
+    try:
+        g.update_GUI(board)
+    except:
+        pass
     g.window.mainloop()
 
     print('Debug complete')

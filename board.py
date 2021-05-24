@@ -53,7 +53,6 @@ class Board:
         self.intersections = self.initialize_intersections()
         self.terrains = self.initialize_terrains()
         # Assign the correct attributes for each attribute.
-        # self.assign_intersection()
         self.assign_specs()
 
     def __str__(self):
@@ -104,50 +103,55 @@ class Board:
             terrains[x] = Terrain(x, x, 0)
         return terrains
 
-    # The following methods will assign the correct attributes for each
+    # The following method will assign the correct attributes for each
     # object.  It does not matter if the object that's assigned already
     # has it's own attributes referred to properly, or if it will be
     # assigned later.  The pointers remain unchanged, and all objects
     # will have their proper attributes.  This circular relationship is
     # interesting.  An object's attribute's attribute can be the initial
-    # object.
-
-
-    
+    # object.  
     def assign_specs(self) -> None:
+        # First, it loops through the list of terrains from the board_specs
+        # file.  The first item is the key/identifier.  Then there are two
+        # tuples: the intersections, and the edges.
         for item in terrains_specs:
-            # Identify the correct objects from the initialized lists, based
-            # on the values of the tuple parameters.
+            # Create a local variable to hold the edges for this terrain.
             local_egdes = []
             for subitem in item[1]:
+                # Each integer in the tuple refers to a key in the edges
+                # dictionary.  This edge will be added to the list. 
+                # Additionally,  this edge's terrains attribute will be updated
+                # to hold the terrain we're working on now.
                 local_egdes.append(self.edges[subitem])
                 self.edges[subitem].terrains.append(self.terrains[item[0]])
+
+            # The same process is repeated for the intersections.
             local_intersections = []
             for subitem in item[2]:
                 local_intersections.append(self.intersections[subitem])
                 self.intersections[subitem].terrains.append(self.terrains[item[0]])
 
-            # Pass the objects, as tuples, to reassign the attributes of the
-            # object.
+            # The local lists are converted to tuples and passed to the terrain.
             self.terrains[item[0]].edges = (tuple(local_egdes))
             self.terrains[item[0]].intersections = (tuple(local_intersections))
 
             # Assign the last landscape and resource number.  (The lists
             # were shuffled, so it's random.) I deduct 1 from the list index,
-            # since the dictionaryuses keys starting at 1, and lists start at 0.
+            # since the dictionary uses keys starting at 1, and lists start at 0.
             self.terrains[item[0]].resource = self.board_resources[item[0]-1]
             self.terrains[item[0]].resource_num = self.roll_numbers[item[0]-1]
 
 
-        # intersections to edges and ports
+        # Using the next list from the board_specs file, the intersections and
+        # edges will reference each other.  Additionally, the ports will be added.
         for item in intersections_specs:
+            # It uses the same method as above: loops throught he intersections
+            # to add a list of edges, and adds self to the edge being processed.
             local_egdes = []
             for subitem in item[1]:
                 local_egdes.append(self.edges[subitem])
                 self.edges[subitem].intersections.append(self.intersections[item[0]])
 
-            # Pass the objects, to reassign the attributes of the
-            # object.
             self.intersections[item[0]].edges = local_egdes
             # If that item contains a port, assign it here.
             if len(item) == 3:

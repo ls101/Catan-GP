@@ -15,14 +15,10 @@ PORTS_NAMES = constants.PORTS_NAMES
 # assigned when the attributes are still integers, when all is done, all
 # attributes will be correct.
 
-#  The default resource_num of zero references the ocean surrounding the
-# island, and bordering some objects.
-
-
 class Edge:
     # occupier references the road that players can place on the edge
     # during the game.  Since this is all that really matters in the
-    # game, the string method returns this property only.
+    # game, the string method returns this only property and its identifier.
     def __init__(
         self,
         identifier,
@@ -135,16 +131,17 @@ class Terrain:
 
 
 def main():
-    i = Intersection(0)
-    print(i)
-    e = Edge(0)
-    print(e)
-    t = Terrain(0, 0, 1)
-    print(t)
-    print(RESOURCE_NAMES[t.resource])
-    e.get_neighbors()
-    i.get_neighbors()
-    t.get_neighbors()
+    pass
+    # i = Intersection(0)
+    # print(i)
+    # e = Edge(0)
+    # print(e)
+    # t = Terrain(0, 0, 1)
+    # print(t)
+    # print(RESOURCE_NAMES[t.resource])
+    # e.get_neighbors()
+    # i.get_neighbors()
+    # t.get_neighbors()
 
 
 if __name__ == '__main__':

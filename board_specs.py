@@ -1,4 +1,9 @@
-
+""" 
+This file contains the details for the board objects: which the edges and
+intersections belong to each terrain, and which edges and ports belong to
+each intersection. They follow the numbers on the diagram, and will be used
+to assign the correct object attribute for the board components.
+ """
 
 # Edges start at top-right, clockwise, end at top-left.
 # Intersections start at top-center, clockwise.
@@ -26,7 +31,7 @@ terrains_specs = [
     (19, (61, 66, 72, 71, 65, 60), (45, 46, 54, 53, 52, 44))
 ]
 
-# 
+# identifier, edges, port
 intersections_specs = [
     (1, (1, 7), 8),
     (2, (2, 1), 8),

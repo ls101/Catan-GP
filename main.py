@@ -73,7 +73,7 @@ if __name__ == '__main__':
         current_player = players[player_nr]
         board_safety_copy = copy.deepcopy(board)
         settle_position, road_position = current_player.start_settelment_second(board_safety_copy)
-        board.start_settelment_second(player_nr,settle_position,road_position)
+        board.start_settelment_second(players[player_nr], player_nr,settle_position,road_position)
 
     # game will be played for maximum MAXIMUM_ROUNDS
     for game_round in range(MAXIMUM_ROUNDS):

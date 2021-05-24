@@ -25,7 +25,7 @@ class Cards():
     
     def cards_insert(self,*cards_insert):
         for card in cards_insert:
-         self.cards.append(self.cards)
+            self.cards.append(self.cards)
     
     #this function removes cards
     def cards_remove(self,*cards_remove):

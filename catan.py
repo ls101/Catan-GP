@@ -8,6 +8,8 @@ import visual
 
 RESOURCE_NAMES = constants.RESOURCE_NAMES
 DEVELOPMENT_CARD_NAMES = constants.DEVELOPMENT_CARD_NAMES
+PRICES = constants.PRICES
+PLAYER_COLORS = constants.PLAYER_COLORS
 dev_dict = dict(zip(DEVELOPMENT_CARD_NAMES,np.arange(0, len(DEVELOPMENT_CARD_NAMES))))
 
 class CatanBoard:
@@ -130,7 +132,7 @@ class CatanBoard:
         game_end, winner = False, 0
         return game_end, winner
 
-    def buy_settlement(self, player_nr, position):
+    def buy_settlement(self, player, player_nr, position):
     
         """changes CatanBoard()/self if possible according to the rules of building a settelment:
 
@@ -142,19 +144,23 @@ class CatanBoard:
         position -- integer 0-53
 
         """
-       
+        # pay for the settlement
+        self.bank.move_cards(player.resource_cards, PRICES['settlement'])
+        print(player.resource_cards)
+        print('\nbank:\n')
+        print(self.bank)
         
-        buy=player.can_buy(self,'settlement')
-        if buy:
-            location=input("please enter of the location where you want to place your settlement")
-        else:
-            print('sorry you do not have the means to purchase a settlement')
-            #now need to remove these cards from the players cards 
-            #not sure how to access the players object need to figure that out 
+        # buy the settlement: reassign the intersection's occupier and update the gui.
+        # The rest is done in the player class
+       
+        self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's settlement"
+        print(self.board.intersections[position])
+        self.gui.buy_settlement(player_nr, position)
+
 
         ################################ Insert/Modify CODE HERE ##################################
 
-    def buy_city(self, player_nr, position):
+    def buy_city(self, player, player_nr, position):
         """changes CatanBoard()/self if possible according to the rules of building a city:
 
         ################################ Insert/Modify Comments HERE ##################################
@@ -165,14 +171,21 @@ class CatanBoard:
         position -- integer 0-53
         """
         ################################ Insert/Modify CODE HERE ##################################
-        city=['wheat','wheat','ore','ore','ore']
-        buy=player.can_buy(self,'city')
-        if not buy:
-            print('you are unable to purchase a city')
+        
+        # pay for the city
+        self.bank.move_cards(player.resource_cards, PRICES['city'])
+        print(player.resource_cards)
+        print('\nbank:\n')
+        print(self.bank)
+        
+        # buy the city: reassign the settlement's occupier and update the gui.
+        # The rest is done in the player class
+       
+        self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's city"
+        print(self.board.intersections[position])
+        self.gui.buy_city(player_nr, position) 
 
-        #need to see if the item has a settlement there that they want to replace 
-
-    def buy_road(self, player_nr, position):
+    def buy_road(self, player,  player_nr, position):
         """changes CatanBoard()/self if possible according to the rules of building a road:
 
         ################################ Insert/Modify Comments HERE ##################################
@@ -184,26 +197,36 @@ class CatanBoard:
 
         """
         ################################ Insert/Modify CODE HERE ##################################
-        buy=player.can_buy(self,'road')
-        try:
-            placement=int(input('where do you want to place the road ?'))
-        except:
-            print("you must enter a numeric value!")
+        # pay for the road
+        self.bank.move_cards(player.resource_cards, PRICES['road'])
+        print(player.resource_cards)
+        print('\nbank:\n')
+        print(self.bank)
+        
+        # buy the road: reassign the road's occupier and update the gui.
+        # The rest is done in the player class
+        self.board.edges[position].occupier = PLAYER_COLORS[player_nr] + " player's road"
+        print(self.board.edges[position])
+        self.gui.buy_road(player_nr, position)
 
-    def buy_dev_card(self, player_nr):
+    def buy_dev_card(self, player):
         """changes CatanBoard()/self if possible according to the rules of buying a development card card:
 
         ################################ Insert/Modify Comments HERE ##################################
 
         buy_dev_card input arguments:
         self -- CatanBoard()
-        player_nr -- integer 0-3
+        player -- a player object from the list
 
         """
         ################################ Insert/Modify CODE HERE ##################################
-        buy=player.can_buy(self,'dev_card')
+        buy = player.can_buy(self,'dev_card')
         if not buy:
             print('you are unable to purchase a development card')
+        else:
+            player.resource_cards.move_cards(self.bank, PRICES['dev_card'])
+            # get card from list, add to player
+            player.development_cards.cards_insert()
 
     def roll(self):
         min=1
@@ -351,6 +374,16 @@ if __name__ == '__main__':
 
     ################################ Insert/Modify CODE HERE ##################################
     b = CatanBoard()
-    print(b)
-    b.gui.window.mainloop()
+    # print(b)
+    # p = player.CatanPlayer(0)
+    # p.resource_cards = cards.ResourceCards(6)
+    # b.buy_road(p, 2, 9)
+    # b.buy_road(p, 0, 19)
+    # b.buy_road(p, 3, 29)
+    # b.buy_settlement(p, 3, 7)
+    # b.buy_settlement(p, 2, 19)
+    # b.buy_city(p, 1, 29)
+    # b.buy_city(p, 0, 33)
+
     print('Debug complete')
+    b.gui.window.mainloop()

@@ -68,7 +68,7 @@ class GUIboard:
 
         self.window.title("Catan game State")
 
-
+        self.board = board
 
         self.C = tk.Canvas(self.window, bg="light blue", height=SCREEN_HIGHT, width=SCREEN_WIDTH)
 
@@ -135,20 +135,37 @@ class GUIboard:
         
         self.C.pack()
 
-        # test:
-        # self.C.create_oval(board.intersections[30].coords, fill='purple')
-        # self.C.create_line(board.edges[30].coords, fill='purple', width=4)
-        # self.C.update()
-    
-
-    def update_GUI(self, board):
-        self.C.create_oval(board.intersections[30].coords, fill='purple')
-        self.C.create_line(board.edges[30].coords, fill='purple', width=4)
+    def buy_road(self, player, edge_num):
+        # updates an edge to reflect the road color
+        self.C.create_line(self.board.edges[edge_num].coords, fill=PLAYER_COLORS[player], width=5)
         self.C.update()
 
-    # def buy_road(self, edge_num, player):
-    #     self.C.create_line(board.edges[edge_num], fill=player_colors[player], width=4)
+    def buy_settlement(self, player, edge_num):
+        # updates an intersection to reflect the settlement
+        # first, enlarge the circle
+        add_offset = 3
+        coords = self.board.intersections[edge_num].coords
+        new_coords = []
+        new_coords.append(coords[0] - add_offset)
+        new_coords.append(coords[1] - add_offset)
+        new_coords.append(coords[2] + add_offset)
+        new_coords.append(coords[3] + add_offset)
+        self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
         self.C.update()
+
+    def buy_city(self, player, edge_num):
+        # updates an intersection to reflect the settlement
+        # first, enlarge the circle
+        add_offset = 3
+        coords = self.board.intersections[edge_num].coords
+        new_coords = []
+        new_coords.append(coords[0] - add_offset)
+        new_coords.append(coords[1] - add_offset*add_offset)
+        new_coords.append(coords[2] + add_offset)
+        new_coords.append(coords[3] + add_offset*add_offset)
+        self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
+        self.C.update()
+
 
 if __name__ == '__main__':
     board = catan.CatanBoard().board

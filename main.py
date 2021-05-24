@@ -110,15 +110,15 @@ if __name__ == '__main__':
                         board.steal_card(player_nr, position, target_player_nr)
                 if choice == 3:
                     position = current_player.set_settlement(board_safety_copy)
-                    board.buy_settlement(player_nr, position)
+                    board.buy_settlement(players[player_nr], player_nr, position)
                 if choice == 4:
                     position = current_player.set_city(board_safety_copy)
-                    board.buy_city(player_nr, position)
+                    board.buy_city(players[player_nr], player_nr, position)
                 if choice == 5:
                     position = current_player.set_road(board_safety_copy)
-                    board.buy_road(player_nr, position)
+                    board.buy_road(players[player_nr], player_nr, position)
                 if choice == 6:
-                    board.buy_dev_card(player_nr)
+                    board.buy_dev_card(players[player_nr])
                 if choice == 8:
                     position, target_player_nr = current_player.steal_card(board_safety_copy)
                     board.play_knight(player_nr, position, target_player_nr)

@@ -1,6 +1,7 @@
 import numpy as np
 from cards import *
 import constants
+import board as board
 
 prices = constants.PRICES
 class CatanPlayer:
@@ -13,7 +14,7 @@ class CatanPlayer:
             'settlements': 5,
             'cities': 4
         }
-        # Items placed onthe board will be an array containg the index numbers
+        # Items placed on the board will be an array containg the index numbers
         # of those items, which are stored in arrays. The index numbers match
         # the numbers on the diagram.
         self.roads = []
@@ -33,131 +34,127 @@ class CatanPlayer:
         self.army = 0
         self.victory_points = 0
 
-    def get_input_by_index(self, lis) -> int:
-        # Will prompt player for a valid number, and return it. If the input is
-        # not valid, it will return None. This will be called in a loop, until
-        # a valid index is received.
-        # the player gets the option to see the board etc.
-        print('Please enter the location for placement, as an integer.')
-        print('input "s" to [s]how the list')
-        position = input()
-        # If the player wants to see info, print it
-        if position == 's':
-            print(lis)
-            return self.get_input_by_index(lis)
-        # Otherwise, validate the input data: must be a digit, and a  valid
-        # index for this list.
-        elif not position.isdigit():
-            print('Input must be an integer. Please try again.')
-            return self.get_input_by_index(lis)
-        elif not 0 < int(position) < len(lis):
-            print('Input must be greater than zero and less than {0}. Please try again'.format(len(lis)))
-            return self.get_input_by_index(lis)
-        else:
-            return int(position)
-
-
-    def get_input_by_value(self, lis) -> int:
-        # Will prompt player for a valid number, and return it. If the input is
-        # not valid, it will return None. This will be called in a loop, until
-        # a valid index is received.
-        # the player gets the option to see the board etc.
-        print('Please enter the location for placement, as an integer.')
-        print('input "s" to [s]how the list')
-        position = input()
-        # If the player wants to see info, print it
-        if position == 's':
-            print(lis)
-            return self.get_input_by_value(lis)
-        # Otherwise, validate the input data: must be a digit, and an integer
-        # that is in this list.
-        elif not position.isdigit():
-            print('Input must be an integer. Please try again.')
-            return self.get_input_by_value(lis)
-        elif not int(position) in lis:
-            print('Your chosen number is not in the list. Please try again.')
-            return self.get_input_by_value(lis)
-        else:
-            return int(position)
-
-
-    def set_settlement(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
-
-        generate buy_settlement input:
-        output -- position -- integer 0-54 """
-            
-        ################################ Insert/Modify CODE HERE ##################################
-        # position = int(input('insert argument'))
-
-        # Get, and validate, an integer input. The method will return none for
-        # invalid input. A valid index that cannot be used will be reassigned
-        # as None. A loop will request an input until a valid one is received.
+    # Find valid locations for settlements based on current settlements
+    # and roads - the new settlement must be attached to the player's
+    # road and occupier must be None
+    def get_valid_settlements(self, board):
         valid_settlements = []
+        # check if the intersection attached to the player's roads
+        # is available
         for road in self.roads:
-            for s in road.intersections:
-                if s is None:
-                    valid_settlements.append(s.identifier)
+            for intersection in road.intersections:
+                if intersection.occupier is None:
+                    valid_settlements.append(intersection.identifier)
+        return valid_settlements
 
+    def get_valid_roads(self, board):
+        valid_roads = []
+        # check if the road is attached to the player's roads
+        # and is available
+        for road in self.roads:
+            for neighbor in road.get_neighbors():
+                if road.occupier is None:
+                    valid_roads.append(neighbor.identifier)
+        return valid_roads
 
-        position = self.get_input_by_value(valid_settlements)
-        if board.intersections[position] is not None:
-            print('That location is not available. Please choose another location.')
-            position = None
+    # Takes a list of valid positions to place object and asks for input
+    # If the input is valid, returns the position
+    # Otherwise the player can try again
+    def get_index_input(self, valid_positions):
+        while True:
+            position = int(input('Choose a location from the list'))
+            if position in valid_positions:
+                return position
+            else:
+                print("Please choose a valid option")
 
-        while position is None:
-            position = self.get_input_by_value(valid_settlements)
-            if board.intersections[position] is not None:
-                print('That location is not available. Please choose another location.')
-                position = None
+    def can_buy(self, type_to_buy):
+        # Checks if the player has resources to buy
+        # Self.resource_cards is a dictionary of players cards - resource_number : amount_of_resource
+        # Find which resources are needed to buy type_to_buy
+        needed_to_buy = constants.PRICES[type_to_buy]
+        # Check if player has those resources in their cards
+        for key in needed_to_buy:
+            # if the player does not have enough of one
+            # type of resource, they can not buy that type of item
+            if self.resource_cards.resource_cards[key] < needed_to_buy[key]:
+                return False
+        return True
 
-        # check if player can place settlement there. Meaning, s/he has a road there
-        return position
+    def purchase_settlement(self, position, board, override):
+        # Add the position to the players list of settlements
+        self.settlements.append(board.intersections[position])
+        # Remove resource cards that were needed to purchase settlement
+        if not override:
+            for key in constants.PRICES['settlement']:
+                self.resource_cards.resource_cards[key] -= constants.PRICES['settlement'][key]
+        # Add point for building settlement
+        self.victory_points += 1
+
+    def purchase_city(self, position, board):
+        # Remove the position from settlement and add to cities
+        for i in self.settlements:
+            if i.identifier == position:
+                self.settlements.remove(i)
+        self.cities.append(board.intersections[position])
+        # Remove resource cards that were needed to purchase city
+        for key in constants.PRICES['city']:
+            self.resource_cards.resource_cards[key] -= constants.PRICES['city'][key]
+        # Add two points for building a city
+        self.victory_points += 2
+
+    def purchase_road(self, position, board, override):
+        # Add the position to the players list of road
+        self.roads.append(board.edges[position])
+        # Remove resource cards that were needed to purchase road
+        if not override:
+            for key in constants.PRICES['road']:
+                self.resource_cards.resource_cards[key] -= constants.PRICES['road'][key]
+
+    # Find valid locations for settlements based on current settlements
+    # and roads - the new settlement must be attached to the player's
+    # road and occupier must be None
+    # Override used for first settlements when no resource cards are taken
+    def set_settlement(self, board, override=False):
+        # check if player has resources to buy settlement
+        if self.can_buy('settlement') or override:
+            # find valid places to put settlements
+            valid_settlements = self.get_valid_settlements(board)
+            # print list of valid settlements to choose from to build on
+            print(valid_settlements)
+            # get a valid position to place the settlement
+            position = self.get_index_input(valid_settlements)
+            # Purchase the settlement and trade in cards
+            self.purchase_settlement(position, board, override)
+            return position
 
     def set_city(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
+        # check if player has resources to buy city
+        if self.can_buy('city'):
+            # find valid places to put cities
+            valid_cities = []
+            for settlement in self.settlements:
+                valid_cities.append(settlement.identifier)
+            # print list of valid cities to choose from to build on
+            print(valid_cities)
+            # get a valid position to place the city
+            position = self.get_index_input(valid_cities)
+            # Purchase the city and trade in cards
+            self.purchase_city(position, board)
+            return position
 
-        output -- genererate buy_city arguments:
-        position -- integer 0-53
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-
-        # position = int(input('insert argument'))
-
-        position = self.get_input_by_value(self.settlements)
-        
-
-        # check if player can place road there. Meaning, s/he has a road next to it
-        return position
-
-    def set_road(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
-
-        output -- generate buy_road arguments:
-        position -- integer 0-71
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        # position = int(input('insert argument'))
-
-
-        # The following code must be altered; the list does not follow the game rules
-
-        # Initialize a temporary list for where the player can place a road
-        lis = []
-        for item in self.settlements:
-            for element in item.edges:
-                if board.edges[element] is None: lis.append(element)
-        for item in self.cities:
-            for element in item.edges:
-                if board.edges[element] is None: lis.append(element)
-
-        # Get a valid position where to place the road
-        position = self.get_input_by_value(lis)
-
-        return position
+    def set_road(self, board, override=False):
+        # check if player has resources to buy settlement
+        if self.can_buy('road') or override:
+            # find valid places to put settlements
+            valid_roads = self.get_valid_roads(board)
+            # print list of valid roads to choose from to build on
+            print(valid_roads)
+            # get a valid position to place the road
+            position = self.get_index_input(valid_roads)
+            # Purchase the road and trade in cards
+            self.purchase_road(position, board, override)
+            return position
 
     def turn_choice(self, board):
         """
@@ -339,42 +336,32 @@ class CatanPlayer:
         # Get, and validate, an integer input. The method will return none for
         # invalid input. A valid index that cannot be used will be reassigned
         # as None. A loop will request an input until a valid one is received.
-        settle_position = self.get_input_by_index(board.intersections)
+        settle_position = self.get_index_input(board.intersections)
         if board.intersections[settle_position] is not None:
             print('That location is not available. Please choose another location.')
             settle_position = None
         # Repeat the above code, until a valid input is returned
         while settle_position is None:
-            settle_position = self.get_input_by_index(board.intersections)
+            settle_position = self.get_index_input(board.intersections)
             if board.intersections[settle_position] is not None:
                 print('That location is not available. Please choose another location.')
                 settle_position = None
 
 
         # Now, get the position of a road next to the chosen settlement position
-        road_position = self.get_input_by_value(settle_position.edges)
+        road_position = self.get_index_input(settle_position.edges)
         if board.edges[road_position] is not None:
             print('That location is already taken. Please choose another location.')
             road_position = None
 
         while road_position is None:
-            road_position = self.get_input_by_value(settle_position.edges)
+            road_position = self.get_index_input(settle_position.edges)
             if board.edges[road_position] is not None:
                 print('That location is already taken. Please choose another location.')
                 road_position = None
 
         # Return the two integers
         return settle_position, road_position
-
-
-    def can_buy(self, item):
-
-
-        for key, value in item():
-            if value < self.resource_cards[key]:
-                return False
-            return True
-
     
     
 
@@ -387,8 +374,14 @@ if __name__ == '__main__':
     ################################ Insert/Modify CODE HERE ##################################
     p = CatanPlayer(0)
     print(p.player_nr)
+    b = board.Board()
+    p.roads.append(b.edges[1])
+    p.settlements.append(b.intersections[1])
+    print(p.resource_cards)
     # print(p.discard_half())
     # test_list = [10,20,30,40,50]
     # p.get_input_by_index(test_list)
     # p.get_input_by_value(test_list)
+    p.set_settlement(b)
+    print(p.resource_cards)
     print('Debug complete')

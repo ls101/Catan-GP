@@ -22,7 +22,7 @@ class Cards():
     
     def cards_insert(self,*cards_insert):
         for card in cards_insert:
-         self.cards.append(cards)
+         self.cards.append(self.cards)
     
     #this function removes cards
     def cards_remove(self,*cards_remove):
@@ -40,14 +40,15 @@ class ResourceCards:
     # Ideally, the RESOURCE_NAMES list should be coded ONCE for the entire game
     # and then imported. It is here temporarily.
     # Note: dessert was removed from this list.
-    RESOURCE_NAMES = ["brick", "ore", "hay", "wood", "sheep"]
+    RESOURCE_NAMES = ["dessert", "brick", "ore", "hay", "wood", "sheep"]
 
     def __init__(self, num=0):
         # The object is initialized with a dictionary as mentioned above.  The
         # players start with no cards; the bank starts with 19 of each.
         self.resource_cards = {}
         for item in self.RESOURCE_NAMES:
-            self.resource_cards[item] = num 
+            if item != "dessert":
+                self.resource_cards[item] = num 
 
     def __str__(self):
         if self.get_total_cards() == 0:
@@ -132,4 +133,5 @@ if __name__ == '__main__':
     c = ResourceCards()
     d = ResourceCards(19)
     cc = Cards()
+    print(d)
 print()       

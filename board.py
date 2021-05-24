@@ -77,7 +77,7 @@ class Board:
         # Display each terrains; the identifying numbers correspond to
         # the above diagram.
         s += 'Following is the content of each terrain:\n\n'
-        for item in range(1, len(self.terrains)):
+        for item in self.terrains:
             s += str(self.terrains[item])
         return s
 

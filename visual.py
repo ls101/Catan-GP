@@ -31,7 +31,7 @@ def hexagon_coordinates2(a, center_x=0, center_y=0):
         ⇒  The triangle formed by each side and the lines joining the end points of the side to the circumcentre are equilateral.
         ⇒  The circumradius of the hexagon is  a  units.
         ⇒  The coordinates of vertex  B  are  (acos60o,asin60o)=(a2,3√a2).
-        ⇒  The coordinates of vertex  C  are  (acos120o,asin120o)=(−a2,3√a2).
+        ⇒  The coordinates of vertex  self.C  are  (acos120o,asin120o)=(−a2,3√a2).
         ⇒  The coordinates of vertex  E  are  (acos240o,asin240o)=(−a2,−3√a2).
         ⇒  The coordinates of vertex  F  are  (acos300o,asin300o)=(a2,−3√a2)."""
     x_angle = a / 2
@@ -55,90 +55,100 @@ def hexagon_coordinates(a, center_x, center_y):
     return cor
 
 
-def visualize(board):
-    """
+class GUIboard:
+    def __init__(self, board):
+        """
 
-    :param board: from the catan class
-    :return: GUI visualisation
-    """
-    window = tk.Tk()
+        :param board: from the catan class
+        :return: GUI visualisation
+        """
+        self.window = tk.Tk()
 
-    window.title("Catan game State")
+        self.window.title("Catan game State")
 
 
 
-    C = tk.Canvas(window, bg="blue", height=SCREEN_HIGHT, width=SCREEN_WIDTH)
+        self.C = tk.Canvas(self.window, bg="light blue", height=SCREEN_HIGHT, width=SCREEN_WIDTH)
 
-    # xs = np.concatenate(
-    #     [(HEX_RADIUS * 0.875) * (np.arange(3) * 2 + 3)] + [(HEX_RADIUS * 0.875) * (np.arange(4) * 2 + 2)] + [
-    #         (HEX_RADIUS * 0.875) * (np.arange(5) * 2 + 1)] + [(HEX_RADIUS * 0.875) * (np.arange(4) * 2 + 2)] + [
-    #         (HEX_RADIUS * 0.875) * (np.arange(3) * 2 + 3)])
-    xs = [(HEX_RADIUS * 0.875) * (np.arange(3) * 2 + 3)] + [(HEX_RADIUS * 0.875) * (np.arange(4) * 2 + 2)] + [
-            (HEX_RADIUS * 0.875) * (np.arange(5) * 2 + 1)] 
-    xs.append(xs[1])
-    xs.append(xs[0])
-    xs = np.concatenate(xs)
+        # xs = np.concatenate(
+        #     [(HEX_RADIUS * 0.875) * (np.arange(3) * 2 + 3)] + [(HEX_RADIUS * 0.875) * (np.arange(4) * 2 + 2)] + [
+        #         (HEX_RADIUS * 0.875) * (np.arange(5) * 2 + 1)] + [(HEX_RADIUS * 0.875) * (np.arange(4) * 2 + 2)] + [
+        #         (HEX_RADIUS * 0.875) * (np.arange(3) * 2 + 3)])
+        xs = [(HEX_RADIUS * 0.875) * (np.arange(3) * 2 + 3)] + [(HEX_RADIUS * 0.875) * (np.arange(4) * 2 + 2)] + [
+                (HEX_RADIUS * 0.875) * (np.arange(5) * 2 + 1)] 
+        xs.append(xs[1])
+        xs.append(xs[0])
+        xs = np.concatenate(xs)
+            
+
+        # ys = [HEX_RADIUS] * 3 + [HEX_RADIUS * 2.5] * 4 + [HEX_RADIUS * 4] * 5 + [HEX_RADIUS * 5.5] * 4 + [
+        #     HEX_RADIUS * 7] * 3
+        ys = []
+        size = 3
+        for i in range(5):
+            ys += [HEX_RADIUS+(HEX_RADIUS*1.5*i)] * size
+            if i < 2:
+                size +=1
+            else:
+                size -=1
+
+
+        for i in range(19):
+            x = xs[i]
+            y = ys[i]
+            tile = board.terrains[i+1]
+            t = str(tile.resource_num) + ' ' + catan.RESOURCE_NAMES[tile.resource]
+            # added +5 to move it right and down; to give space at sides
+            coord = hexagon_coordinates(HEX_RADIUS, x+5, y+5)
+            self.C.create_polygon(coord, fill= RESOURCE_COLORS[tile.resource])
+            self.C.create_text(x, y, font="Times 15 italic bold",
+                        text=t)
+            
+            # pass the coordinates to the edges and intersections
+            coord_i = 0
+            OFFSET = 4
+            for i in tile.intersections:
+                if not hasattr(i, 'coords'):
+                    # x, y, x, y
+                    i.coords = [coord[coord_i] - OFFSET, coord[coord_i + 1] - OFFSET, coord[coord_i] + OFFSET, coord[coord_i + 1] + OFFSET]
+                coord_i += 2
+            
+            coord_e = 0
+            for e in tile.edges:
+                if not hasattr(e, 'coords'):
+                    # x, y, x, y
+                    e.coords = [coord[coord_e], coord[coord_e + 1]]
+                    if coord_e+2 >= len(coord):
+                        e.coords += [coord[0], coord[1]]
+                    else:
+                        e.coords += [coord[coord_e + 2], coord[coord_e + 3]]
+                coord_e += 2
+
+            # self.C.update
+        # display the edges and intersections
+        for i in board.intersections.values():
+            self.C.create_oval(i.coords, fill='black')
+        for e in board.edges.values():
+            self.C.create_line(e.coords, fill='black', width=4)
         
+        self.C.pack()
 
-    # ys = [HEX_RADIUS] * 3 + [HEX_RADIUS * 2.5] * 4 + [HEX_RADIUS * 4] * 5 + [HEX_RADIUS * 5.5] * 4 + [
-    #     HEX_RADIUS * 7] * 3
-    ys = []
-    size = 3
-    for i in range(5):
-        ys += [HEX_RADIUS+(HEX_RADIUS*1.5*i)] * size
-        if i < 2:
-            size +=1
-        else:
-            size -=1
-
-
-    for i in range(19):
-        x = xs[i]
-        y = ys[i]
-        tile = board.terrains[i+1]
-        t = str(tile.resource_num) + ' ' + catan.RESOURCE_NAMES[tile.resource]
-        # added +5 to move it right and down; to give space at sides
-        coord = hexagon_coordinates(HEX_RADIUS, x+5, y+5)
-        C.create_polygon(coord, fill= RESOURCE_COLORS[tile.resource])
-        C.create_text(x, y, font="Times 15 italic bold",
-                      text=t)
-        
-        # pass the coordinates to the edges and intersections
-        coord_i = 0
-        OFFSET = 4
-        for i in tile.intersections:
-            if not hasattr(i, 'coords'):
-                # x, y, x, y
-                i.coords = [coord[coord_i] - OFFSET, coord[coord_i + 1] - OFFSET, coord[coord_i] + OFFSET, coord[coord_i + 1] + OFFSET]
-            coord_i += 2
-        
-        coord_e = 0
-        for e in tile.edges:
-            if not hasattr(e, 'coords'):
-                # x, y, x, y
-                e.coords = [coord[coord_e], coord[coord_e + 1]]
-                if coord_e+2 >= len(coord):
-                    e.coords += [coord[0], coord[1]]
-                else:
-                    e.coords += [coord[coord_e + 2], coord[coord_e + 3]]
-            coord_e += 2
-
-        # C.update
-    # display the edges and intersections
-    for i in board.intersections.values():
-        C.create_oval(i.coords, fill='black')
-    for e in board.edges.values():
-        C.create_line(e.coords, fill='black', width=4)
+        # test:
+        # self.C.create_oval(board.intersections[30].coords, fill='purple')
+        # self.C.create_line(board.edges[30].coords, fill='purple', width=4)
+        # self.C.update()
     
-    # test:
-    # C.create_oval(board.intersections[30].coords, fill='purple')
-    # C.create_line(board.edges[30].coords, fill='purple', width=4)
-    C.pack()
-   
-    window.mainloop()
 
+    def update_GUI(self, board):
+        self.C.create_oval(board.intersections[30].coords, fill='purple')
+        self.C.create_line(board.edges[30].coords, fill='purple', width=4)
+        self.C.update()
 
 if __name__ == '__main__':
     board = catan.CatanBoard().board
-    visualize(board)
+    g = GUIboard(board)
+    input('continue')
+    g.update_GUI(board)
+    g.window.mainloop()
+
     print('Debug complete')

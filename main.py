@@ -132,8 +132,8 @@ if __name__ == '__main__':
                     resource = current_player.play_mono(board_safety_copy)
                     board.play_mono(player_nr, resource)
                 if choice == 12:
-                    resource_own, resource_bank = current_player.trade_bank(board_safety_copy)
-                    board.trade_bank(player_nr, resource_own, resource_bank)
+                    resource_own, resource_bank, give = current_player.trade_bank(board_safety_copy)
+                    board.trade_bank(player, resource_own, resource_bank, give)
                 if choice == 13:
                     resources_own, target_player_nr, resources_target = current_player.trade_offer(board_safety_copy)
                     answer_target = players[target_player_nr].trade_answer(board_safety_copy, resources_own,

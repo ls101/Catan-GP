@@ -200,7 +200,6 @@ class GUIboard:
 
     def restrict_edge(self, edge_num):
         # updates an intersection to reflect its restricted status
-        # first, enlarge the circle
         coords = self.board.intersections[edge_num].coords
 
         self.img = Image.open('images/x.png')

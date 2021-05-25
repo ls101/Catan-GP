@@ -79,7 +79,23 @@ class CatanBoard:
         # return out
         return str(self.board)
     
+    def place_road(self, player_nr, position):
+        self.board.edges[position].occupier = PLAYER_COLORS[player_nr] + " player's road"
+        print(self.board.edges[position])
+        self.gui.buy_road(player_nr, position)
 
+    def place_settlment(self, player_nr, position):
+        # buy the settlement: reassign the intersection's occupier and update the gui.
+        # The rest is done in the player class
+        self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's settlement"
+        print(self.board.intersections[position])
+        self.gui.buy_settlement(player_nr, position)
+
+        # mark the neighboring intersections as restricted - cannot have a settlement
+        for i in self.board.intersections[position].get_neighbors():
+            i.occupier = 'restricted'
+            self.gui.restrict_edge(i.identifier)
+            print(i)
 
     def start_settelment_first(self, player_nr, settle_position, road_position):
         """changes CatanBoard()/self if possible according to the rules of
@@ -95,19 +111,9 @@ class CatanBoard:
         ################################ Insert/Modify CODE HERE ##################################
 
         # Place the road
-        self.board.edges[road_position].occupier = PLAYER_COLORS[player_nr] + " player's road"
-        print(self.board.edges[road_position])
-        self.gui.buy_road(player_nr, road_position)
-
+        self.place_road(player_nr, road_position)
         # Place the settlement
-        self.board.intersections[settle_position].occupier = PLAYER_COLORS[player_nr] + " player's settlement"
-        print(self.board.intersections[settle_position])
-        self.gui.buy_settlement(player_nr, settle_position) 
-
-        # mark the neighboring intersections as restricted - cannot have a settlement
-        for i in self.board.intersections[settle_position].get_neighbors():
-            i.occupier = 'restricted'
-            print(i)
+        self.place_settlment(player_nr, settle_position)
 
 
 
@@ -169,18 +175,9 @@ class CatanBoard:
         print(player.resource_cards)
         print('\nbank:\n')
         print(self.bank)
-        
-        # buy the settlement: reassign the intersection's occupier and update the gui.
-        # The rest is done in the player class
-        self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's settlement"
-        print(self.board.intersections[position])
-        self.gui.buy_settlement(player_nr, position)
 
-        # mark the neighboring intersections as restricted - cannot have a settlement
-        for i in self.board.intersections[position].get_neighbors():
-            i.occupier = 'restricted'
-            self.gui.restrict_edge(i.identifier)
-            print(i)
+        # place the settlement
+        self.place_settlment(player_nr, position)
 
 
         ################################ Insert/Modify CODE HERE ##################################
@@ -229,9 +226,7 @@ class CatanBoard:
         
         # buy the road: reassign the road's occupier and update the gui.
         # The rest is done in the player class
-        self.board.edges[position].occupier = PLAYER_COLORS[player_nr] + " player's road"
-        print(self.board.edges[position])
-        self.gui.buy_road(player_nr, position)
+        self.place_road(player_nr, position)
 
     def buy_dev_card(self, player):
         """changes CatanBoard()/self if possible according to the rules of buying a development card card:
@@ -333,13 +328,8 @@ class CatanBoard:
         
         # Place the roads: reassign the road's occupier and update the gui.
         # The rest is done in the player class
-        self.board.edges[position1].occupier = PLAYER_COLORS[player_nr] + " player's road"
-        print(self.board.edges[position1])
-        self.gui.buy_road(player_nr, position1)
-        # Place the second road
-        self.board.edges[position2].occupier = PLAYER_COLORS[player_nr] + " player's road"
-        print(self.board.edges[position2])
-        self.gui.buy_road(player_nr, position2)
+        self.place_road(player_nr, position1)
+        self.place_road(player_nr, position2)
 
         # 
         """ return the card to the game deck """
@@ -424,12 +414,12 @@ if __name__ == '__main__':
     # b.buy_city(p, 0, 33)
     # # print(b)
     # b.start_settelment_second(p, 0, 10, 10)
-    # b.start_settelment_second(p, 0, 20, 20)
+    # b.start_settelment_first(0, 20, 20)
     # b.start_settelment_second(p, 0, 30, 30)
-    b.trade_bank(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
-    print(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
-    print(b.bank)
-    print(p.resource_cards)
-    print('Debug complete')
-    print(b.board.robber)
+    # b.trade_bank(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
+    # print(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
+    # print(b.bank)
+    # print(p.resource_cards)
+    # print(b.board.robber)
     b.gui.window.mainloop()
+    print('Debug complete')

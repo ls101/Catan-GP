@@ -104,7 +104,7 @@ if __name__ == '__main__':
                         for p_nr in range(4):
                             p = players[p_nr]
                             resources = p.discard_half(board_safety_copy)
-                            board.discard_half(p_nr, resources)
+                            board.discard_half(p, resources)
                         # steal resource after everybody discarded cards
                         position, target_player_nr = current_player.steal_card(board_safety_copy)
                         board.steal_card(player_nr, position, target_player_nr)

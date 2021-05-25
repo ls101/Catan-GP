@@ -273,14 +273,14 @@ class CatanBoard:
 
     
 
-    def discard_half(self, player_nr, resourses):
+    def discard_half(self, player, resourCes):
         """changes CatanBoard()/self if possible according to the rules of discarding cards if 7 rolled
 
         ################################ Insert/Modify Comments HERE ##################################
         discard_half input arguments:
         self -- CatanBoard()
         player_nr -- integer 0-3
-        resourses -- np.array([brick, ore, hay, wood, sheep])
+        resourCes -- np.array([brick, ore, hay, wood, sheep])
                 brick -- integer 0-19
                 ore -- integer 0-19
                 hay -- integer 0-19
@@ -289,18 +289,10 @@ class CatanBoard:
 
         """
         ################################ Insert/Modify CODE HERE ##################################
-        # print(self.cards.resources_list(self))
-        # discard_num=cards.get_discard_num(self)
-        # cards_remove=[]
-        # print('You need to remove '+discard_num+" cards")
-        # #will give the player the dictionary numbers ....
-        # for num in range(1,discard_num+1):
-        #     try:
-        #         card=int(input("card"+num+" which card do you want to remove ?"))
-        #     except:
-        #         print("you must enter a numeric card!")
-        #     #also need to make sure that it is a proper card is this being a dictionary ?
-        player_nr.resource_cards.move_cards(self.bank, resourses)
+        # The bank is receiving half of the player's cards. "resources" refers
+        # to the cards that the player chose to discaRD.
+        self.bank.move_cards(player.resource_cards, resourCes)
+        print(player.resource_cards)
 
         
             
@@ -338,6 +330,19 @@ class CatanBoard:
         position2 -- integer 0-71
         """
         ################################ Insert/Modify CODE HERE ##################################
+        
+        # Place the roads: reassign the road's occupier and update the gui.
+        # The rest is done in the player class
+        self.board.edges[position1].occupier = PLAYER_COLORS[player_nr] + " player's road"
+        print(self.board.edges[position1])
+        self.gui.buy_road(player_nr, position1)
+        # Place the second road
+        self.board.edges[position2].occupier = PLAYER_COLORS[player_nr] + " player's road"
+        print(self.board.edges[position2])
+        self.gui.buy_road(player_nr, position2)
+
+        # 
+        """ return the card to the game deck """
 
     def play_plenty(self, player_nr, resource1, resource2):
         """changes CatanBoard()/self if possible according to the rules of playing the years of plenty dev card :
@@ -400,20 +405,7 @@ if __name__ == '__main__':
     b = CatanBoard()
     # print(b)
     p = player.CatanPlayer(0)
-    # p.resource_cards = cards.ResourceCards(6)
-    # b.buy_road(p, 2, 9)
-    # b.buy_road(p, 0, 19)
-    # b.buy_road(p, 3, 29)
-    # b.buy_settlement(p, 3, 7)
-    # b.buy_settlement(p, 2, 19)
-    # b.buy_city(p, 1, 29)
-    # b.buy_city(p, 0, 33)
-    # print(b)
-    b.start_settelment_second(p, 0, 10, 10)
-    b.start_settelment_second(p, 0, 20, 20)
-    b.start_settelment_second(p, 0, 30, 30)
-    print(p.resource_cards)
-    print(b.bank)
+
 
     print('Debug complete')
     b.gui.window.mainloop()

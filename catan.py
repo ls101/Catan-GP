@@ -180,6 +180,7 @@ class CatanBoard:
         # mark the neighboring intersections as restricted - cannot have a settlement
         for i in self.board.intersections[position].get_neighbors():
             i.occupier = 'restricted'
+            self.gui.restrict_edge(i.identifier)
             print(i)
 
 
@@ -406,6 +407,17 @@ if __name__ == '__main__':
     # print(b)
     p = player.CatanPlayer(0)
 
-
+    p.resource_cards = cards.ResourceCards(6)
+    b.buy_road(p, 2, 9)
+    b.buy_road(p, 0, 19)
+    b.buy_road(p, 3, 29)
+    b.buy_settlement(p, 3, 7)
+    b.buy_settlement(p, 2, 19)
+    b.buy_city(p, 1, 29)
+    b.buy_city(p, 0, 33)
+    # print(b)
+    b.start_settelment_second(p, 0, 10, 10)
+    b.start_settelment_second(p, 0, 20, 20)
+    b.start_settelment_second(p, 0, 30, 30)
     print('Debug complete')
     b.gui.window.mainloop()

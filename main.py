@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # first settelment with road
     for player_nr in range(1,num_players):
         current_player = players[player_nr]
-        board_safety_copy = copy.deepcopy(board)
+        board_safety_copy = copy.deepcopy(board.board)
         settle_position, road_position = current_player.start_settelment_first(board_safety_copy)
         board.start_settelment_first(player_nr,settle_position,road_position)
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # second settelment with road
     for player_nr in range(num_players, 0, -1):
         current_player = players[player_nr]
-        board_safety_copy = copy.deepcopy(board)
+        board_safety_copy = copy.deepcopy(board.board)
         settle_position, road_position = current_player.start_settelment_second(board_safety_copy)
         board.start_settelment_second(players[player_nr], player_nr,settle_position,road_position)
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
             while winner==False or turns <31:
                 # making safety working copy of board (can be changed in later
                 # implementation to only visible data)
-                board_safety_copy = copy.deepcopy(board)
+                board_safety_copy = copy.deepcopy(board.board)
                 # player makes the choice what to do the choices are integers 0 or negative integer is turn finished
                 choice = current_player.turn_choice(board_safety_copy)
                 # print statements for debugging
@@ -132,8 +132,8 @@ if __name__ == '__main__':
                     resource = current_player.play_mono(board_safety_copy)
                     board.play_mono(player_nr, resource)
                 if choice == 12:
-                    resource_own, resource_bank = current_player.trade_bank(board_safety_copy)
-                    board.trade_bank(player_nr, resource_own, resource_bank)
+                    resource_own, resource_bank, give = current_player.trade_bank(board_safety_copy)
+                    board.trade_bank(player, resource_own, resource_bank, give)
                 if choice == 13:
                     resources_own, target_player_nr, resources_target = current_player.trade_offer(board_safety_copy)
                     answer_target = players[target_player_nr].trade_answer(board_safety_copy, resources_own,

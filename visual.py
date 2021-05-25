@@ -1,3 +1,4 @@
+from PIL import Image, ImageTk
 import tkinter as tk
 import numpy as np
 import catan
@@ -11,12 +12,14 @@ PLAYER_COLORS = constants.PLAYER_COLORS
 # SCREEN_WIDTH = 1920
 
 # constant Hexagon radius for catan GUI
-HEX_RADIUS = 5/60*1080
+HEX_RADIUS = 70
+# HEX_RADIUS = 5/60*1080
 SCREEN_HIGHT = HEX_RADIUS*8 +10
 SCREEN_WIDTH = HEX_RADIUS*10*.875 +10
 
 # RESOURCE_COLORS correspond the RESOURCE_NAMES constant from the Catan class
 RESOURCE_COLORS = ["khaki", "saddle brown", "gray", "gold2", "dark green", "lawn green"]
+RESOURCE_IMAGES = ["images/desert.png", "images/brick.png", "images/ore.png", "images/hay.png", "images/wood.png", "images/sheep.png"]
 
 def hexagon_coordinates2(a, center_x=0, center_y=0):
     """ Hexagon with horizontal edges
@@ -69,6 +72,7 @@ class GUIboard:
         self.window.title("Catan game State")
 
         self.board = board
+        self.icons = []
 
         self.C = tk.Canvas(self.window, bg="light blue", height=SCREEN_HIGHT, width=SCREEN_WIDTH)
 
@@ -94,21 +98,30 @@ class GUIboard:
             else:
                 size -=1
 
-
+        self.imgs = []
         for i in range(19):
             x = xs[i]
             y = ys[i]
             tile = board.terrains[i+1]
-            t = str(tile.resource_num) + ' ' + catan.RESOURCE_NAMES[tile.resource]
             # added +5 to move it right and down; to give space at sides
-            coord = hexagon_coordinates(HEX_RADIUS, x+5, y+5)
-            self.C.create_polygon(coord, fill= RESOURCE_COLORS[tile.resource])
-            self.C.create_text(x, y, font="Times 15 italic bold",
-                        text=t)
+            x +=5
+            y +=5
+            coord = hexagon_coordinates(HEX_RADIUS, x, y)
+            self.C.create_polygon(coord, fill=RESOURCE_COLORS[tile.resource])
+
+
+            self.img = Image.open(RESOURCE_IMAGES[tile.resource])
+            self.img = self.img.resize((HEX_RADIUS*2, HEX_RADIUS*2), Image.ANTIALIAS)
+            self.imgs.append(ImageTk.PhotoImage(self.img, master=self.C))
+            self.C.create_image(x, y, image=self.imgs[i], anchor=tk.CENTER)
+
+
+            self.C.create_text(x, y, font="Times 30 italic bold",
+                        text=tile.resource_num)
             
             # pass the coordinates to the edges and intersections
             coord_i = 0
-            OFFSET = 4
+            OFFSET = 2
             for i in tile.intersections:
                 if not hasattr(i, 'coords'):
                     # x, y, x, y
@@ -143,7 +156,7 @@ class GUIboard:
     def buy_settlement(self, player, edge_num):
         # updates an intersection to reflect the settlement
         # first, enlarge the circle
-        add_offset = 3
+        add_offset = 10
         coords = self.board.intersections[edge_num].coords
         new_coords = []
         new_coords.append(coords[0] - add_offset)
@@ -151,26 +164,59 @@ class GUIboard:
         new_coords.append(coords[2] + add_offset)
         new_coords.append(coords[3] + add_offset)
         self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
+
+        # add icon
+        self.img = Image.open('images/house.png')
+        self.img = self.img.resize((25, 25), Image.ANTIALIAS)
+        # add image to end of list (to ensure all icons are displayed).
+        # then, display the last icon from the list - this one
+        self.icons.append(ImageTk.PhotoImage(self.img, master=self.C))
+        cur_icon = len(self.icons)-1
+        self.C.create_image(coords[0], coords[1], image=self.icons[cur_icon], anchor=tk.CENTER)
+
         self.C.update()
 
     def buy_city(self, player, edge_num):
-        # updates an intersection to reflect the settlement
+        # updates an intersection to reflect the city
         # first, enlarge the circle
-        add_offset = 3
+        add_offset = 15
         coords = self.board.intersections[edge_num].coords
         new_coords = []
         new_coords.append(coords[0] - add_offset)
-        new_coords.append(coords[1] - add_offset*add_offset)
+        new_coords.append(coords[1] - add_offset)
         new_coords.append(coords[2] + add_offset)
-        new_coords.append(coords[3] + add_offset*add_offset)
+        new_coords.append(coords[3] + add_offset)
         self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
+
+        self.img = Image.open('images/city.png')
+        self.img = self.img.resize((30, 30), Image.ANTIALIAS)
+        # add image to end of list (to ensure all icons are displayed).
+        # then, display the last icon from the list - this one
+        self.icons.append(ImageTk.PhotoImage(self.img, master=self.C))
+        cur_icon = len(self.icons)-1
+        self.C.create_image(coords[0], coords[1], image=self.icons[cur_icon], anchor=tk.CENTER)
+
+        self.C.update()
+
+    def restrict_edge(self, edge_num):
+        # updates an intersection to reflect its restricted status
+        coords = self.board.intersections[edge_num].coords
+
+        self.img = Image.open('images/x.png')
+        self.img = self.img.resize((30, 30), Image.ANTIALIAS)
+        # add image to end of list (to ensure all icons are displayed).
+        # then, display the last icon from the list - this one
+        self.icons.append(ImageTk.PhotoImage(self.img, master=self.C))
+        cur_icon = len(self.icons)-1
+        self.C.create_image(coords[0], coords[1], image=self.icons[cur_icon], anchor=tk.CENTER)
+
         self.C.update()
 
 
 if __name__ == '__main__':
     board = catan.CatanBoard().board
     g = GUIboard(board)
-    input('continue')
+    # input('continue')
     try:
         g.update_GUI(board)
     except:
@@ -178,3 +224,4 @@ if __name__ == '__main__':
     g.window.mainloop()
 
     print('Debug complete')
+    # print(g.icon)

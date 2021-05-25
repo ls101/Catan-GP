@@ -1,3 +1,4 @@
+from board_components import RESOURCE_NAMES
 import numpy as np
 from cards import *
 import constants
@@ -21,9 +22,8 @@ class CatanPlayer:
         self.settlements = []
         # Note that cities are added by removing said item from the settlements list
         self.cities = []
-        # Players can place settlements only where they have a road. This will
-        # be tracked here.
-        # self.valid_settlements = []
+        # port where the player has a settlement
+        self.ports = []
 
         # All items owned by the player, but not on the board:
         self.resource_cards = ResourceCards()
@@ -266,6 +266,17 @@ class CatanPlayer:
 
         return int(input('insert argument'))
 
+    def ports_trade(self, key):
+        # Checks if a player has a port; this allows better trading terms
+        # when trading with the bank.
+        resource_search = RESOURCE_NAMES.index(key)
+        if resource_search in self.ports:
+            return 2
+        elif 0 in self.ports:
+            return 3
+        else:
+            return 4
+
     def trade_bank(self, board):
         """
         ################################ Insert/Modify Comments HERE ##################################
@@ -276,7 +287,19 @@ class CatanPlayer:
         """
         ################################ Insert/Modify CODE HERE ##################################
         resource_own, resource_bank = int(input('insert argument')), int(input('insert argument'))
-        return resource_own, resource_bank
+
+        if resource_own == resource_bank:
+            # error message
+            pass
+        else:
+            # Determine how many cards the palyer needs to give to the bank
+            give = self.ports_trade(resource_own)
+            # Ensure the player has those cards
+            if self.resource_cards.resource_cards[resource_own] >= give:
+                return resource_own, resource_bank, give
+            else:
+                # error message
+                pass
 
     def trade_offer(self, board):
         """

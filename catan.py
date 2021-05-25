@@ -18,7 +18,6 @@ class CatanBoard:
     def __init__(self):
         self.board = Board()
         self.bank = cards.ResourceCards(19)
-        self.robber = self.board.robber
 
         # get a GUI
         self.gui = visual.GUIboard(self.board)
@@ -180,6 +179,7 @@ class CatanBoard:
         # mark the neighboring intersections as restricted - cannot have a settlement
         for i in self.board.intersections[position].get_neighbors():
             i.occupier = 'restricted'
+            self.gui.restrict_edge(i.identifier)
             print(i)
 
 
@@ -366,7 +366,7 @@ class CatanBoard:
         """
         ################################ Insert/Modify CODE HERE ##################################
 
-    def trade_bank(self, player_nr, resource_own, resource_bank):
+    def trade_bank(self, player, resource_own, resource_bank, give):
         """changes CatanBoard()/self if possible according to the rules bank trading including ports:
 
         ################################ Insert/Modify Comments HERE ##################################
@@ -376,6 +376,14 @@ class CatanBoard:
         resource_bank -- integer 1-5
         """
         ################################ Insert/Modify CODE HERE ##################################
+        if self.bank.resource_cards[resource_bank] >= 1:
+            d = {
+                resource_bank: 1,
+                resource_own: -give
+            }
+            player.resource_cards.move_cards(self.bank, d)
+        else:
+            print('Sorry, the bank does not have the requested resource')
 
     def trade_offer(self, player_nr, resources_own, target_player_nr, resources_target, answer_target=False):
         """changes CatanBoard()/self if possible according to the rules bank trading including ports:
@@ -406,6 +414,22 @@ if __name__ == '__main__':
     # print(b)
     p = player.CatanPlayer(0)
 
-
+    p.resource_cards = cards.ResourceCards(6)
+    # b.buy_road(p, 2, 9)
+    # b.buy_road(p, 0, 19)
+    # b.buy_road(p, 3, 29)
+    # b.buy_settlement(p, 3, 7)
+    # b.buy_settlement(p, 2, 19)
+    # b.buy_city(p, 1, 29)
+    # b.buy_city(p, 0, 33)
+    # # print(b)
+    # b.start_settelment_second(p, 0, 10, 10)
+    # b.start_settelment_second(p, 0, 20, 20)
+    # b.start_settelment_second(p, 0, 30, 30)
+    b.trade_bank(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
+    print(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
+    print(b.bank)
+    print(p.resource_cards)
     print('Debug complete')
+    print(b.board.robber)
     b.gui.window.mainloop()

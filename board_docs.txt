@@ -1,9 +1,12 @@
 The board class contains all properties that belong to the board.
 It is initialized from the CatanBoard. (That should really be called CatanGame.)
 Development cards etc. belong to the game, not the board, so they're initialized there.
-The robber's start position is defined in the board, but tracked in the game.
-(See line 16 in catan.py)
-The robber position in board.py is not used further.
+
+UPDATE:
+The robber's start position is defined in the board, and tracked there.
+To access the robber from catan.py: self.board.robber
+From main.py: board.board.robber
+
 
 The board has three types of objects:
 Terrain, Edge, Intersection.

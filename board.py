@@ -41,7 +41,10 @@ class Board:
         # Desert_tile_nr will represent where the desert resource exists
         desert_tile_nr = np.where(self.board_resources == res_dict["desert"])
         # Robber will keep track of where the robber is and it starts in the desert
-        self.robber = desert_tile_nr
+        # Robber will be an integer.
+        # Numpy returns a tuple of which the first is a list with the index.
+        # We'll extract it, and add 1 since terrain keys start at 1, not 0.
+        self.robber = desert_tile_nr[0][0] +1
         # as the desert tile and replace whatever was already in the desert tile into the empty zero tile
         self.roll_numbers[zero_tile_nr], self.roll_numbers[desert_tile_nr] =\
             (self.roll_numbers[desert_tile_nr], self.roll_numbers[zero_tile_nr])

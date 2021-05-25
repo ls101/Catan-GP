@@ -18,7 +18,6 @@ class CatanBoard:
     def __init__(self):
         self.board = Board()
         self.bank = cards.ResourceCards(19)
-        self.robber = self.board.robber
 
         # get a GUI
         self.gui = visual.GUIboard(self.board)
@@ -432,4 +431,5 @@ if __name__ == '__main__':
     print(b.bank)
     print(p.resource_cards)
     print('Debug complete')
+    print(b.board.robber)
     b.gui.window.mainloop()

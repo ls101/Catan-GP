@@ -145,17 +145,17 @@ class CatanBoard:
         # Check length
         self.check_longest_road(player)
 
-    def buy_dev_card(self, player, turn):
+    def buy_dev_card(self, turns, player, player_nr,):
         # Check if player has enough resources to buy the card
         if player.can_buy('dev_card', override=True):
             print('you are unable to purchase a development card')
         else:
             # pay for the card
-            print('paying')
             self.bank.move_cards(player.resource_cards, PRICES['dev_card'])
-            print('paid')
             # buy the card
-            player.development_cards.buy_card(turn)
+            card = player.development_cards.buy_card(turns)
+            if player.development_cards.buy_card(card):
+                self.player_points[player_nr] += 1
 
     def roll(self):
         min = 1
@@ -208,23 +208,35 @@ class CatanBoard:
             # Check length
             self.check_longest_road(player)
 
-    def play_plenty(self, turns, player, player_nr, resource1, resource2):
-        can_play, card = player.development_cards.can_play(turns, 'road building')
+    def play_plenty(self, turns, player, resource1, resource2):
+        can_play, card = player.development_cards.can_play(turns, 'year of plenty')
         if can_play:
-            """ define play plenty """
+            # Initialize a dict with resource1
+            c = {resource1: 1}
+            # Add resource2; ensure it's added even if both are the same
+            c[resource2] = c.get(resource2, 0) + 1
+            """ check if the bank has it """
+            # The player receives cards from the bank.
+            player.resource_cards.move_cards(self.bank, c)            
             # return the card to the game deck
             player.development_cards.return_to_deck(card)
 
-    def play_mono(self, turns, player, player_nr, resource):
-        """changes CatanBoard()/self if possible according to the rules of playing monopoly dev card :
-
-        ################################ Insert/Modify Comments HERE ##################################
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        resource -- integer 1-5
-
-        """
-        ################################ Insert/Modify CODE HERE ##################################
+    def play_mono(self, turns, players, player_nr, resource):
+        player = players[player_nr]
+        can_play, card = player.development_cards.can_play(turns, 'monopoly')
+        if can_play:
+            # Initialize a counter
+            cards = 0
+            # Add everyone's cards of that resource type, and remove from
+            # that player.
+            for p in players:
+                cards += p.resource_cards[resource]
+                p.resource_cards[resource] = 0
+            
+            # Add those cards to the player who plays now
+            player.resource_cards[resource] = cards
+            # return the card to the game deck
+            player.development_cards.return_to_deck(card)
 
     def trade_bank(self, player, resource_own, resource_bank, give):
         # Check that the bank has the card

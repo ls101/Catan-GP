@@ -72,6 +72,13 @@ class DevCards(Cards):
         """
         pass
 
+    def check_victory(self):
+        """
+        - check if the card is a victory points card
+        - return 0 or 1
+        """
+        pass
+
     def can_play(self, turns, card_type):
         """
         - card_type refers to the type of development card

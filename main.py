@@ -104,7 +104,7 @@ if __name__ == '__main__':
                     
                     """ buy development card """
                 elif choice == 4:
-                    board.buy_dev_card(players[player_nr], turns)
+                    board.buy_dev_card(turns, players[player_nr], player_nr,)
 
                     """ play development cards """
                 elif choice == 5:
@@ -116,10 +116,10 @@ if __name__ == '__main__':
                     board.play_roads(turns, players[player_nr], player_nr, position1, position2)
                 elif choice == 7:
                     resource1, resource2 = current_player.play_plenty(board_safety_copy)
-                    board.play_plenty(turns, players[player_nr], player_nr, resource1, resource2)
+                    board.play_plenty(turns, players[player_nr], resource1, resource2)
                 elif choice == 8:
                     resource = current_player.play_mono(board_safety_copy)
-                    board.play_mono(turns, players[player_nr], player_nr, resource)
+                    board.play_mono(turns, players, player_nr, resource)
 
                     """ trading """
                 elif choice == 9:

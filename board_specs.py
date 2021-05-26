@@ -1,4 +1,4 @@
-""" 
+"""
 This file contains the details for the board objects: which the edges and
 intersections belong to each terrain, and which edges and ports belong to
 each intersection. They follow the numbers on the diagram, and will be used
@@ -88,4 +88,3 @@ intersections_specs = [
     (53, (71, 72)),
     (54, (66, 72))
 ]
-

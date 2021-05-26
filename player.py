@@ -17,7 +17,7 @@ class CatanPlayer:
             'settlements': 5,
             'cities': 4
         }
-        # Items placed on the board will be an array containg the index numbers
+        # Items placed on the board will be an array containing the index numbers
         # of those items, which are stored in arrays. The index numbers match
         # the numbers on the diagram.
         self.roads = []
@@ -67,13 +67,16 @@ class CatanPlayer:
     # If the input is valid, returns the position
     # Otherwise the player can try again
     def get_index_input(self, valid_positions):
+        print(valid_positions)
         while True:
-            # catch error for non int input###################
-            position = int(input('Choose a location from the list'))
-            if position in valid_positions:
+            try:
+                position = int(input("Choose a positon(number) from the list"))
+            except:
+                print("Invalid input, try again")
+            if position in valid_settlements:
                 return position
             else:
-                print("Please choose a valid option")
+                print("Invalid choice, try again")
 
     def can_buy(self, type_to_buy):
         # Checks if the player has resources to buy
@@ -400,58 +403,42 @@ class CatanPlayer:
             finally:
                 print("Invalid input, try again")
 
-    def start_settelment_second(self, board):
-        """
-                ################################ Insert/Modify Comments HERE ##################################
-        output:
-            settle_position -- integer 0-53
-            road_position integer 0-71
-        """
-        ################################ Insert/Modify CODE HERE ##################################
+    def get_valid_settlements_start(self, board):
+        valid_settlements = []
+        # check if the intersection's neighbors are all empty
+        for settlement in board.intersections:
+            for neighbor in settlement.get_neighbors():
+                if neighbor.occupier is not None:
+                    break # go to the next settlement
+            # if all the neighbors pass the test (is None) add to valid_settlements
+            valid_settlements.append(settlement.identifier)
 
-        # settle_position, road_position = int(input('insert argument')), int(input('insert argument'))
-        # This is really the same as the first settlement
-        settle_position, road_position = self.start_settelment_first(self, board)
-        return settle_position, road_position
+        return valid_settlements
 
-    def start_settelment_first(self, board):
-        # Can add:
-        # if an intersection's roads are all taken, it should not be a valid option
-        """
-                ################################ Insert/Modify Comments HERE ##################################
-        output:
-            settle_position -- integer 0-53
-            road_position integer 0-71
-        """
-        ################################ Insert/Modify CODE HERE ##################################
+    def get_valid_roads_start(self, board, settlement_position):
+        valid_roads = []
+        # check if the road is attached to the player's roads
+        # and is available (will have to be available bc if not the settlement could not be placed there)
+        for road in board.intersections[settlement_position]:
+            if road.occupier is None:
+                valid_roads.append(road.identifier)
+        return valid_roads
 
-        # settle_position, road_position = int(input('insert argument')), int(input('insert argument'))
+    def start_settlement_placement(self, board):
+        # check for valid_settlements
+        valid_settlements = self.get_valid_settlements_start(board)
+        # get settlement input
+        print("Choose a settlement")
+        settlement_position = self.get_index_input(valid_settlements)
+        # get valid road
+        valid_roads = self.get_valid_roads_start(board, settlement_position)
+        # get road input
+        print("Choose a road")
+        road_position = self.get_index_input(valid_roads)
 
-        # Get, and validate, an integer input. The method will return none for
-        # invalid input. A valid index that cannot be used will be reassigned
-        # as None. A loop will request an input until a valid one is received.
-        settle_position = self.get_index_input(board.intersections)
-        if board.intersections[settle_position] is not None:
-            print('That location is not available. Please choose another location.')
-            settle_position = None
-        # Repeat the above code, until a valid input is returned
-        while settle_position is None:
-            settle_position = self.get_index_input(board.intersections)
-            if board.intersections[settle_position] is not None:
-                print('That location is not available. Please choose another location.')
-                settle_position = None
-
-        # Now, get the position of a road next to the chosen settlement position
-        road_position = self.get_index_input(settle_position.edges)
-        if board.edges[road_position] is not None:
-            print('That location is already taken. Please choose another location.')
-            road_position = None
-
-        while road_position is None:
-            road_position = self.get_index_input(settle_position.edges)
-            if board.edges[road_position] is not None:
-                print('That location is already taken. Please choose another location.')
-                road_position = None
+        # Purchase the road and settlement
+        self.purchase_settlement(settlement_position, board, True)
+        self.purchase_road(road_position, board, True)
 
         # Return the two integers
         return settle_position, road_position

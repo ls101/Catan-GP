@@ -28,24 +28,21 @@ if __name__ == '__main__':
     
     for player_nr in range(1,num_players) :
         players.append(player.CatanPlayer(player_nr))
-    
-    
 
-    # game set up of the two settelment
-    # first settelment with road
-    for player_nr in range(1,num_players):
+    # game set up of the two settlement
+    # first settlement with road
+    for player_nr in range(1, num_players):
         current_player = players[player_nr]
         board_safety_copy = copy.deepcopy(board.board)
-        settle_position, road_position = current_player.start_settelment_first(board_safety_copy)
-        board.start_settelment_first(player_nr,settle_position,road_position)
+        settle_position, road_position = current_player.start_settlement_placement(board_safety_copy)
+        board.start_settelment_first(player_nr, settle_position, road_position)
 
-
-    # second settelment with road
+    # second settlement with road
     for player_nr in range(num_players, 0, -1):
         current_player = players[player_nr]
         board_safety_copy = copy.deepcopy(board.board)
-        settle_position, road_position = current_player.start_settelment_second(board_safety_copy)
-        board.start_settelment_second(players[player_nr], player_nr,settle_position,road_position)
+        settle_position, road_position = current_player.start_settlement_placement(board_safety_copy)
+        board.start_settelment_second(players[player_nr], player_nr, settle_position, road_position)
 
     # game will be played for maximum MAXIMUM_ROUNDS
     for game_round in range(MAXIMUM_ROUNDS):

@@ -6,7 +6,7 @@ import board as board
 
 prices = constants.PRICES
 
-
+# board intersections#################################################
 class CatanPlayer:
     # Initialize the Catan Board with all the options for resources, numbers to be rolled,
     # settlements/roads, port options
@@ -48,19 +48,21 @@ class CatanPlayer:
         # check if the intersection attached to the player's roads
         # is available
         for road in self.roads:
-            for intersection in road.intersections:
+            for intersection in board.edges.intersections[road]:
                 if intersection.occupier is None:
                     valid_settlements.append(intersection.identifier)
         return valid_settlements
 
-    def get_valid_roads(self, board):
+    def get_valid_roads(self, board, position1=None):
         valid_roads = []
         # check if the road is attached to the player's roads
         # and is available
         for road in self.roads:
-            for neighbor in road.get_neighbors():
-                if road.occupier is None:
+            for neighbor in board.edges[road].get_neighbors():
+                if neighbor.occupier is None:
                     valid_roads.append(neighbor.identifier)
+        if position1 is not None:
+            valid_roads.remove(position1)
         return valid_roads
 
     # Takes a list of valid positions to place object and asks for input
@@ -70,13 +72,14 @@ class CatanPlayer:
         print(valid_positions)
         while True:
             try:
-                position = int(input("Choose a positon(number) from the list"))
+                position = int(input("Choose a position(number) from the list"))
+            except:
+                print("Invalid input, try again")
+            else:
                 if position in valid_positions:
                     return position
                 else:
                     print("Invalid choice, try again")
-            except:
-                print("Invalid input, try again")
 
     def can_buy(self, type_to_buy, override=False):
         # Checks if the player has resources to buy
@@ -89,15 +92,14 @@ class CatanPlayer:
             # type of resource, they can not buy that type of item
             if self.resource_cards.resource_cards[key] < needed_to_buy[key]:
                 return False
-        if override or self.unused_items[type_to_buy] <= 0:
+        if self.unused_items[type_to_buy] <= 0:
             # Player has a limit on roads, settlements, cities.
-            # override is True for development cards
             return False
         return True
 
     def purchase_settlement(self, position, board, override):
         # Add the position to the players list of settlements
-        self.settlements.append(board.intersections[position])
+        self.settlements.append(position)
 
         # Add the resources for where the settlement is places
         for terrain in board.intersections[position].terrains:
@@ -107,10 +109,6 @@ class CatanPlayer:
         if board.intersections[position].port is not None:
             self.ports.append(board.intersections[position].port)
 
-        # Remove resource cards that were needed to purchase settlement
-        if not override:
-            for key in constants.PRICES['settlement']:
-                board.cards.move_cards(bank, {key, constants.PRICES['settlement'][key] * -1})
         # Add point for building settlement
         self.victory_points += 1
         # Remove settlement from unused items
@@ -121,14 +119,11 @@ class CatanPlayer:
         for i in self.settlements:
             if i.identifier == position:
                 self.settlements.remove(i)
-        self.cities.append(board.intersections[position])
-        # Add the resources for where the city is places (twice)
+        self.cities.append(position)
+        # Add the resources for where the city is places
         for terrain in board.intersections[position].terrains:
             self.resources.append((terrain.resource_num, terrain.resource))
-            self.resources.append((terrain.resource_num, terrain.resource))
-        # Remove resource cards that were needed to purchase city
-        for key in constants.PRICES['city']:
-            board.cards.move_cards(bank, {key, constants.PRICES['city'][key] * -1})
+
         # Add two points for building a city
         self.victory_points += 2
         # Remove city from unused and put back settlement
@@ -137,11 +132,9 @@ class CatanPlayer:
 
     def purchase_road(self, position, board, override):
         # Add the position to the players list of road
-        self.roads.append(board.edges[position])
+        self.roads.append(position)
         # Remove resource cards that were needed to purchase road
-        if not override:
-            for key in constants.PRICES['road']:
-                board.cards.move_cards(bank, {key, constants.PRICES['city'][key] * -1})
+
         # Remove road from unused
         self.unused_items['roads'] -= 1
 
@@ -170,7 +163,7 @@ class CatanPlayer:
             # find valid places to put cities
             valid_cities = []
             for settlement in self.settlements:
-                valid_cities.append(settlement.identifier)
+                valid_cities.append(settlement)
             # print list of valid cities to choose from to build on
             print(valid_cities)
             # get a valid position to place the city
@@ -181,13 +174,13 @@ class CatanPlayer:
         else:
             return None
 
-    def set_road(self, board, override=False):
+    def set_road(self, board, override=False, position1=None):
         # check if player has resources to buy settlement
         if self.can_buy('road') or override:
             # find valid places to put settlements
-            valid_roads = self.get_valid_roads(board)
+            valid_roads = self.get_valid_roads(board, position1)
             # print list of valid roads to choose from to build on
-            print(valid_roads)
+            # print(valid_roads)
             # get a valid position to place the road
             position = self.get_index_input(valid_roads)
             # Purchase the road and trade in cards
@@ -198,18 +191,17 @@ class CatanPlayer:
 
     def print_menu(self) -> None:
         print('MENU')
-        print('1. End your turn')
-        print('2. Roll the Dice')
-        print('3. Buy a settlement')
-        print('4. Buy a city ')
-        print('5. Buy a road ')
-        print('6. Buy a development card')
-        print('8. Play a knight ')
-        print('9. Play a road ')
-        print('10. Play a plenty')
-        print('11. Play mono')
-        print('12. Trade')
-        print('13. Target ')
+        print('0. End your turn')
+        print('1. Buy a Settlement')
+        print('2. Buy a City ')
+        print('3. Buy a Road ')
+        print('4. Buy a Development Card')
+        print('5. Play a Knight ')
+        print('6. Play a Road ')
+        print('7. Play a Plenty')
+        print('8. Play Mono')
+        print('9. Trade Cards')
+        print('10. Target a Player')
 
     def turn_choice(self, board):
         choice = 0
@@ -274,53 +266,71 @@ class CatanPlayer:
             return None
 
     def steal_card(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
-        output
-        position -- integer 0 - self.number_of_tiles-1
-        target_player_nr -- integer 0-3
 
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        position, target_player_nr = int(input('insert argument')), int(input('insert argument'))
-        return position, target_player_nr
+        # move the robber to a new tile (int between 1-19), not the current place
+        # find who has settlements on that tile (return None if none)
+        # If occupier is not None and occupier[0] > 0 and not self.player_nr
+        # Give list of available players to target (if more than one)
+        # Return target player
+
+        # get tile to move robber to
+        position = self.get_index_input(list(range(1, 20)))
+        # find all the players that have a settlement/city on that tile
+        affected_players = []
+        for intersection in board.terrains[position].intersections:
+            if intersection.occupier is not None and intersection.occupier[0] > 0:
+                if not intersection.occupier == self.player_nr:
+                    affected_players.append(intersection.occupier[0])
+
+        # Return none if no players have settlements on that tile
+        if len(affected_players) == 0:
+            return None
+        # Return the one player if only one player has settlements on that tile
+        if len(set(affected_players)) == 1:
+            return position, affected_players[0]
+
+        # Let player choose who to target if there is more than one player on the tile
+        target_player = self.get_index_input(list(set(affected_players)))
+        return position, target_player
 
     def play_roads(self, board):
-        """
+        # dev card gives two roads without resources (override)
+        # purchase road twice and return both positions
+        print("Road #1")
+        position1 = self.set_road(board, True)
+        print("Road #2")
+        position2 = self.set_road(board, True, position1)
 
-        ################################ Insert/Modify Comments HERE ##################################
-        position1 -- integer 0-71
-        position2 -- integer 0-71
-
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        position1, position2 = int(input('insert argument')), int(input('insert argument'))
         return position1, position2
 
     def play_plenty(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
-        resource1 -- integer 1-5
-        resource2 -- integer 1-5
+        # player chooses two resources from the bank
+        # return those two numbers
+        string_output = ""
+        for index in range(1, 6):
+            string_output += "{}.{} ".format(index, constants.RESOURCE_NAMES[index])
+        print("Choose a resource")
+        print(string_output)
+        resource1 = self.get_index_input(list(range(1, 6)))
+        resource2 = self.get_index_input(list(range(1, 6)))
 
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-
-        resource1, resource2 = int(input('insert argument')), int(input('insert argument'))
         return resource1, resource2
 
     def play_mono(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
-        resource -- integer 1-5
-        """
-        ################################ Insert/Modify CODE HERE ##################################
+        # choose one resource to take from other players
+        # return the number
+        string_output = ""
+        for index in range(1, 6):
+            string_output += "{}.{} ".format(index, constants.RESOURCE_NAMES[index])
+        print("Which resource would you like to take from the players? ")
+        print(string_output)
+        resource = self.get_index_input(list(range(1, 6)))
 
-        return int(input('insert argument'))
+        return resource
 
     def ports_trade(self, key):
         # print list of resources to choose form 1 -5
-        for i in range(len(constants.RESOURCE_NAMES) + 1):
+        for i in range(1, len(constants.RESOURCE_NAMES)):
             print(i, constants.RESOURCE_NAMES[i])
 
         # Checks if a player has a port; this allows better trading terms
@@ -341,7 +351,7 @@ class CatanPlayer:
             if resource_own == resource_bank:
                 print("You can not trade and receive the same resource")
                 # return None to go back to main menu
-                return None, None
+                return None
             else:
                 # Determine how many cards the player needs to give to the bank
                 give = self.ports_trade(resource_own)
@@ -350,7 +360,7 @@ class CatanPlayer:
                     return resource_own, resource_bank, give
                 else:
                     print("You do not have sufficient {} cards to trade in".format(resource_own))
-                    return None, None
+                    return None
         except:
             print("Invalid input")
             # give the player another chance for proper input
@@ -409,12 +419,8 @@ class CatanPlayer:
         valid_settlements = []
         # check if the intersection's neighbors are all empty
         for settlement in board.intersections: # board.intersections is a dictionary
-            for neighbor in board.intersections[settlement].get_neighbors():
-                if neighbor.occupier is not None:
-                    break # go to the next settlement
-            # if all the neighbors pass the test (is None) add to valid_settlements
-            valid_settlements.append(board.intersections[settlement].identifier)
-
+            if board.intersections[settlement].occupier is None:
+                valid_settlements.append(board.intersections[settlement].identifier)
         return valid_settlements
 
     def get_valid_roads_start(self, board, settlement_position):
@@ -455,16 +461,21 @@ if __name__ == '__main__':
     p = CatanPlayer(0)
     print(p.player_nr)
     b = board.Board()
-    p.roads.append(b.edges[1])
+    p.roads.append(1)
     p.settlements.append(b.intersections[1])
     print(p.resource_cards)
     # print(p.discard_half())
     # test_list = [10,20,30,40,50]
     # p.get_input_by_index(test_list)
     # p.get_input_by_value(test_list)
-    p.start_settlement_placement(b)
+    # p.start_settlement_placement(b)
     # print(p.resource_cards)
     # p.resource_cards = ResourceCards(4)
     # p.discard_half()
+    # b.intersections[2].occupier = (1, '')
+    # b.intersections[1].occupier = (3, '')
+    # (p.steal_card(b))
+    # p.play_roads(b)
+    p.play_mono(b)
 
     print('Debug complete')

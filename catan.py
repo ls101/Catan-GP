@@ -111,20 +111,12 @@ class CatanBoard:
     def buy_settlement(self, player, player_nr, position):
         # pay for the settlement
         self.bank.move_cards(player.resource_cards, PRICES['settlement'])
-        print(player.resource_cards)
-        print('\nbank:\n')
-        print(self.bank)
-
         # place the settlement (and update points)
         self.place_settlment(player_nr, position)
-
-
-        ################################ Insert/Modify CODE HERE ##################################
 
     def buy_city(self, player, player_nr, position):
         # pay for the city
         self.bank.move_cards(player.resource_cards, PRICES['city'])
-        
         # buy the city: reassign the settlement's occupier and update the gui.
         # The rest is done in the player class       
         self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's city"
@@ -170,15 +162,10 @@ class CatanBoard:
         dice_values=dye1+dye2
         return dice_values
 
-    
-
     def discard_half(self, player, resources):
         # The bank is receiving half of the player's cards. "resources" refers
         # to the cards that the player chose to discard.
         self.bank.move_cards(player.resource_cards, resources)
-        print(player.resource_cards)
-
-        
             
     def steal_card(self, player_nr, position, target_player_nr):
         """changes CatanBoard()/self if possible according to the rules of discarding cards if 7 rolled

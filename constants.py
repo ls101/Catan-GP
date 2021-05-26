@@ -28,7 +28,7 @@ PRICES = {
         'sheep': 1,
         'hay': 1
     },
-    
+
     'city': {
         'ore': 3,
         'hay': 2

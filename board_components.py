@@ -1,5 +1,3 @@
-import numpy as np
-import random
 import constants
 
 RESOURCE_NAMES = constants.RESOURCE_NAMES
@@ -14,6 +12,7 @@ PORTS_NAMES = constants.PORTS_NAMES
 # it does not matter in which order these are assigned; even if it's
 # assigned when the attributes are still integers, when all is done, all
 # attributes will be correct.
+
 
 class Edge:
     # occupier references the road that players can place on the edge
@@ -73,8 +72,10 @@ class Intersection:
         s = str(self.identifier) + ': '
         if self.occupier is None:
             s += 'available'
+        elif self.occupier[0] < 0:
+            s += 'restricted'
         else:
-            s += self.occupier
+            s += self.occupier[1]
         if self.port is not None:
             s += ' [{0} port]'.format(PORTS_NAMES[self.port])
         return s

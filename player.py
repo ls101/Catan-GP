@@ -5,6 +5,8 @@ import constants
 import board as board
 
 prices = constants.PRICES
+
+
 class CatanPlayer:
     # Initialize the Catan Board with all the options for resources, numbers to be rolled,
     # settlements/roads, port options
@@ -28,7 +30,7 @@ class CatanPlayer:
         # All items owned by the player, but not on the board:
         self.resource_cards = ResourceCards()
         self.development_cards = DevCards()
-        
+
         # Game statistics, regarding this player:
         # self.road_length = 0
         self.army = 0
@@ -313,7 +315,7 @@ class CatanPlayer:
 
     def ports_trade(self, key):
         # print list of resources to choose form 1 -5
-        for i in range(len(constants.RESOURCE_NAMES)+1):
+        for i in range(len(constants.RESOURCE_NAMES) + 1):
             print(i, constants.RESOURCE_NAMES[i])
 
         # Checks if a player has a port; this allows better trading terms
@@ -364,7 +366,7 @@ class CatanPlayer:
             target_player_nr = int(input("Which player would you like to trade with?"))
             resource_target = int(input('What resource would you like to receive?'))
             resource_target_amount = int(input("How many {} would you like to offer"
-                                            .format(constants.RESOURCE_NAMES[resource_own])))
+                                               .format(constants.RESOURCE_NAMES[resource_own])))
 
             if self.resource_cards.resource_cards[resource_own] >= resource_own_amount:
                 return ((resource_own, resource_own_amount),
@@ -379,27 +381,24 @@ class CatanPlayer:
             # give the player another chance for proper input
             return self.trade_offer(self, board)
 
-
     def trade_answer(self, board, resources_offered, resources_asked):
-       print("You have been offered the following trade")
-       print("{} {} in exchange for {} {}".format(resources_offered[0],
-                                                  resources_offered[1],
-                                                  resources_asked[0],
-                                                  resources_asked[1]))
+        print("You have been offered the following trade")
+        print("{} {} in exchange for {} {}".format(resources_offered[0],
+                                                   resources_offered[1],
+                                                   resources_asked[0],
+                                                   resources_asked[1]))
 
-       while True:
-           try:
+        while True:
+            try:
                 decision = input("Would you like to accept? Y/N")
                 if decision == 'y' or decision == 'Y':
                     return True
                 elif decision == 'n' or decision == 'N':
                     return False
-           except:
-              print("Invalid input, try again")
-           finally:
-              print("Invalid input, try again")
-
-
+            except:
+                print("Invalid input, try again")
+            finally:
+                print("Invalid input, try again")
 
     def start_settelment_second(self, board):
         """
@@ -442,7 +441,6 @@ class CatanPlayer:
                 print('That location is not available. Please choose another location.')
                 settle_position = None
 
-
         # Now, get the position of a road next to the chosen settlement position
         road_position = self.get_index_input(settle_position.edges)
         if board.edges[road_position] is not None:
@@ -457,10 +455,6 @@ class CatanPlayer:
 
         # Return the two integers
         return settle_position, road_position
-
-    
-    
-    
 
 
 if __name__ == '__main__':

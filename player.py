@@ -71,12 +71,12 @@ class CatanPlayer:
         while True:
             try:
                 position = int(input("Choose a positon(number) from the list"))
+                if position in valid_positions:
+                    return position
+                else:
+                    print("Invalid choice, try again")
             except:
                 print("Invalid input, try again")
-            if position in valid_settlements:
-                return position
-            else:
-                print("Invalid choice, try again")
 
     def can_buy(self, type_to_buy):
         # Checks if the player has resources to buy
@@ -112,7 +112,7 @@ class CatanPlayer:
         # Add point for building settlement
         self.victory_points += 1
         # Remove settlement from unused items
-        self.unused_items['settlement'] -= 1
+        self.unused_items['settlements'] -= 1
 
     def purchase_city(self, position, board):
         # Remove the position from settlement and add to cities
@@ -130,8 +130,8 @@ class CatanPlayer:
         # Add two points for building a city
         self.victory_points += 2
         # Remove city from unused and put back settlement
-        self.unused_items['city'] -= 1
-        self.unused_items['settlement'] += 1
+        self.unused_items['cities'] -= 1
+        self.unused_items['settlements'] += 1
 
     def purchase_road(self, position, board, override):
         # Add the position to the players list of road
@@ -141,7 +141,7 @@ class CatanPlayer:
             for key in constants.PRICES['road']:
                 board.cards.move_cards(bank, {key, constants.PRICES['city'][key] * -1})
         # Remove road from unused
-        self.unused_items['road'] -= 1
+        self.unused_items['roads'] -= 1
 
     # Find valid locations for settlements based on current settlements
     # and roads - the new settlement must be attached to the player's
@@ -406,12 +406,12 @@ class CatanPlayer:
     def get_valid_settlements_start(self, board):
         valid_settlements = []
         # check if the intersection's neighbors are all empty
-        for settlement in board.intersections:
-            for neighbor in settlement.get_neighbors():
+        for settlement in board.intersections: # board.intersections is a dictionary
+            for neighbor in board.intersections[settlement].get_neighbors():
                 if neighbor.occupier is not None:
                     break # go to the next settlement
             # if all the neighbors pass the test (is None) add to valid_settlements
-            valid_settlements.append(settlement.identifier)
+            valid_settlements.append(board.intersections[settlement].identifier)
 
         return valid_settlements
 
@@ -419,7 +419,7 @@ class CatanPlayer:
         valid_roads = []
         # check if the road is attached to the player's roads
         # and is available (will have to be available bc if not the settlement could not be placed there)
-        for road in board.intersections[settlement_position]:
+        for road in board.intersections[settlement_position].edges:
             if road.occupier is None:
                 valid_roads.append(road.identifier)
         return valid_roads
@@ -441,7 +441,7 @@ class CatanPlayer:
         self.purchase_road(road_position, board, True)
 
         # Return the two integers
-        return settle_position, road_position
+        return settlement_position, road_position
 
 
 if __name__ == '__main__':
@@ -460,7 +460,7 @@ if __name__ == '__main__':
     # test_list = [10,20,30,40,50]
     # p.get_input_by_index(test_list)
     # p.get_input_by_value(test_list)
-    p.set_settlement(b)
+    p.start_settlement_placement(b)
     # print(p.resource_cards)
     # p.resource_cards = ResourceCards(4)
     # p.discard_half()

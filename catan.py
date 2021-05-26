@@ -1,5 +1,5 @@
 import numpy as np
-import random 
+import random
 from board import Board
 import cards
 import player
@@ -13,8 +13,8 @@ PLAYER_COLORS = constants.PLAYER_COLORS
 dev_dict = dict(zip(DEVELOPMENT_CARD_NAMES,np.arange(0, len(DEVELOPMENT_CARD_NAMES))))
 
 class CatanBoard:
-    # Initialize the Catan Board with all the options for resources, numbers to be rolled,
-    # settlements/roads, port options
+    # Initialize the Catan Board with all the options for resources, numbers to
+    # be rolled, settlements/roads, port options
     def __init__(self):
         self.board = Board()
         self.bank = cards.ResourceCards(19)
@@ -22,21 +22,27 @@ class CatanBoard:
         # get a GUI
         self.gui = visual.GUIboard(self.board)
 
-        ################################ Insert/Modify CODE HERE ##################################
-
         # player_points player0, player1, player2, player3
-        self.player_points = [0,0,0,0]
-        # longest road player_number initialisation with -1
+        self.player_points = [0, 0, 0, 0]
+        # longest road player_number. Initialization with -1.
         self.longest_road = -1
-        # longest largest_army player_number initialisation with -1
+        # longest largest_army player_number. Initialization with -1.
         self.largest_army = -1
         # devcards according to dev_dict dictionary
-        self.bank_devcards = np.array([14*[dev_dict["knight"]] + 5*[dev_dict["victory point"]] + 2*[dev_dict["road building"]] + 2*[dev_dict["year of plenty"]] + 2*[dev_dict["monopoly"]]])
+        self.bank_devcards = np.array([
+            14*[dev_dict["knight"]]
+            + 5*[dev_dict["victory point"]]
+            + 2*[dev_dict["road building"]]
+            + 2*[dev_dict["year of plenty"]]
+            + 2*[dev_dict["monopoly"]]
+        ])
         np.random.shuffle(self.bank_devcards)
         # played open knight cards for each player
-        self.open_knights = [0,0,0,0]
+        self.open_knights = [0, 0, 0, 0]
+
+        """ -- update this from DevCards class -- """
         # hidden unplayed dev cards for each player
-        # as 2d materix  dev_dict x  player_nr
+        # as 2d matrix  dev_dict x  player_nr
         self.hidden_dev_cards = np.array([[0]*5]*4)
         # how many dev cards were just bought this turn and can not be played
         # as 2d matrix dev_dict x  player_nr
@@ -44,29 +50,36 @@ class CatanBoard:
 
     # String output for printing the board
     def __str__(self):
-        """ add code to print the game's other info, such as bank resource cards, robber, etc. """
         return str(self.board)
-    
-    def check_longest_road(player):
+
+    def check_longest_road(self, player):
+        pass
+
+    def check_largest_army(self, player):
         pass
 
     def place_road(self, player_nr, position):
-        self.board.edges[position].occupier = PLAYER_COLORS[player_nr] + " player's road"
+        # Reassign the road's occupier
+        self.board.edges[position].occupier = \
+            PLAYER_COLORS[player_nr] + " player's road"
         print(self.board.edges[position])
         self.gui.buy_road(player_nr, position)
 
     def place_settlment(self, player_nr, position):
-        # buy the settlement: reassign the intersection's occupier and update the gui.
+        # buy the settlement: reassign the intersection's occupier and
+        # update the gui.
         # The rest is done in the player class
-        self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's settlement"
+        self.board.intersections[position].occupier = (
+            player_nr, PLAYER_COLORS[player_nr] + " player's settlement")
         print(self.board.intersections[position])
         self.gui.buy_settlement(player_nr, position)
         # Update the points for the player
         self.player_points[player_nr] += 1
 
-        # mark the neighboring intersections as restricted - cannot have a settlement
+        # Mark the neighboring intersections as restricted - cannot have
+        # a settlement.
         for i in self.board.intersections[position].get_neighbors():
-            i.occupier = 'restricted'
+            i.occupier = (-1, 'restricted')
             self.gui.restrict_edge(i.identifier)
             print(i)
 
@@ -76,12 +89,10 @@ class CatanBoard:
         # Place the settlement
         self.place_settlment(player_nr, settle_position)
 
-
-
     def start_settelment_second(self, player, player_nr, settle_position, road_position):
         # Set the settlement and road
         self.start_settelment_first(player_nr, settle_position, road_position)
-        # Give the resource cards
+        # Give the resource cards to the player.
         c = {}  # initialize a dict
         for i in self.board.intersections[settle_position].terrains:
             key = RESOURCE_NAMES[i.resource]  # The key for the dict
@@ -118,20 +129,23 @@ class CatanBoard:
         # pay for the city
         self.bank.move_cards(player.resource_cards, PRICES['city'])
         # buy the city: reassign the settlement's occupier and update the gui.
-        # The rest is done in the player class       
-        self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's city"
+        # The rest is done in the player class
+        self.board.intersections[position].occupier = (
+            player_nr, PLAYER_COLORS[player_nr] + " player's city")
         print(self.board.intersections[position])
-        self.gui.buy_city(player_nr, position) 
+        self.gui.buy_city(player_nr, position)
         # Update the points for the player
         self.player_points[player_nr] += 1
 
-    def buy_road(self, player,  player_nr, position):
+    def buy_road(self, player, player_nr, position):
         # pay for the road
         self.bank.move_cards(player.resource_cards, PRICES['road'])
         # buy the road:
         self.place_road(player_nr, position)
+        # Check length
+        self.check_longest_road(player)
 
-    def buy_dev_card(self, player):
+    def buy_dev_card(self, player, turn):
         # Check if player has enough resources to buy the card
         if player.can_buy('dev_card', override=True):
             print('you are unable to purchase a development card')
@@ -141,91 +155,67 @@ class CatanBoard:
             self.bank.move_cards(player.resource_cards, PRICES['dev_card'])
             print('paid')
             # buy the card
-            player.development_cards.buy_card()
+            player.development_cards.buy_card(turn)
 
     def roll(self):
-        min=1
-        max=6
-        value=random.randint(min,max)
-        return value 
+        min = 1
+        max = 6
+        value = random.randint(min, max)
+        return value
 
-    def roll_dice(self, player_nr):
-        dye1=self.roll()
-        dye2=self.roll()
-        dice_values=dye1+dye2
+    def roll_dice(self):
+        dye1 = self.roll()
+        dye2 = self.roll()
+        dice_values = dye1+dye2
         return dice_values
 
     def discard_half(self, player, resources):
         # The bank is receiving half of the player's cards. "resources" refers
         # to the cards that the player chose to discard.
         self.bank.move_cards(player.resource_cards, resources)
-            
-    def steal_card(self, player, position, target_player):
-        """changes CatanBoard()/self if possible according to the rules of discarding cards if 7 rolled
 
-        ################################ Insert/Modify Comments HERE ##################################
-        steal_card input arguments:
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        position -- integer 0 - self.number_of_tiles-1
-        target_player_nr -- integer 0-3
-        """
-        ################################ Insert/Modify CODE HERE ##################################
+    def steal_card(self, player, position, target_player):
+        # Update the robber position
         self.board.robber = position
+        # Check if target player has any cards
         if target_player.resource_cards.get_total_cards() == 0:
             print("Sorry, your target doesn't have any cards")
         else:
+            # Get a random card and move it to the player who plays robber.
             steal = target_player.resource_cards.get_random_card()
-            target_player.resource_cards[steal] -= 1
-            player.resource_cards[steal] += 1
+            player.resource_cards.move_cards(target_player.resource_cards, steal)
 
-    def play_knight(self, player_nr, position, target_player_nr):
-        """changes CatanBoard()/self if possible according to the rules knight playing in catan:
+    def play_knight(self, turns, player, player_nr, position, target_player):
+        can_play, card = player.development_cards.can_play(turns, 'knight')
+        if can_play:
+            self.steal_card(player, position, target_player)
+            # return the card to the game deck
+            player.development_cards.return_to_deck(card)
+            # Update the army
+            player.army += 1
+            self.open_knights[player_nr] += 1
+            self.check_largest_army()
 
-        ################################ Insert/Modify Comments HERE ##################################
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        position -- integer 0 - self.number_of_tiles-1
-        target_player_nr -- integer 0-3
+    def play_roads(self, turns, player, player_nr, position1, position2):
+        can_play, card = player.development_cards.can_play(turns, 'road building')
+        if can_play:
+            # Place the roads: reassign the road's occupier and update the gui.
+            # The rest is done in the player class
+            self.place_road(player_nr, position1)
+            self.place_road(player_nr, position2)
+            # return the card to the game deck
+            player.development_cards.return_to_deck(card)
+            # Check length
+            self.check_longest_road(player)
 
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        self.steal_card(player_nr, position, target_player_nr)
-        # 
-        """ return the card to the game deck """
-        """ update army """
+    def play_plenty(self, turns, player, player_nr, resource1, resource2):
+        can_play, card = player.development_cards.can_play(turns, 'road building')
+        if can_play:
+            """ define play plenty """
+            # return the card to the game deck
+            player.development_cards.return_to_deck(card)
 
-    def play_roads(self, player_nr, position1, position2):
-        """changes CatanBoard()/self if possible according to the rules of playing the roadsbuilding dev card :
-
-        ################################ Insert/Modify Comments HERE ##################################
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        position1 -- integer 0-71
-        position2 -- integer 0-71
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        
-        # Place the roads: reassign the road's occupier and update the gui.
-        # The rest is done in the player class
-        self.place_road(player_nr, position1)
-        self.place_road(player_nr, position2)
-
-        # 
-        """ return the card to the game deck """
-
-    def play_plenty(self, player_nr, resource1, resource2):
-        """changes CatanBoard()/self if possible according to the rules of playing the years of plenty dev card :
-
-        ################################ Insert/Modify Comments HERE ##################################
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        resource1 -- integer 1-5
-        resource1 -- integer 1-5
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-
-    def play_mono(self, player_nr, resource):
+    def play_mono(self, turns, player, player_nr, resource):
         """changes CatanBoard()/self if possible according to the rules of playing monopoly dev card :
 
         ################################ Insert/Modify Comments HERE ##################################
@@ -277,14 +267,15 @@ if __name__ == '__main__':
     b = CatanBoard()
     # print(b)
     p = player.CatanPlayer(0)
+    q = player.CatanPlayer(0)
 
     p.resource_cards = cards.ResourceCards(6)
     # b.discard_half(p, {'hay':1})
-    print(b.bank)
-    print(p.resource_cards)
-    b.buy_dev_card(p)
-    print(b.bank)
-    print(p.resource_cards)
+    # print(b.bank)
+    # print(p.resource_cards)
+    # b.buy_dev_card(p, 3)
+    # print(b.bank)
+    # print(p.resource_cards)
     # b.buy_road(p, 2, 9)
     # b.buy_road(p, 0, 19)
     # b.buy_road(p, 3, 29)
@@ -306,5 +297,9 @@ if __name__ == '__main__':
     # print(b.bank)
     # print(p.resource_cards)
     # print(b.board.robber)
+    # print(b)
+    b.steal_card(q, 1, p)
+    print(q.resource_cards)
+    print(p.resource_cards)
     b.gui.window.mainloop()
     print('Debug complete')

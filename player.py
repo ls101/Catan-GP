@@ -27,7 +27,7 @@ class CatanPlayer:
 
         # All items owned by the player, but not on the board:
         self.resource_cards = ResourceCards()
-        self.development_cards = Cards()
+        self.development_cards = DevCards()
         
         # Game statistics, regarding this player:
         self.road_length = 0
@@ -385,6 +385,8 @@ class CatanPlayer:
 
         # Return the two integers
         return settle_position, road_position
+
+    
     
     
 

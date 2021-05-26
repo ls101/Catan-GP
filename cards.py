@@ -5,6 +5,7 @@ import constants
 class Cards():
     def __init__(self):
       self.cards=[]
+      
 
     def __str__(self):
        cards_iterated=""
@@ -30,6 +31,34 @@ class Cards():
     #this function removes cards
     def cards_remove(self,*cards_remove):
         pass
+
+    
+class DevCards(Cards):
+    # in order to make sure that a development card is not used in the turn it wasborn instead of the 
+    #dev card being an instance of the card class 
+    #i created an inherited class of the sub class .. 
+    # the index of the dev card will be the same as the card itself 
+    #when ever you buy a dev card it will reference the turn by index and make sure the turn you bought it is not the
+    # turn in which you want to use it 
+    def __init__(self):
+        super.__init__(self)
+        self.turn=[]
+
+    def turn_setter(self,turn):
+        #when you purchase a dev card you will also set which turn it is 
+        turn.append(turn)
+    
+    def use_dev_card(self,card_choice,game_turn):
+        # this method determines if one can use the dev card 
+        # by seeing which turn they bought it and which turn they are up to in the game
+        can_use=False
+        index=card_choice-1
+        if turn[index]==game_turn:
+            print('you can not use a development card on the turn in which you purchased it')
+        else:
+            can_use=True
+        return can_use   
+
 
     
 

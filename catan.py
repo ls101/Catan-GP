@@ -23,14 +23,6 @@ class CatanBoard:
         self.gui = visual.GUIboard(self.board)
 
         ################################ Insert/Modify CODE HERE ##################################
-        # Number_of_tiles represents the slots on the board available to receive a resource and number
-        # This number is the same length as the available resources
-
-        # self.number_of_tiles = len(self.board_resources)
-        
-        # Settlements and roads need to be tracked.
-
-
 
         # player_points player0, player1, player2, player3
         self.player_points = [0,0,0,0]
@@ -52,33 +44,12 @@ class CatanBoard:
 
     # String output for printing the board
     def __str__(self):
-        # """
-        # ################################ Insert/Modify Comments HERE ##################################
-
-        # output -- str
-        # """
-        # ################################ Insert/Modify CODE HERE ##################################
-        # out = "\n"
-        # # Port pointer starts at zero and will be incremented as ports are used
-        # port_nr = 0
-        # # For each slot in the board - add the resource and roll_number at the corresponding index
-        # for tile_nr in range(self.number_of_tiles):
-        #     out += RESOURCE_NAMES[self.board_resources[tile_nr]] + "-" + str(self.roll_numbers[tile_nr]) + " "
-        #     # if the current tile is next to a port - add in the port
-        #     if tile_nr in [2, 6, 11, 15, 18]:
-        #         out += " " + PORTS_NAMES[self.ports[port_nr]] + "\n"
-        #         # if the tile is not at the end of the board - add in a second port on the next line
-        #         if tile_nr < 18:
-        #             out += PORTS_NAMES[self.ports[port_nr + 1]] + " "
-        #         # Increment the port pointer by 2
-        #         port_nr += 2
-        # """ Return the output string with all the resources, numbers, and ports to be printed when needed.
-        # The robber should be added to this output to keep track of where it is.
-        # Also, I think the output could use better formatting to differentiate between ports and resources and to 
-        # be easier to look at. """
-        # return out
+        """ add code to print the game's other info, such as bank resource cards, robber, etc. """
         return str(self.board)
     
+    def check_longest_road(player):
+        pass
+
     def place_road(self, player_nr, position):
         self.board.edges[position].occupier = PLAYER_COLORS[player_nr] + " player's road"
         print(self.board.edges[position])
@@ -90,6 +61,8 @@ class CatanBoard:
         self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's settlement"
         print(self.board.intersections[position])
         self.gui.buy_settlement(player_nr, position)
+        # Update the points for the player
+        self.player_points[player_nr] += 1
 
         # mark the neighboring intersections as restricted - cannot have a settlement
         for i in self.board.intersections[position].get_neighbors():
@@ -98,18 +71,6 @@ class CatanBoard:
             print(i)
 
     def start_settelment_first(self, player_nr, settle_position, road_position):
-        """changes CatanBoard()/self if possible according to the rules of
-        building the first starting settelment with an road
-
-        ################################ Insert/Modify Comments HERE ##################################
-        buy_settlement arguments:
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        settle_position -- integer 0-54
-        road_position -- integer 0-71
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-
         # Place the road
         self.place_road(player_nr, road_position)
         # Place the settlement
@@ -118,17 +79,6 @@ class CatanBoard:
 
 
     def start_settelment_second(self, player, player_nr, settle_position, road_position):
-
-        """changes CatanBoard()/self if possible according to the rules of
-         building the first starting settelment with an road
-        ################################ Insert/Modify Comments HERE ##################################
-        buy_settlement arguments:
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        settle_position -- integer 0-54
-        road_position -- integer 0-71
-        """
-        ################################ Insert/Modify CODE HERE ##################################
         # Set the settlement and road
         self.start_settelment_first(player_nr, settle_position, road_position)
         # Give the resource cards
@@ -159,73 +109,34 @@ class CatanBoard:
         return game_end, winner
 
     def buy_settlement(self, player, player_nr, position):
-    
-        """changes CatanBoard()/self if possible according to the rules of building a settelment:
-
-        ################################ Insert/Modify Comments HERE ##################################
-
-        buy_settlement arguments:
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        position -- integer 0-53
-
-        """
         # pay for the settlement
         self.bank.move_cards(player.resource_cards, PRICES['settlement'])
         print(player.resource_cards)
         print('\nbank:\n')
         print(self.bank)
 
-        # place the settlement
+        # place the settlement (and update points)
         self.place_settlment(player_nr, position)
 
 
         ################################ Insert/Modify CODE HERE ##################################
 
     def buy_city(self, player, player_nr, position):
-        """changes CatanBoard()/self if possible according to the rules of building a city:
-
-        ################################ Insert/Modify Comments HERE ##################################
-
-        buy_city arguments:
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        position -- integer 0-53
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        
         # pay for the city
         self.bank.move_cards(player.resource_cards, PRICES['city'])
-        print(player.resource_cards)
-        print('\nbank:\n')
-        print(self.bank)
         
         # buy the city: reassign the settlement's occupier and update the gui.
         # The rest is done in the player class       
         self.board.intersections[position].occupier = PLAYER_COLORS[player_nr] + " player's city"
         print(self.board.intersections[position])
         self.gui.buy_city(player_nr, position) 
+        # Update the points for the player
+        self.player_points[player_nr] += 1
 
     def buy_road(self, player,  player_nr, position):
-        """changes CatanBoard()/self if possible according to the rules of building a road:
-
-        ################################ Insert/Modify Comments HERE ##################################
-
-        buy_road arguments:
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        position -- integer 0-71
-
-        """
-        ################################ Insert/Modify CODE HERE ##################################
         # pay for the road
         self.bank.move_cards(player.resource_cards, PRICES['road'])
-        print(player.resource_cards)
-        print('\nbank:\n')
-        print(self.bank)
-        
-        # buy the road: reassign the road's occupier and update the gui.
-        # The rest is done in the player class
+        # buy the road:
         self.place_road(player_nr, position)
 
     def buy_dev_card(self, player):
@@ -254,13 +165,6 @@ class CatanBoard:
         return value 
 
     def roll_dice(self, player_nr):
-        """changes CatanBoard()/self if possible according to the rules of rolling dice in catan:
-
-        ################################ Insert/Modify Comments HERE ##################################
-
-        """
-        # output roll_numer of dice
-        ################################ Insert/Modify CODE HERE ##################################
         dye1=self.roll()
         dye2=self.roll()
         dice_values=dye1+dye2
@@ -268,25 +172,10 @@ class CatanBoard:
 
     
 
-    def discard_half(self, player, resourCes):
-        """changes CatanBoard()/self if possible according to the rules of discarding cards if 7 rolled
-
-        ################################ Insert/Modify Comments HERE ##################################
-        discard_half input arguments:
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        resourCes -- np.array([brick, ore, hay, wood, sheep])
-                brick -- integer 0-19
-                ore -- integer 0-19
-                hay -- integer 0-19
-                wood --integer 0-19
-                sheep --integer 0-19
-
-        """
-        ################################ Insert/Modify CODE HERE ##################################
+    def discard_half(self, player, resources):
         # The bank is receiving half of the player's cards. "resources" refers
-        # to the cards that the player chose to discaRD.
-        self.bank.move_cards(player.resource_cards, resourCes)
+        # to the cards that the player chose to discard.
+        self.bank.move_cards(player.resource_cards, resources)
         print(player.resource_cards)
 
         
@@ -314,6 +203,10 @@ class CatanBoard:
 
         """
         ################################ Insert/Modify CODE HERE ##################################
+        self.steal_card(player_nr, position, target_player_nr)
+        # 
+        """ return the card to the game deck """
+        """ update army """
 
     def play_roads(self, player_nr, position1, position2):
         """changes CatanBoard()/self if possible according to the rules of playing the roadsbuilding dev card :
@@ -357,16 +250,10 @@ class CatanBoard:
         ################################ Insert/Modify CODE HERE ##################################
 
     def trade_bank(self, player, resource_own, resource_bank, give):
-        """changes CatanBoard()/self if possible according to the rules bank trading including ports:
-
-        ################################ Insert/Modify Comments HERE ##################################
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        resource_own -- integer 1-5
-        resource_bank -- integer 1-5
-        """
-        ################################ Insert/Modify CODE HERE ##################################
+        # Check that the bank has the card
         if self.bank.resource_cards[resource_bank] >= 1:
+            # Create the dictionary for the move_cards method.
+            # Since it's done in one call, the cards given are negative.
             d = {
                 resource_bank: 1,
                 resource_own: -give
@@ -405,6 +292,9 @@ if __name__ == '__main__':
     p = player.CatanPlayer(0)
 
     p.resource_cards = cards.ResourceCards(6)
+    # b.discard_half(p, {'hay':1})
+    # print(b.bank)
+    # print(p.resource_cards)
     # b.buy_road(p, 2, 9)
     # b.buy_road(p, 0, 19)
     # b.buy_road(p, 3, 29)

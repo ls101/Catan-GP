@@ -200,26 +200,23 @@ class CatanPlayer:
         return offering
 
 
-    def discard_half(self, board):
-        
-        """
-        ################################ Insert/Modify Comments HERE ##################################
-        discard_half output arguments:
-
-        resourses -- np.array([brick, ore, hay, wood, sheep])
-                brick -- integer 0-19
-                ore -- integer 0-19
-                hay -- integer 0-19
-                wood --integer 0-19
-                sheep --integer 0-19
-        """
+    def discard_half(self):
         ################################ Insert/Modify CODE HERE ##################################
         print('Robber activated!')
-        if self.resource_cards.get_discard_num() > 0:
-            return self.offer_cards()
-
-        # return np.array([int(input('insert argument')), int(input('insert argument')), int(input('insert argument')),
-        #                  int(input('insert argument')), int(input('insert argument'))])
+        # Get the number of cards to discard. Will be zero if less than 7 cards.
+        total = self.resource_cards.get_discard_num()
+        if total > 0:
+            # Ask player which cards to discard
+            offer = self.offer_cards()
+            # Make sure the total offer is correct
+            while sum(offer.values()) != total:
+                print('You must choose exactly {0} cards'.format(total))
+                offer = self.offer_cards()
+            return offer
+        else:
+            # If total is 0
+            print("You don't have to discard cards now.")
+            return None
 
     def steal_card(self, board):
         """
@@ -408,5 +405,8 @@ if __name__ == '__main__':
     # p.get_input_by_index(test_list)
     # p.get_input_by_value(test_list)
     p.set_settlement(b)
-    print(p.resource_cards)
+    # print(p.resource_cards)
+    # p.resource_cards = ResourceCards(4)
+    # p.discard_half()
+
     print('Debug complete')

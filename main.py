@@ -103,8 +103,11 @@ if __name__ == '__main__':
                     if dice_number == 7:
                         for p_nr in range(4):
                             p = players[p_nr]
-                            resources = p.discard_half(board_safety_copy)
-                            board.discard_half(p, resources)
+                            resources = p.discard_half()
+                            # The above checks if the player has more than seven cards.
+                            # It returns the cards to discard, or None.
+                            if resource is not None:
+                                board.discard_half(p, resources)
                         # steal resource after everybody discarded cards
                         position, target_player_nr = current_player.steal_card(board_safety_copy)
                         board.steal_card(player_nr, position, target_player_nr)
@@ -133,7 +136,7 @@ if __name__ == '__main__':
                     board.play_mono(player_nr, resource)
                 if choice == 12:
                     resource_own, resource_bank, give = current_player.trade_bank(board_safety_copy)
-                    board.trade_bank(player, resource_own, resource_bank, give)
+                    board.trade_bank(players[player_nr], resource_own, resource_bank, give)
                 if choice == 13:
                     resources_own, target_player_nr, resources_target = current_player.trade_offer(board_safety_copy)
                     answer_target = players[target_player_nr].trade_answer(board_safety_copy, resources_own,

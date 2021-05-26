@@ -17,34 +17,6 @@ MAXIMUM_ROUNDS = 30
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    def menu():
-        print('MENU')
-        print('2. Roll the Dice')
-        print('3. Buy a settlement')
-        print('4. buy a city ')
-        print('5. buy a road ')
-        print('6. Buy a development card')
-        print('8. play a knight ')
-        print('9. play a road ')
-        print('10.play a plenty')
-        print('11. play mono')
-        print('12. trade')
-        print('13. target ')
-        choice=input('Enter Choice: \n')
-        try :
-            choice=int(choice)
-        except:
-            ('your choice must be numeric ')
-            menu()
-        while choice <0 or choice >13:
-           choice=input("You must enter a choice between 1 and 13 : \n ")
-           try :
-               choice=int(choice)
-           except:
-             ('your choice must be numeric ')
-             menu()
-    
-        return choice
 
     # build catan board
     board = catan.CatanBoard()
@@ -84,19 +56,19 @@ if __name__ == '__main__':
             current_player = players[player_nr]
             # print statements for debugging
             print('It is turn of player number:{0}'.format(current_player.player_nr))
-            choice = menu()
+            # choice = menu()
             
-            winner=False
+            winner = False
             
-            turns =0
-            while winner==False or turns <31:
+            turns = 0
+            while winner is False or turns < 31:
                 # making safety working copy of board (can be changed in later
                 # implementation to only visible data)
                 board_safety_copy = copy.deepcopy(board.board)
                 # player makes the choice what to do the choices are integers 0 or negative integer is turn finished
                 choice = current_player.turn_choice(board_safety_copy)
                 # print statements for debugging
-                print(choice)
+                # print(choice)
                 if choice == 2:
                     # roll dice
                     ok, dice_number = board.roll_dice(player_nr)
@@ -121,7 +93,7 @@ if __name__ == '__main__':
                     position = current_player.set_road(board_safety_copy)
                     board.buy_road(players[player_nr], player_nr, position)
                 if choice == 6:
-                    board.buy_dev_card(players[player_nr],turns)
+                    board.buy_dev_card(players[player_nr], turns)
                 if choice == 8:
                     position, target_player_nr = current_player.steal_card(board_safety_copy)
                     board.play_knight(player_nr, position, target_player_nr)
@@ -146,9 +118,9 @@ if __name__ == '__main__':
 
                 game_end, winner = board.check_points()
                 if game_end:
-                 print("player {0} won".format(winner))
-                 break 
-                turns+=1
+                    print("player {0} won".format(winner))
+                    break
+                turns += 1
 
     print('game ended')
     board.board.gui.window.mainloop()

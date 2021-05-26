@@ -41,7 +41,7 @@ class DevCards(Cards):
     #when ever you buy a dev card it will reference the turn by index and make sure the turn you bought it is not the
     # turn in which you want to use it 
     def __init__(self):
-        super.__init__(self)
+    #    super.__init__(self)
         self.turn=[]
 
     def turn_setter(self,turn):

@@ -4,6 +4,7 @@ from board_specs import *
 from board_components import *
 import constants
 import player
+import cards
 
 
 # List of resources available to be distributed on the board
@@ -58,8 +59,8 @@ class Board:
         self.terrains = self.initialize_terrains()
         # Assign the correct attributes for each attribute.
         self.assign_specs()
-        self.dev_cards=np.array('knight'*14,'victory point'*5,'road building'*2,'year of plenty'*2,'monopoly'*2)
-        self.dev_cards=random.shuffle(dev_cards)
+#        self.dev_cards=np.array('knight'*14,'victory point'*5,'road building'*2,'year of plenty'*2,'monopoly'*2)
+ #       self.dev_cards=random.shuffle(dev_cards)
 
     def __str__(self):
         # A message, of how the board is displayed.

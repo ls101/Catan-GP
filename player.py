@@ -30,9 +30,13 @@ class CatanPlayer:
         self.development_cards = DevCards()
         
         # Game statistics, regarding this player:
-        self.road_length = 0
+        # self.road_length = 0
         self.army = 0
         self.victory_points = 0
+
+        # Resources that correspond to where the player has settlements/cities - double resources for cities
+        # Tuple - resource_num, resource_type
+        self.resources = []
 
     # Find valid locations for settlements based on current settlements
     # and roads - the new settlement must be attached to the player's
@@ -62,6 +66,7 @@ class CatanPlayer:
     # Otherwise the player can try again
     def get_index_input(self, valid_positions):
         while True:
+            # catch error for non int input###################
             position = int(input('Choose a location from the list'))
             if position in valid_positions:
                 return position
@@ -79,17 +84,30 @@ class CatanPlayer:
             # type of resource, they can not buy that type of item
             if self.resource_cards.resource_cards[key] < needed_to_buy[key]:
                 return False
+        if self.unused_items[type_to_buy] <= 0:
+            return False
         return True
 
     def purchase_settlement(self, position, board, override):
         # Add the position to the players list of settlements
         self.settlements.append(board.intersections[position])
+
+        # Add the resources for where the settlement is places
+        for terrain in board.intersections[position].terrains:
+            self.resources.append((terrain.resource_num, terrain.resource))
+
+        # Add ports - if the intersection has a port, add it to player's ports
+        if board.intersections[position].port is not None:
+            self.ports.append(board.intersections[position].port)
+
         # Remove resource cards that were needed to purchase settlement
         if not override:
             for key in constants.PRICES['settlement']:
-                self.resource_cards.resource_cards[key] -= constants.PRICES['settlement'][key]
+                board.cards.move_cards(bank, {key, constants.PRICES['settlement'][key] * -1})
         # Add point for building settlement
         self.victory_points += 1
+        # Remove settlement from unused items
+        self.unused_items['settlement'] -= 1
 
     def purchase_city(self, position, board):
         # Remove the position from settlement and add to cities
@@ -97,11 +115,18 @@ class CatanPlayer:
             if i.identifier == position:
                 self.settlements.remove(i)
         self.cities.append(board.intersections[position])
+        # Add the resources for where the city is places (twice)
+        for terrain in board.intersections[position].terrains:
+            self.resources.append((terrain.resource_num, terrain.resource))
+            self.resources.append((terrain.resource_num, terrain.resource))
         # Remove resource cards that were needed to purchase city
         for key in constants.PRICES['city']:
-            self.resource_cards.resource_cards[key] -= constants.PRICES['city'][key]
+            board.cards.move_cards(bank, {key, constants.PRICES['city'][key] * -1})
         # Add two points for building a city
         self.victory_points += 2
+        # Remove city from unused and put back settlement
+        self.unused_items['city'] -= 1
+        self.unused_items['settlement'] += 1
 
     def purchase_road(self, position, board, override):
         # Add the position to the players list of road
@@ -109,7 +134,9 @@ class CatanPlayer:
         # Remove resource cards that were needed to purchase road
         if not override:
             for key in constants.PRICES['road']:
-                self.resource_cards.resource_cards[key] -= constants.PRICES['road'][key]
+                board.cards.move_cards(bank, {key, constants.PRICES['city'][key] * -1})
+        # Remove road from unused
+        self.unused_items['road'] -= 1
 
     # Find valid locations for settlements based on current settlements
     # and roads - the new settlement must be attached to the player's
@@ -127,6 +154,8 @@ class CatanPlayer:
             # Purchase the settlement and trade in cards
             self.purchase_settlement(position, board, override)
             return position
+        else:
+            return None
 
     def set_city(self, board):
         # check if player has resources to buy city
@@ -142,6 +171,8 @@ class CatanPlayer:
             # Purchase the city and trade in cards
             self.purchase_city(position, board)
             return position
+        else:
+            return None
 
     def set_road(self, board, override=False):
         # check if player has resources to buy settlement
@@ -155,18 +186,38 @@ class CatanPlayer:
             # Purchase the road and trade in cards
             self.purchase_road(position, board, override)
             return position
+        else:
+            return None
+
+    def print_menu(self) -> None:
+        print('MENU')
+        print('1. End your turn')
+        print('2. Roll the Dice')
+        print('3. Buy a settlement')
+        print('4. Buy a city ')
+        print('5. Buy a road ')
+        print('6. Buy a development card')
+        print('8. Play a knight ')
+        print('9. Play a road ')
+        print('10. Play a plenty')
+        print('11. Play mono')
+        print('12. Trade')
+        print('13. Target ')
 
     def turn_choice(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
+        choice = 0
+        # Print the menu
+        self.print_menu()
 
-        output -- integer
-        0 -- end turn
-        see main for more integer - action correspondance
-
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        return 0
+        # Get input - must be a number between 1 and 13
+        while choice < 1 or choice > 13:
+            try:
+                choice = int(input('Enter Choice: \n'))
+                if choice < 1 or choice > 13:
+                    print('Enter a number between 1 and 13')
+            except:
+                print('You must input a numeric value between 1 and 13')
+        return choice
 
     def offer_input(self, key, value):
         try:
@@ -183,7 +234,6 @@ class CatanPlayer:
                 # A valid number is returned
                 return offer
 
-
     def offer_cards(self):
         # For trade offers and for discarding
         print(self.resource_cards)
@@ -199,9 +249,7 @@ class CatanPlayer:
                     offering[key] = offer
         return offering
 
-
     def discard_half(self):
-        ################################ Insert/Modify CODE HERE ##################################
         print('Robber activated!')
         # Get the number of cards to discard. Will be zero if less than 7 cards.
         total = self.resource_cards.get_discard_num()
@@ -264,6 +312,10 @@ class CatanPlayer:
         return int(input('insert argument'))
 
     def ports_trade(self, key):
+        # print list of resources to choose form 1 -5
+        for i in range(len(constants.RESOURCE_NAMES)+1):
+            print(i, constants.RESOURCE_NAMES[i])
+
         # Checks if a player has a port; this allows better trading terms
         # when trading with the bank.
         resource_search = RESOURCE_NAMES.index(key)
@@ -275,56 +327,79 @@ class CatanPlayer:
             return 4
 
     def trade_bank(self, board):
-        """
-        ################################ Insert/Modify Comments HERE ##################################
+        try:
+            resource_own = int(input('What resource would you like to trade in?'))
+            resource_bank = int(input('What resource would you like to receive?'))
 
-        resource_own -- integer 1-5
-        resource_bank -- integer 1-5
-
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        resource_own, resource_bank = int(input('insert argument')), int(input('insert argument'))
-
-        if resource_own == resource_bank:
-            # error message
-            pass
-        else:
-            # Determine how many cards the palyer needs to give to the bank
-            give = self.ports_trade(resource_own)
-            # Ensure the player has those cards
-            if self.resource_cards.resource_cards[resource_own] >= give:
-                return resource_own, resource_bank, give
+            if resource_own == resource_bank:
+                print("You can not trade and receive the same resource")
+                # return None to go back to main menu
+                return None, None
             else:
-                # error message
-                pass
+                # Determine how many cards the player needs to give to the bank
+                give = self.ports_trade(resource_own)
+                # Ensure the player has those cards
+                if self.resource_cards.resource_cards[resource_own] >= give:
+                    return resource_own, resource_bank, give
+                else:
+                    print("You do not have sufficient {} cards to trade in".format(resource_own))
+                    return None, None
+        except:
+            print("Invalid input")
+            # give the player another chance for proper input
+            return self.trade_bank(self, board)
 
     def trade_offer(self, board):
         """
-        ################################ Insert/Modify Comments HERE ##################################
-        resources_own -- np.array([brick, ore, hay, wood, sheep])
+        resources_own - what the player is offering
+        resources_own_amount - amount of the resource they are offering
         target_player_nr -- integer 0-3
-        resources_target -- np.array([brick, ore, hay, wood, sheep])
-                brick -- integer 0-19
-                ore -- integer 0-19
-                hay -- integer 0-19
-                wood --integer 0-19
-                sheep --integer 0-19
+        resources_target and resources_target_amount - what they are willing
+        to accept in the trade
         """
-        ################################ Insert/Modify CODE HERE ##################################
-        resources_own, target_player_nr, resources_target = input('insert argument'),
-        input('insert argument'), input('insert argument')
+        try:
+            resource_own = int(input('What resource would you like to trade in?'))
+            resource_own_amount = int(input("How many {} would you like to offer"
+                                            .format(constants.RESOURCE_NAMES[resource_own])))
+            target_player_nr = int(input("Which player would you like to trade with?"))
+            resource_target = int(input('What resource would you like to receive?'))
+            resource_target_amount = int(input("How many {} would you like to offer"
+                                            .format(constants.RESOURCE_NAMES[resource_own])))
 
-        return resources_own, target_player_nr, resources_target
+            if self.resource_cards.resource_cards[resource_own] >= resource_own_amount:
+                return ((resource_own, resource_own_amount),
+                        target_player_nr,
+                        (resource_target, resource_target_amount))
+            else:
+                print("You do not have sufficient {} cards to trade in".format(resource_own))
+                return self.trade_offer(self, board)
+
+        except:
+            print("Invalid input")
+            # give the player another chance for proper input
+            return self.trade_offer(self, board)
+
 
     def trade_answer(self, board, resources_offered, resources_asked):
-        """
-        output true or false
-        ################################ Insert/Modify Comments HERE ##################################
-        resources_offered -- np.array([brick, ore, hay, wood, sheep])
-        resources_asked -- np.array([brick, ore, hay, wood, sheep])
-                """
+       print("You have been offered the following trade")
+       print("{} {} in exchange for {} {}".format(resources_offered[0],
+                                                  resources_offered[1],
+                                                  resources_asked[0],
+                                                  resources_asked[1]))
 
-        return False
+       while True:
+           try:
+                decision = input("Would you like to accept? Y/N")
+                if decision == 'y' or decision == 'Y':
+                    return True
+                elif decision == 'n' or decision == 'N':
+                    return False
+           except:
+              print("Invalid input, try again")
+           finally:
+              print("Invalid input, try again")
+
+
 
     def start_settelment_second(self, board):
         """

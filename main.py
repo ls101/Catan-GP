@@ -13,7 +13,6 @@ if __name__ == '__main__':
     # build catan board
     board = catan.CatanBoard()
 
-
     # game set up of the two settlement
     # first settlement with road
     for player_nr in range(constants.NUM_PLAYERS):
@@ -45,8 +44,10 @@ if __name__ == '__main__':
             # Each turn starts with rolling the dice
             # roll dice at the start of each turn
             dice_number = board.roll_dice()
+            print('Player #{} - {} rolled a {}'.format(
+                player_nr, constants.PLAYER_COLORS[player_nr], dice_number))
             if dice_number == 7:
-                for p_nr in range(4):
+                for p_nr in range(constants.NUM_PLAYERS):
                     p = board.players[p_nr]
                     resources = p.resource_cards.discard_half()
                     # The above checks if the player has more than seven
@@ -56,6 +57,9 @@ if __name__ == '__main__':
                 # steal resource after everybody discarded cards
                 position, target_player_nr = current_player.steal_card(board_safety_copy)
                 board.steal_card(player_nr, position, target_player_nr)
+            else:
+                # give resources to plyers as per settlements/cities
+                board.get_resources(dice_number)
 
             """ The player is given option as what to do during the turn.
             The turn ends when player hits zero. """
@@ -89,16 +93,17 @@ if __name__ == '__main__':
                     # the player doesn't have the resources to buy the item.
                     if position is not None:
                         board.buy_road(player_nr, position)
-                    
+
                     """ buy development card """
                 elif choice == 4:
                     board.buy_dev_card(turns, player_nr,)
 
                     """ play development cards """
                 elif choice == 5:
-                    position, target_player_nr = current_player.steal_card(board_safety_copy)
-                    board.play_knight(turns, player_nr, 
-                                      position, target_player_nr)
+                    response = current_player.steal_card(board_safety_copy)
+                    if response is not None:
+                        position, target_player_nr = response
+                        board.play_knight(turns, player_nr, position, target_player_nr)
                 elif choice == 6:
                     position1, position2 = current_player.play_roads(board_safety_copy)
                     board.play_roads(turns, player_nr, position1, position2)

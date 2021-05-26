@@ -6,10 +6,10 @@ import board as board
 
 prices = constants.PRICES
 
-# board intersections#################################################
+
 class CatanPlayer:
-    # Initialize the Catan Board with all the options for resources, numbers to be rolled,
-    # settlements/roads, port options
+    # Initialize the Catan Board with all the options for resources, numbers
+    # to be rolled, settlements/roads, port options
     def __init__(self, player_nr):
         self.player_nr = player_nr
         self.unused_items = {
@@ -17,12 +17,13 @@ class CatanPlayer:
             'settlements': 5,
             'cities': 4
         }
-        # Items placed on the board will be an array containing the index numbers
-        # of those items, which are stored in arrays. The index numbers match
-        # the numbers on the diagram.
+        # Items placed on the board will be an array containing the index
+        # numbers of those items, which are stored in arrays. The index
+        # numbers match the numbers on the diagram.
         self.roads = []
         self.settlements = []
-        # Note that cities are added by removing said item from the settlements list
+        # Note that cities are added by removing said item from the
+        # settlements list
         self.cities = []
         # port where the player has a settlement
         self.ports = []
@@ -36,8 +37,9 @@ class CatanPlayer:
         self.army = 0
         self.victory_points = 0
 
-        # Resources that correspond to where the player has settlements/cities - double resources for cities
-        # Tuple - resource_num, resource_type
+        # Resources that correspond to where the player has
+        # settlements/cities - double resources for cities
+        # It is stored as a tuple - (resource_num, resource_type)
         self.resources = []
 
     # Find valid locations for settlements based on current settlements
@@ -267,8 +269,8 @@ class CatanPlayer:
 
     def steal_card(self, board):
 
-        # move the robber to a new tile (int between 1-19), not the current place
-        # find who has settlements on that tile (return None if none)
+        # move the robber to a new tile (int between 1-19), not the current
+        # place find who has settlements on that tile (return None if none)
         # If occupier is not None and occupier[0] > 0 and not self.player_nr
         # Give list of available players to target (if more than one)
         # Return target player

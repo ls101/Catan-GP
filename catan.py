@@ -61,11 +61,26 @@ class CatanBoard:
     def __str__(self):
         return str(self.board)
 
-    def check_longest_road(self, player):
+    def check_longest_road(self):
         pass
 
-    def check_largest_army(self, player):
+    def check_largest_army(self):
         pass
+
+    def get_resources(self, dice_number):
+        for player_nr in self.players:
+            # For each player, check if they have resources with the number
+            # of the dice rolled.
+            c = {}  # initialize a dict
+            for i in p.resources:
+                if i[0] == dice_number:
+                    key = RESOURCE_NAMES[i[1]]  # The key for the dict
+                    # For each resource, check if there is such a key.
+                    # Meaning, if the player has more than one of a given
+                    # resource, increment it. Otherwise, add it.
+                    c[key] = c.get(key, 0) + 1
+                # the player receives cards from the bank.
+                self.players[player_nr].resource_cards.move_cards(self.bank, c)
 
     def place_road(self, player_nr, position):
         # Reassign the road's occupier
@@ -115,15 +130,11 @@ class CatanBoard:
         print(c)
 
     def check_points(self):
-        """checks if somebody won the game (reached 10 points) and returns the winner or one of the point leaders
-
-        ################################ Insert/Modify Comments HERE ##################################
+        """
         output --
-
         game_end (logical)
         winner (integer 0-3)
         """
-        ################################ Insert/Modify CODE HERE #################################
         game_end, winner = False, 0
         return game_end, winner
 
@@ -151,7 +162,7 @@ class CatanBoard:
         # buy the road:
         self.place_road(player_nr, position)
         # Check length
-        self.check_longest_road(self.players[player_nr])
+        self.check_longest_road()
 
     def buy_dev_card(self, turns, player_nr,):
         player = self.players[player_nr]
@@ -218,7 +229,7 @@ class CatanBoard:
             # return the card to the game deck
             player.development_cards.return_to_deck(card)
             # Check length
-            self.check_longest_road(player)
+            self.check_longest_road()
 
     def play_plenty(self, turns, player_nr, resource1, resource2):
         player = self.players[player_nr]
@@ -230,7 +241,7 @@ class CatanBoard:
             c[resource2] = c.get(resource2, 0) + 1
             """ check if the bank has it """
             # The player receives cards from the bank.
-            player.resource_cards.move_cards(self.bank, c)            
+            player.resource_cards.move_cards(self.bank, c)
             # return the card to the game deck
             player.development_cards.return_to_deck(card)
 
@@ -245,7 +256,7 @@ class CatanBoard:
             for p in self.players:
                 cards += p.resource_cards[resource]
                 p.resource_cards[resource] = 0
-            
+
             # Add those cards to the player who plays now
             player.resource_cards[resource] = cards
             # return the card to the game deck
@@ -265,9 +276,7 @@ class CatanBoard:
             print('Sorry, the bank does not have the requested resource')
 
     def trade_offer(self, player_nr, resources_own, target_player_nr, resources_target, answer_target=False):
-        """changes CatanBoard()/self if possible according to the rules bank trading including ports:
-
-        ################################ Insert/Modify Comments HERE ##################################
+        """
         self -- CatanBoard()
         player_nr -- integer 0-3
         resources_own -- np.array([brick, ore, hay, wood, sheep])
@@ -280,15 +289,9 @@ class CatanBoard:
                 sheep --integer 0-19
         answer_target -- TRUE for yes or FALSE for no
         """
-        ################################ Insert/Modify CODE HERE ##################################
 
 
 if __name__ == '__main__':
-    """
-     ################################ Insert/Modify Comments HERE ##################################
-     """
-
-    ################################ Insert/Modify CODE HERE ##################################
     b = CatanBoard()
     # print(b)
     p = player.CatanPlayer(0)
@@ -323,7 +326,8 @@ if __name__ == '__main__':
     # print(p.resource_cards)
     # print(b.board.robber)
     # print(b)
-    b.steal_card(q, 1, p)
+    p.resource_cards.move_cards(b.bank, {})
+    b.steal_card(0, 1, 0)
     print(q.resource_cards)
     print(p.resource_cards)
     b.gui.window.mainloop()

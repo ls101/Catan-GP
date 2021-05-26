@@ -1,6 +1,7 @@
 # This module contains constants, lists of strings that are used in multiple files.
 # It's safer to import it than rewrite it, as a misspelled string will cause errors.
 
+NUM_PLAYERS = 4
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
 DEVELOPMENT_CARD_NAMES = ["knight","victory point", "road building", "year of plenty",  "monopoly"]
 PORTS_NAMES = ["3:1", "2brick:1", "2ore:1", "2hay:1", "2wood:1", "2sheep:1"]

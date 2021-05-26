@@ -132,23 +132,16 @@ class CatanBoard:
         self.place_road(player_nr, position)
 
     def buy_dev_card(self, player):
-        """changes CatanBoard()/self if possible according to the rules of buying a development card card:
-
-        ################################ Insert/Modify Comments HERE ##################################
-
-        buy_dev_card input arguments:
-        self -- CatanBoard()
-        player -- a player object from the list
-
-        """
-        ################################ Insert/Modify CODE HERE ##################################
-        buy = player.can_buy(self,'dev_card')
-        if not buy:
+        # Check if player has enough resources to buy the card
+        if player.can_buy('dev_card', override=True):
             print('you are unable to purchase a development card')
         else:
-            player.resource_cards.move_cards(self.bank, PRICES['dev_card'])
-            # get card from list, add to player
-            player.development_cards.cards_insert()
+            # pay for the card
+            print('paying')
+            self.bank.move_cards(player.resource_cards, PRICES['dev_card'])
+            print('paid')
+            # buy the card
+            player.development_cards.buy_card()
 
     def roll(self):
         min=1
@@ -167,7 +160,7 @@ class CatanBoard:
         # to the cards that the player chose to discard.
         self.bank.move_cards(player.resource_cards, resources)
             
-    def steal_card(self, player_nr, position, target_player_nr):
+    def steal_card(self, player, position, target_player):
         """changes CatanBoard()/self if possible according to the rules of discarding cards if 7 rolled
 
         ################################ Insert/Modify Comments HERE ##################################
@@ -178,6 +171,13 @@ class CatanBoard:
         target_player_nr -- integer 0-3
         """
         ################################ Insert/Modify CODE HERE ##################################
+        self.board.robber = position
+        if target_player.resource_cards.get_total_cards() == 0:
+            print("Sorry, your target doesn't have any cards")
+        else:
+            steal = target_player.resource_cards.get_random_card()
+            target_player.resource_cards[steal] -= 1
+            player.resource_cards[steal] += 1
 
     def play_knight(self, player_nr, position, target_player_nr):
         """changes CatanBoard()/self if possible according to the rules knight playing in catan:
@@ -280,24 +280,27 @@ if __name__ == '__main__':
 
     p.resource_cards = cards.ResourceCards(6)
     # b.discard_half(p, {'hay':1})
-    # print(b.bank)
-    # print(p.resource_cards)
-    b.buy_road(p, 2, 9)
-    b.buy_road(p, 0, 19)
-    b.buy_road(p, 3, 29)
-    b.buy_road(p, 1, 49)
-    b.buy_settlement(p, 3, 7)
-    b.buy_settlement(p, 1, 45)
-    b.buy_settlement(p, 0, 50)
-    b.buy_settlement(p, 2, 36)
-    b.buy_city(p, 2, 36)
-    b.buy_city(p, 1, 29)
-    b.buy_city(p, 0, 33)
-    b.buy_city(p, 3, 44)
+    print(b.bank)
+    print(p.resource_cards)
+    b.buy_dev_card(p)
+    print(b.bank)
+    print(p.resource_cards)
+    # b.buy_road(p, 2, 9)
+    # b.buy_road(p, 0, 19)
+    # b.buy_road(p, 3, 29)
+    # b.buy_road(p, 1, 49)
+    # b.buy_settlement(p, 3, 7)
+    # b.buy_settlement(p, 1, 45)
+    # b.buy_settlement(p, 0, 50)
+    # b.buy_settlement(p, 2, 36)
+    # b.buy_city(p, 2, 36)
+    # b.buy_city(p, 1, 29)
+    # b.buy_city(p, 0, 33)
+    # b.buy_city(p, 3, 44)
     # print(b)
-    b.start_settelment_second(p, 0, 10, 10)
-    b.start_settelment_first(0, 20, 20)
-    b.start_settelment_second(p, 0, 30, 30)
+    # b.start_settelment_second(p, 0, 10, 10)
+    # b.start_settelment_first(0, 20, 20)
+    # b.start_settelment_second(p, 0, 30, 30)
     # b.trade_bank(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
     # print(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
     # print(b.bank)

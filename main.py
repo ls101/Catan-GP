@@ -79,7 +79,7 @@ if __name__ == '__main__':
                                 board.discard_half(p, resources)
                         # steal resource after everybody discarded cards
                         position, target_player_nr = current_player.steal_card(board_safety_copy)
-                        board.steal_card(player_nr, position, target_player_nr)
+                        board.steal_card(players[player_nr], position, players{target_player_nr})
                 if choice == 3:
                     position = current_player.set_settlement(board_safety_copy)
                     # Check if player chose a position. It will return None if

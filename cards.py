@@ -32,7 +32,7 @@ class Cards():
     def cards_remove(self,*cards_remove):
         pass
 
-    
+""" dev cards are the only cards. Not sure why we need inheritance """    
 class DevCards(Cards):
     # in order to make sure that a development card is not used in the turn it wasborn instead of the 
     #dev card being an instance of the card class 
@@ -41,7 +41,8 @@ class DevCards(Cards):
     #when ever you buy a dev card it will reference the turn by index and make sure the turn you bought it is not the
     # turn in which you want to use it 
     def __init__(self):
-    #    super.__init__(self)
+        """ super.__init__(self) -- this is Java syntax """
+        Cards.__init__(self)
         self.turn=[]
 
     def turn_setter(self,turn):
@@ -53,11 +54,20 @@ class DevCards(Cards):
         # by seeing which turn they bought it and which turn they are up to in the game
         can_use=False
         index=card_choice-1
-        if turn[index]==game_turn:
+        """ if turn[index]==game_turn: -- must use "self" in Python """
+        if self.turn[index] == game_turn:
             print('you can not use a development card on the turn in which you purchased it')
         else:
             can_use=True
-        return can_use   
+        return can_use 
+
+    def buy_card(self):
+        """ 
+        - add a new card to player list
+        - remove that card from game deck
+        - ensure this card cannot be used for this turn
+         """  
+        pass
 
 
     

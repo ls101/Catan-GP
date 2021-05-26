@@ -51,7 +51,7 @@ class CatanPlayer:
             for intersection in board.edges.intersections[road]:
                 if intersection.occupier is None:
                     valid_settlements.append(intersection.identifier)
-        return valid_settlements
+        return set(valid_settlements)
 
     def get_valid_roads(self, board, position1=None):
         valid_roads = []
@@ -61,9 +61,11 @@ class CatanPlayer:
             for neighbor in board.edges[road].get_neighbors():
                 if neighbor.occupier is None:
                     valid_roads.append(neighbor.identifier)
+        # Position for adding two roads (development card) Remove the first
+        # road added for can not be added a second time
         if position1 is not None:
             valid_roads.remove(position1)
-        return valid_roads
+        return set(valid_roads)
 
     # Takes a list of valid positions to place object and asks for input
     # If the input is valid, returns the position
@@ -274,18 +276,22 @@ class CatanPlayer:
         # Return target player
 
         # get tile to move robber to
-        position = self.get_index_input(list(range(1, 20)))
+        list_without_robber = list(range(1, 20))
+        list_without_robber.remove(board.robber)
+        position = self.get_index_input(list_without_robber)
         # find all the players that have a settlement/city on that tile
         affected_players = []
+
         for intersection in board.terrains[position].intersections:
-            if intersection.occupier is not None and intersection.occupier[0] > 0:
-                if not intersection.occupier == self.player_nr:
+            if intersection.occupier is not None and intersection.occupier[0] >= 0:
+                if not intersection.occupier[0] == self.player_nr:
                     affected_players.append(intersection.occupier[0])
 
         # Return none if no players have settlements on that tile
         if len(affected_players) == 0:
             return None
         # Return the one player if only one player has settlements on that tile
+        # Convert to set to remove duplicate players
         if len(set(affected_players)) == 1:
             return position, affected_players[0]
 
@@ -294,8 +300,8 @@ class CatanPlayer:
         return position, target_player
 
     def play_roads(self, board):
-        # dev card gives two roads without resources (override)
-        # purchase road twice and return both positions
+        # Developement card gives two roads without resources (override)
+        # Purchase road twice and return both positions
         print("Road #1")
         position1 = self.set_road(board, True)
         print("Road #2")
@@ -306,9 +312,9 @@ class CatanPlayer:
     def play_plenty(self, board):
         # player chooses two resources from the bank
         # return those two numbers
-        string_output = ""
-        for index in range(1, 6):
-            string_output += "{}.{} ".format(index, constants.RESOURCE_NAMES[index])
+        string_output = "" 
+        for index in range(1, len(constants.RESOURCE_NAMES)):
+            string_output += "{}-{} ".format(index, constants.RESOURCE_NAMES[index])
         print("Choose a resource")
         print(string_output)
         resource1 = self.get_index_input(list(range(1, 6)))
@@ -321,7 +327,7 @@ class CatanPlayer:
         # return the number
         string_output = ""
         for index in range(1, 6):
-            string_output += "{}.{} ".format(index, constants.RESOURCE_NAMES[index])
+            string_output += "{}-{} ".format(index, constants.RESOURCE_NAMES[index])
         print("Which resource would you like to take from the players? ")
         print(string_output)
         resource = self.get_index_input(list(range(1, 6)))
@@ -476,6 +482,6 @@ if __name__ == '__main__':
     # b.intersections[1].occupier = (3, '')
     # (p.steal_card(b))
     # p.play_roads(b)
-    p.play_mono(b)
+    p.play_plenty(b)
 
     print('Debug complete')

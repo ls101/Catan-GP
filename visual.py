@@ -156,18 +156,19 @@ class GUIboard:
     def buy_settlement(self, player, edge_num):
         # updates an intersection to reflect the settlement
         # first, enlarge the circle
-        add_offset = 10
+        # add_offset = 10
         coords = self.board.intersections[edge_num].coords
-        new_coords = []
-        new_coords.append(coords[0] - add_offset)
-        new_coords.append(coords[1] - add_offset)
-        new_coords.append(coords[2] + add_offset)
-        new_coords.append(coords[3] + add_offset)
-        self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
+        # new_coords = []
+        # new_coords.append(coords[0] - add_offset)
+        # new_coords.append(coords[1] - add_offset)
+        # new_coords.append(coords[2] + add_offset)
+        # new_coords.append(coords[3] + add_offset)
+        # self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
 
+        filename = 'images/'+PLAYER_COLORS[player]+'house.png'
         # add icon
-        self.img = Image.open('images/house.png')
-        self.img = self.img.resize((25, 25), Image.ANTIALIAS)
+        self.img = Image.open(filename)
+        self.img = self.img.resize((21, 21), Image.ANTIALIAS)
         # add image to end of list (to ensure all icons are displayed).
         # then, display the last icon from the list - this one
         self.icons.append(ImageTk.PhotoImage(self.img, master=self.C))
@@ -179,17 +180,18 @@ class GUIboard:
     def buy_city(self, player, edge_num):
         # updates an intersection to reflect the city
         # first, enlarge the circle
-        add_offset = 15
+        # add_offset = 15
         coords = self.board.intersections[edge_num].coords
-        new_coords = []
-        new_coords.append(coords[0] - add_offset)
-        new_coords.append(coords[1] - add_offset)
-        new_coords.append(coords[2] + add_offset)
-        new_coords.append(coords[3] + add_offset)
-        self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
+        # new_coords = []
+        # new_coords.append(coords[0] - add_offset)
+        # new_coords.append(coords[1] - add_offset)
+        # new_coords.append(coords[2] + add_offset)
+        # new_coords.append(coords[3] + add_offset)
+        # self.C.create_oval(new_coords, fill=PLAYER_COLORS[player], outline='')
 
-        self.img = Image.open('images/city.png')
-        self.img = self.img.resize((30, 30), Image.ANTIALIAS)
+        filename = 'images/'+PLAYER_COLORS[player]+'city.png'
+        self.img = Image.open(filename)
+        self.img = self.img.resize((35, 35), Image.ANTIALIAS)
         # add image to end of list (to ensure all icons are displayed).
         # then, display the last icon from the list - this one
         self.icons.append(ImageTk.PhotoImage(self.img, master=self.C))
@@ -202,8 +204,8 @@ class GUIboard:
         # updates an intersection to reflect its restricted status
         coords = self.board.intersections[edge_num].coords
 
-        self.img = Image.open('images/x.png')
-        self.img = self.img.resize((30, 30), Image.ANTIALIAS)
+        self.img = Image.open('images/xx.png')
+        self.img = self.img.resize((24, 24), Image.ANTIALIAS)
         # add image to end of list (to ensure all icons are displayed).
         # then, display the last icon from the list - this one
         self.icons.append(ImageTk.PhotoImage(self.img, master=self.C))
@@ -212,7 +214,8 @@ class GUIboard:
 
         self.C.update()
 
-
+# attributions: images from
+# https://game-icons.net/
 if __name__ == '__main__':
     board = catan.CatanBoard().board
     g = GUIboard(board)

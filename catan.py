@@ -138,13 +138,13 @@ class CatanBoard:
 
     def buy_settlement(self, player_nr, position):
         # pay for the settlement
-        self.bank.move_cards(self.players[player_nr].resource_cards, PRICES['settlement'])
+        self.bank.move_cards(self.players[player_nr].resource_cards, PRICES['settlements'])
         # place the settlement (and update points)
         self.place_settlment(player_nr, position)
 
     def buy_city(self, player_nr, position):
         # pay for the city
-        self.bank.move_cards(self.players[player_nr].resource_cards, PRICES['city'])
+        self.bank.move_cards(self.players[player_nr].resource_cards, PRICES['cities'])
         # buy the city: reassign the settlement's occupier and update the gui.
         # The rest is done in the player class
         self.board.intersections[position].occupier = (
@@ -156,7 +156,7 @@ class CatanBoard:
 
     def buy_road(self, player_nr, position):
         # pay for the road
-        self.bank.move_cards(self.players[player_nr].resource_cards, PRICES['road'])
+        self.bank.move_cards(self.players[player_nr].resource_cards, PRICES['roads'])
         # buy the road:
         self.place_road(player_nr, position)
         # Check length
@@ -165,14 +165,14 @@ class CatanBoard:
     def buy_dev_card(self, turns, player_nr,):
         cur_player = self.players[player_nr]
         # Check if player has enough resources to buy the card
-        if not player.can_buy('dev_card'):
+        if not cur_player.can_buy('dev_card'):
             print('You do not have the required resources to buy a development card.')
         else:
             # pay for the card
             self.bank.move_cards(cur_player.resource_cards, PRICES['dev_card'])
             # buy the card
             card = cur_player.development_cards.buy_card(turns)
-            if cur_player.development_cards.buy_card(card):
+            if cur_player.development_cards.check_victory(card) == 1:
                 self.player_points[player_nr] += 1
             print('Card purchased successfully.')
 
@@ -263,7 +263,7 @@ class CatanBoard:
 
     def trade_bank(self, player_nr, resource_own, resource_bank, give):
         # Check that the bank has the card
-        if self.bank.resource_cards[resource_bank] >= 1:
+        if self.bank.resource_cards[constants.RESOURCE_NAMES[resource_bank]] >= 1:
             # Create the dictionary for the move_cards method.
             # Since it's done in one call, the cards given are negative.
             d = {
@@ -271,6 +271,7 @@ class CatanBoard:
                 constants.RESOURCE_NAMES[resource_own]: -give
             }
             self.players[player_nr].resource_cards.move_cards(self.bank, d)
+            print('{} was traded successfully.'.format(d))
         else:
             print('Sorry, the bank does not have the requested resource')
 
@@ -288,7 +289,7 @@ class CatanBoard:
                 constants.RESOURCE_NAMES[resource_own]: -resource_own_amount
             }
         self.players[player_nr].resource_cards.move_cards(
-            self.players[target_player_nr], d)
+            self.players[target_player_nr].resource_cards, d)
 
 
 

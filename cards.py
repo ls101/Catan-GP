@@ -69,10 +69,11 @@ class DevCards(Cards):
         - add a new card to player list
         - remove that card from game deck
         - ensure this card cannot be used for this turn
+        - return the card
         """
         pass
 
-    def check_victory(self):
+    def check_victory(self, card):
         """
         - check if the card is a victory points card
         - return 0 or 1
@@ -121,7 +122,7 @@ class ResourceCards:
         s = 'You have:\n'
         for key, value in self.resource_cards.items():
             if value > 0:
-                s += str(value) + ' ' + key + '\n'
+                s += '{0} {1}\n'.format(value, key)
         return s
 
     def get_total_cards(self):

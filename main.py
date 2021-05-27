@@ -136,7 +136,7 @@ if __name__ == '__main__':
                             = response
 
                         answer_target = board.players[target_player_nr].trade_answer(
-                            board_safety_copy, resource_own, resource_target)
+                            board_safety_copy, response)
                         if answer_target:
                             board.trade_offer(
                                 player_nr,

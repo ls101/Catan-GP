@@ -2,8 +2,8 @@
 # files.  It's safer to import it than rewrite it, as a misspelled string
 # will cause errors.
 
-NUM_PLAYERS = 2  # for faster debugging
-# NUM_PLAYERS = 4
+# NUM_PLAYERS = 2  # for faster debugging
+NUM_PLAYERS = 4
 
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
 
@@ -33,19 +33,19 @@ PRICES = {
         'sheep': 1
     },
 
-    'road': {
+    'roads': {
         'wood': 1,
         'brick': 1
     },
 
-    'settlement': {
+    'settlements': {
         'wood': 1,
         'brick': 1,
         'sheep': 1,
         'hay': 1
     },
 
-    'city': {
+    'cities': {
         'ore': 3,
         'hay': 2
     }

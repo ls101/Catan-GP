@@ -127,14 +127,15 @@ class CatanBoard:
         self.players[player_nr].resource_cards.move_cards(self.bank, c)
         print(c)
 
-    def check_points(self):
-        """
-        output --
-        game_end (logical)
-        winner (integer 0-3)
-        """
-        game_end, winner = False, 0
-        return game_end, winner
+    def check_points(self, player_nr):
+        # This checks if the player won.  It checks after each round, so it
+        # checks for that player only.
+        if self.player_points[player_nr] >= constants.WINNING_NUM:
+            game_end = True
+            winning_points = self.player_points[player_nr]
+        else:
+            game_end, winning_points = False, -1
+        return game_end, winning_points
 
     def buy_settlement(self, player_nr, position):
         # pay for the settlement
@@ -173,6 +174,7 @@ class CatanBoard:
             # buy the card
             card = cur_player.development_cards.buy_card(turns)
             if cur_player.development_cards.check_victory(card) == 1:
+                """ This point should be hidden from other players """
                 self.player_points[player_nr] += 1
             print('Card purchased successfully.')
 

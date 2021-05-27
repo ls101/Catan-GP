@@ -6,6 +6,7 @@ import constants
 # The game is played for maximum 30 rounds (30*4 = 120 turns) to prevent
 # infinite loops
 MAXIMUM_ROUNDS = 30
+game_end = False
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -149,17 +150,30 @@ if __name__ == '__main__':
                         else:
                             print("The other player did not accept your trade offer.")
 
-                # Increment turns, so that dev_cards' status can be tracked
-                turns += 1
-                # Check for winner / end game after each round.  Break out
-                # of the loop when game ends.
-                game_end, winner = board.check_points()
-                if game_end:
-                    print("player {0} won".format(winner))
-                    break
+            # At the end of each player's turn:
+            print("Points for players:")
+            for p in range(constants.NUM_PLAYERS):
+                print('Player {0} - {1} player has {2} points.'.format(
+                    p, constants.PLAYER_COLORS[p], board.player_points[p]
+                ))
+            # Increment turns, so that dev_cards' status can be tracked
+            turns += 1
+            # Check for winner / end game after each round.  Break out
+            # of the loop when game ends.
+            game_end, winner = board.check_points(player_nr)
+            if game_end:
+                print("player {0} - {1} won with {2} points".format(
+                    player_nr, constants.PLAYER_COLORS[player_nr], winner))
+                break  # Exits out of the inner loop
+            else:
+                # Start over - do not reach the next break statement.
+                continue
+        if game_end:
+            # break out of the outer loop and end the game.
+            break
 
     print('game ended')
-    board.board.gui.window.mainloop()
+    board.gui.window.mainloop()
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

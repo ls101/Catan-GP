@@ -2,6 +2,7 @@
 # files.  It's safer to import it than rewrite it, as a misspelled string
 # will cause errors.
 
+WINNING_NUM = 10
 # NUM_PLAYERS = 2  # for faster debugging
 NUM_PLAYERS = 4
 

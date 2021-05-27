@@ -192,6 +192,11 @@ class CatanBoard:
         # The bank is receiving half of the player's cards. "resources" refers
         # to the cards that the player chose to discard.
         self.bank.move_cards(self.players[player_nr].resource_cards, resources)
+        print('Player {0} - {1} discarded {2}'.format(
+            player_nr,
+            constants.PLAYER_COLORS[player_nr],
+            resources
+        ))
 
     def steal_card(self, player_nr, position, target_player_nr):
         # Update the robber position
@@ -204,6 +209,13 @@ class CatanBoard:
             steal = self.players[target_player_nr].resource_cards.get_random_card()
             self.players[player_nr].resource_cards.move_cards(
                 self.players[target_player_nr].resource_cards, steal)
+            print('Player {0} - {1} stole {2} from {3} - {4}'.format(
+                player_nr,
+                constants.PLAYER_COLORS[player_nr],
+                steal,
+                target_player_nr,
+                constants.PLAYER_COLORS[target_player_nr]
+        ))
 
     def play_knight(self, turns, player_nr, position, target_player_nr):
         cur_player = self.players[player_nr]
@@ -216,6 +228,8 @@ class CatanBoard:
             cur_player.army += 1
             self.open_knights[player_nr] += 1
             self.check_largest_army()
+            print('Player {0} - {1} played a knight'.format(
+                player_nr, constants.PLAYER_COLORS[player_nr]))
 
     def play_roads(self, turns,  player_nr, position1, position2):
         cur_player = self.players[player_nr]
@@ -243,6 +257,11 @@ class CatanBoard:
             cur_player.resource_cards.move_cards(self.bank, c)
             # return the card to the game deck
             cur_player.development_cards.return_to_deck(card)
+            print('Player {0} - {1} received {2}'.format(
+                player_nr,
+                constants.PLAYER_COLORS[player_nr],
+                c
+            ))
 
     def play_mono(self, turns, player_nr, resource):
         cur_player = self.players[player_nr]
@@ -252,14 +271,21 @@ class CatanBoard:
             cards = 0
             # Add everyone's cards of that resource type, and remove from
             # that player.
-            for player_nr in self.players:
-                cards += player_nr.resource_cards.resource_cards[constants.RESOURCE_NAMES[resource]]
-                player_nr.resource_cards.resource_cards[constants.RESOURCE_NAMES[resource]] = 0
+            for p in self.players:
+                cards += p.resource_cards.resource_cards[
+                    constants.RESOURCE_NAMES[resource]]
+                p.resource_cards.resource_cards[
+                    constants.RESOURCE_NAMES[resource]] = 0
 
             # Add those cards to the player who plays now
             cur_player.resource_cards.resource_cards[resource] = cards
             # return the card to the game deck
             cur_player.development_cards.return_to_deck(card)
+            print("Player {0} - {1} received everyone's {2}".format(
+                player_nr,
+                constants.PLAYER_COLORS[player_nr],
+                constants.RESOURCE_NAMES[resource]
+            ))
 
     def trade_bank(self, player_nr, resource_own, resource_bank, give):
         # Check that the bank has the card
@@ -290,7 +316,7 @@ class CatanBoard:
             }
         self.players[player_nr].resource_cards.move_cards(
             self.players[target_player_nr].resource_cards, d)
-
+        print('{} was traded successfully.'.format(d))
 
 
 if __name__ == '__main__':

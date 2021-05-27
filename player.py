@@ -2,7 +2,7 @@ from board_components import RESOURCE_NAMES
 import numpy as np
 from cards import *
 import constants
-import board as board
+# import board as board
 
 prices = constants.PRICES
 
@@ -29,6 +29,7 @@ class CatanPlayer:
         self.ports = []
 
         # All items owned by the player, but not on the board:
+        # self.resource_cards = ResourceCards(4)  # for debugging
         self.resource_cards = ResourceCards()
         self.development_cards = DevCards()
 
@@ -152,6 +153,7 @@ class CatanPlayer:
             # find valid places to put settlements
             valid_settlements = self.get_valid_settlements(board)
 
+            # Return None for empty list - "return" will exit the method
             if len(valid_settlements) == 0:
                 print('You do not have any roads near available intersection.')
                 return None
@@ -173,6 +175,11 @@ class CatanPlayer:
             valid_cities = []
             for settlement in self.settlements:
                 valid_cities.append(settlement)
+
+            # Return None for empty list - "return" will exit the method
+            if len(valid_cities) == 0:
+                print('You do not have where to place a city.')
+                return None
             # print list of valid cities to choose from to build on
             print(valid_cities)
             # get a valid position to place the city
@@ -189,6 +196,11 @@ class CatanPlayer:
         if self.can_buy('roads') or override:
             # find valid places to put settlements
             valid_roads = self.get_valid_roads(board, position1)
+
+            # Return None for empty list - "return" will exit the method
+            if len(valid_roads) == 0:
+                print('You do not have any roads near available intersection.')
+                return None
             # print list of valid roads to choose from to build on
             # print(valid_roads)
             # get a valid position to place the road
@@ -477,8 +489,6 @@ class CatanPlayer:
                     return False
             except:
                 print("Invalid input, try again")
-            finally:
-                print("Invalid input, try again")
 
     def get_valid_settlements_start(self, board):
         valid_settlements = []
@@ -519,6 +529,5 @@ class CatanPlayer:
 
 
 if __name__ == '__main__':
-
 
     print('Debug complete')

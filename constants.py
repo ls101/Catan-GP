@@ -3,6 +3,7 @@
 # will cause errors.
 
 WINNING_NUM = 10
+MIN_LARGEST_ARMY = 3
 # NUM_PLAYERS = 2  # for faster debugging
 NUM_PLAYERS = 4
 

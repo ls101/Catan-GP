@@ -198,15 +198,6 @@ class Board:
 def main():
     b = Board()
     print(b)
-    # for item in b.edges[10].get_neighbors():
-    #     print(item.identifier, end = ', ')
-    # print('\ndone with\n\n')
-    # for item in b.intersections[10].get_neighbors():
-    #     print(item.identifier, end = ', ')
-    # print('\ndone with\n\n')
-    # for item in b.terrains[10].get_neighbors():
-    #     print(item.identifier, end = ', ')
-    # print('\ndone with\n\n')
 
 
 if __name__ == '__main__':

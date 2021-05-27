@@ -167,9 +167,4 @@ class ResourceCards:
 
 
 if __name__ == '__main__':
-    c = ResourceCards()
-    d = ResourceCards(19)
-    cc = Cards()
-    print(d)
-    print(d.get_random_card())
-print()
+    pass

@@ -12,6 +12,7 @@ PRICES = constants.PRICES
 PLAYER_COLORS = constants.PLAYER_COLORS
 dev_dict = dict(zip(DEVELOPMENT_CARD_NAMES,np.arange(0, len(DEVELOPMENT_CARD_NAMES))))
 
+
 class CatanBoard:
     # Initialize the Catan Board with all the options for resources, numbers to
     # be rolled, settlements/roads, port options
@@ -24,10 +25,6 @@ class CatanBoard:
 
         # insert players
         self.players = list()
-        """
-        -- This needs a try-except, and check for max-players == 4
-        constants.NUM_PLAYERS=int(input("Number of players: \n"))
-        """
         for player_nr in range(constants.NUM_PLAYERS):
             self.players.append(player.CatanPlayer(player_nr))
 
@@ -68,11 +65,12 @@ class CatanBoard:
         pass
 
     def get_resources(self, dice_number):
-        for player in self.players:
+        """ check if the bank has it """
+        for cur_player in self.players:
             # For each player, check if they have resources with the number
             # of the dice rolled.
             c = {}  # initialize a dict
-            for i in player.resources:
+            for i in cur_player.resources:
                 if i[0] == dice_number:
                     key = RESOURCE_NAMES[i[1]]  # The key for the dict
                     # For each resource, check if there is such a key.
@@ -80,7 +78,7 @@ class CatanBoard:
                     # resource, increment it. Otherwise, add it.
                     c[key] = c.get(key, 0) + 1
                 # the player receives cards from the bank.
-                player.resource_cards.move_cards(self.bank, c)
+                cur_player.resource_cards.move_cards(self.bank, c)
 
     def place_road(self, player_nr, position):
         # Reassign the road's occupier
@@ -165,17 +163,18 @@ class CatanBoard:
         self.check_longest_road()
 
     def buy_dev_card(self, turns, player_nr,):
-        player = self.players[player_nr]
+        cur_player = self.players[player_nr]
         # Check if player has enough resources to buy the card
-        if not player.can_buy('dev_card', override=True):
+        if not player.can_buy('dev_card'):
             print('You do not have the required resources to buy a development card.')
         else:
             # pay for the card
-            self.bank.move_cards(player.resource_cards, PRICES['dev_card'])
+            self.bank.move_cards(cur_player.resource_cards, PRICES['dev_card'])
             # buy the card
-            card = player.development_cards.buy_card(turns)
-            if player.development_cards.buy_card(card):
+            card = cur_player.development_cards.buy_card(turns)
+            if cur_player.development_cards.buy_card(card):
                 self.player_points[player_nr] += 1
+            print('Card purchased successfully.')
 
     def roll(self):
         min = 1
@@ -207,33 +206,33 @@ class CatanBoard:
                 self.players[target_player_nr].resource_cards, steal)
 
     def play_knight(self, turns, player_nr, position, target_player_nr):
-        player = self.players[player_nr]
-        can_play, card = player.development_cards.can_play(turns, 'knight')
+        cur_player = self.players[player_nr]
+        can_play, card = cur_player.development_cards.can_play(turns, 'knight')
         if can_play:
             self.steal_card(player_nr, position, target_player_nr)
             # return the card to the game deck
-            player.development_cards.return_to_deck(card)
+            cur_player.development_cards.return_to_deck(card)
             # Update the army
-            player.army += 1
+            cur_player.army += 1
             self.open_knights[player_nr] += 1
             self.check_largest_army()
 
     def play_roads(self, turns,  player_nr, position1, position2):
-        player = self.players[player_nr]
-        can_play, card = player.development_cards.can_play(turns, 'road building')
+        cur_player = self.players[player_nr]
+        can_play, card = cur_player.development_cards.can_play(turns, 'road building')
         if can_play:
             # Place the roads: reassign the road's occupier and update the gui.
             # The rest is done in the player class
             self.place_road(player_nr, position1)
             self.place_road(player_nr, position2)
             # return the card to the game deck
-            player.development_cards.return_to_deck(card)
+            cur_player.development_cards.return_to_deck(card)
             # Check length
             self.check_longest_road()
 
     def play_plenty(self, turns, player_nr, resource1, resource2):
-        player = self.players[player_nr]
-        can_play, card = player.development_cards.can_play(turns, 'year of plenty')
+        cur_player = self.players[player_nr]
+        can_play, card = cur_player.development_cards.can_play(turns, 'year of plenty')
         if can_play:
             # Initialize a dict with resource1
             c = {constants.RESOURCE_NAMES[resource1]: 1}
@@ -241,13 +240,13 @@ class CatanBoard:
             c[constants.RESOURCE_NAMES[resource2]] = c.get(constants.RESOURCE_NAMES[resource2], 0) + 1
             """ check if the bank has it """
             # The player receives cards from the bank.
-            player.resource_cards.move_cards(self.bank, c)
+            cur_player.resource_cards.move_cards(self.bank, c)
             # return the card to the game deck
-            player.development_cards.return_to_deck(card)
+            cur_player.development_cards.return_to_deck(card)
 
     def play_mono(self, turns, player_nr, resource):
-        player = self.players[player_nr]
-        can_play, card = player.development_cards.can_play(turns, 'monopoly')
+        cur_player = self.players[player_nr]
+        can_play, card = cur_player.development_cards.can_play(turns, 'monopoly')
         if can_play:
             # Initialize a counter
             cards = 0
@@ -258,9 +257,9 @@ class CatanBoard:
                 player_nr.resource_cards.resource_cards[constants.RESOURCE_NAMES[resource]] = 0
 
             # Add those cards to the player who plays now
-            player.resource_cards.resource_cards[resource] = cards
+            cur_player.resource_cards.resource_cards[resource] = cards
             # return the card to the game deck
-            player.development_cards.return_to_deck(card)
+            cur_player.development_cards.return_to_deck(card)
 
     def trade_bank(self, player_nr, resource_own, resource_bank, give):
         # Check that the bank has the card
@@ -268,67 +267,33 @@ class CatanBoard:
             # Create the dictionary for the move_cards method.
             # Since it's done in one call, the cards given are negative.
             d = {
-                resource_bank: 1,
-                resource_own: -give
+                constants.RESOURCE_NAMES[resource_bank]: 1,
+                constants.RESOURCE_NAMES[resource_own]: -give
             }
             self.players[player_nr].resource_cards.move_cards(self.bank, d)
         else:
             print('Sorry, the bank does not have the requested resource')
 
-    def trade_offer(self, player_nr, resources_own, target_player_nr, resources_target, answer_target=False):
-        """
-        self -- CatanBoard()
-        player_nr -- integer 0-3
-        resources_own -- np.array([brick, ore, hay, wood, sheep])
-        target_player_nr -- integer 0-3
-        resources_target -- np.array([brick, ore, hay, wood, sheep])
-                brick -- integer 0-19
-                ore -- integer 0-19
-                hay -- integer 0-19
-                wood --integer 0-19
-                sheep --integer 0-19
-        answer_target -- TRUE for yes or FALSE for no
-        """
+    def trade_offer(
+        self,
+        player_nr,
+        resource_own,
+        resource_own_amount,
+        target_player_nr,
+        resource_target,
+        resource_target_amount
+    ):
+        d = {
+                constants.RESOURCE_NAMES[resource_target]: resource_target_amount,
+                constants.RESOURCE_NAMES[resource_own]: -resource_own_amount
+            }
+        self.players[player_nr].resource_cards.move_cards(
+            self.players[target_player_nr], d)
+
 
 
 if __name__ == '__main__':
     b = CatanBoard()
-    # print(b)
-    player_nr = player.CatanPlayer(0)
-    q = player.CatanPlayer(0)
 
-    player_nr.resource_cards = cards.ResourceCards(6)
-    # b.discard_half(player_nr, {'hay':1})
-    # print(b.bank)
-    # print(player_nr.resource_cards)
-    # b.buy_dev_card(player_nr, 3)
-    # print(b.bank)
-    # print(player_nr.resource_cards)
-    # b.buy_road(player_nr, 2, 9)
-    # b.buy_road(player_nr, 0, 19)
-    # b.buy_road(player_nr, 3, 29)
-    # b.buy_road(player_nr, 1, 49)
-    # b.buy_settlement(player_nr, 3, 7)
-    # b.buy_settlement(player_nr, 1, 45)
-    # b.buy_settlement(player_nr, 0, 50)
-    # b.buy_settlement(player_nr, 2, 36)
-    # b.buy_city(player_nr, 2, 36)
-    # b.buy_city(player_nr, 1, 29)
-    # b.buy_city(player_nr, 0, 33)
-    # b.buy_city(player_nr, 3, 44)
-    # print(b)
-    # b.start_settelment_second(player_nr, 0, 10, 10)
-    # b.start_settelment_first(0, 20, 20)
-    # b.start_settelment_second(player_nr, 0, 30, 30)
-    # b.trade_bank(player_nr, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
-    # print(player_nr, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
-    # print(b.bank)
-    # print(player_nr.resource_cards)
-    # print(b.board.robber)
-    # print(b)
-    player_nr.resource_cards.move_cards(b.bank, {})
-    b.steal_card(0, 1, 0)
-    print(q.resource_cards)
-    print(player_nr.resource_cards)
     b.gui.window.mainloop()
     print('Debug complete')

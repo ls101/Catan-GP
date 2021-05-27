@@ -4,7 +4,19 @@
 
 NUM_PLAYERS = 2  # for faster debugging
 # NUM_PLAYERS = 4
+
 RESOURCE_NAMES = ["desert", "brick", "ore", "hay", "wood", "sheep"]
+
+
+def rp():
+    string_output = "Please choose the number corresponding to the resource\n"
+    for index in range(1, 6):
+        string_output += "{}-{} ".format(index, RESOURCE_NAMES[index])
+    return string_output
+
+
+RESOURCES_PRINT = rp()
+
 DEVELOPMENT_CARD_NAMES = [
     "knight", "victory point", "road building", "year of plenty",  "monopoly"]
 PORTS_NAMES = ["3:1", "2brick:1", "2ore:1", "2hay:1", "2wood:1", "2sheep:1"]

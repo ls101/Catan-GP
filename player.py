@@ -101,7 +101,7 @@ class CatanPlayer:
             return False
         return True
 
-    def purchase_settlement(self, position, board):
+    def purchase_settlement(self, position, board, override):
         # Add the position to the players list of settlements
         self.settlements.append(position)
 
@@ -207,8 +207,8 @@ class CatanPlayer:
         print('6. Play a Road ')
         print('7. Play a Plenty')
         print('8. Play Mono')
-        print('9. Trade Cards')
-        print('10. Target a Player')
+        print('9. Trade Cards with Bank')
+        print('10. Trade Cards with a Player')
 
     def turn_choice(self, board):
         choice = 42
@@ -343,15 +343,10 @@ class CatanPlayer:
 
         return resource
 
-    def ports_trade(self, key):
-        # print list of resources to choose form 1 -5
-        for i in range(1, len(constants.RESOURCE_NAMES)):
-            print(i, constants.RESOURCE_NAMES[i])
-
+    def ports_trade(self, resource_index):
         # Checks if a player has a port; this allows better trading terms
         # when trading with the bank.
-        resource_search = RESOURCE_NAMES.index(key)
-        if resource_search in self.ports:
+        if resource_index in self.ports:
             return 2
         elif 0 in self.ports:
             return 3
@@ -359,10 +354,19 @@ class CatanPlayer:
             return 4
 
     def trade_bank(self, board):
+        # print list of resources to choose form 1 -5
+        print(self.resource_cards)
+        print(constants.RESOURCES_PRINT)
         try:
             resource_own = int(input('What resource would you like to trade in?'))
             resource_bank = int(input('What resource would you like to receive?'))
 
+        except:
+            print("Invalid input")
+            # give the player another chance for proper input
+            return self.trade_bank(board)
+
+        else:
             if resource_own == resource_bank:
                 print("You can not trade and receive the same resource")
                 # return None to go back to main menu
@@ -371,45 +375,50 @@ class CatanPlayer:
                 # Determine how many cards the player needs to give to the bank
                 give = self.ports_trade(resource_own)
                 # Ensure the player has those cards
-                if self.resource_cards.resource_cards[resource_own] >= give:
+                if self.resource_cards.resource_cards[
+                        constants.RESOURCE_NAMES[resource_own]] >= give:
                     return resource_own, resource_bank, give
                 else:
-                    print("You do not have sufficient {} cards to trade in".format(resource_own))
+                    print("You do not have sufficient {} cards to trade in".format(
+                        constants.RESOURCE_NAMES[resource_own]))
                     return None
-        except:
-            print("Invalid input")
-            # give the player another chance for proper input
-            return self.trade_bank(board)
 
     def trade_offer(self, board):
-        """
-        resources_own - what the player is offering
-        resources_own_amount - amount of the resource they are offering
-        target_player_nr -- integer 0-3
-        resources_target and resources_target_amount - what they are willing
-        to accept in the trade
-        """
+        # resources_own - what the player is offering
+        # resources_own_amount - amount of the resource they are offering
+        # target_player_nr -- integer 0-3
+        # resources_target and resources_target_amount - what they are willing
+        # to accept in the trade
+
+        print(self.resource_cards)
+        print(constants.RESOURCES_PRINT)
         try:
             resource_own = int(input('What resource would you like to trade in?'))
-            resource_own_amount = int(input("How many {} would you like to offer"
-                                            .format(constants.RESOURCE_NAMES[resource_own])))
+            resource_own_amount = int(input(
+                "How many {} would you like to offer".format(constants.RESOURCE_NAMES[resource_own])))
             target_player_nr = int(input("Which player would you like to trade with?"))
             resource_target = int(input('What resource would you like to receive?'))
-            resource_target_amount = int(input("How many {} would you like to offer"
-                                               .format(constants.RESOURCE_NAMES[resource_own])))
-
-            if self.resource_cards.resource_cards[resource_own] >= resource_own_amount:
-                return ((resource_own, resource_own_amount),
-                        target_player_nr,
-                        (resource_target, resource_target_amount))
-            else:
-                print("You do not have sufficient {} cards to trade in".format(resource_own))
-                return self.trade_offer(board)
-
+            resource_target_amount = int(input(
+                "How many {} would you like to receive".format(
+                    constants.RESOURCE_NAMES[resource_target])))
         except:
             print("Invalid input")
             # give the player another chance for proper input
             return self.trade_offer(board)
+        else:
+            if self.resource_cards.resource_cards[
+                constants.RESOURCE_NAMES[resource_own]] >= resource_own_amount:
+                return (
+                    resource_own,
+                    resource_own_amount,
+                    target_player_nr,
+                    resource_target,
+                    resource_target_amount
+                )
+            else:
+                print("You do not have sufficient {} cards to trade in".format(
+                    constants.RESOURCE_NAMES[resource_own]))
+                return None
 
     def trade_answer(self, board, resources_offered, resources_asked):
         print("You have been offered the following trade")
@@ -441,7 +450,8 @@ class CatanPlayer:
     def get_valid_roads_start(self, board, settlement_position):
         valid_roads = []
         # check if the road is attached to the player's roads
-        # and is available (will have to be available bc if not the settlement could not be placed there)
+        # and is available (will have to be available bc if not the settlement
+        # could not be placed there)
         for road in board.intersections[settlement_position].edges:
             if road.occupier is None:
                 valid_roads.append(road.identifier)
@@ -468,22 +478,6 @@ class CatanPlayer:
 
 
 if __name__ == '__main__':
-    p = CatanPlayer(0)
-    print(p.player_nr)
-    b = board.Board()
-    p.roads.append(1)
-    p.settlements.append(b.intersections[1])
-    print(p.resource_cards)
-    # print(p.discard_half())
-    # test_list = [10,20,30,40,50]
-    # p.start_settlement_placement(b)
-    # print(p.resource_cards)
-    # p.resource_cards = ResourceCards(4)
-    # p.discard_half()
-    # b.intersections[2].occupier = (1, '')
-    # b.intersections[1].occupier = (3, '')
-    # (p.steal_card(b))
-    # p.play_roads(b)
-    p.play_plenty(b)
+
 
     print('Debug complete')

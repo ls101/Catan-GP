@@ -126,15 +126,28 @@ if __name__ == '__main__':
                         resource_own, resource_bank, give = response
                         board.trade_bank(player_nr, resource_own, resource_bank, give)
                 elif choice == 10:
-                    resources_own, target_player_nr, resources_target = \
-                        current_player.trade_offer(board_safety_copy)
-                    answer_target = board.players[target_player_nr].trade_answer(
-                        board_safety_copy, resources_own, resources_target)
-                    if answer_target:
-                        board.trade_offer(player_nr, resources_own,
-                            target_player_nr, resources_target, answer_target)
-                    else:
-                        print("The other player did not accept your trade offer.")
+                    response = current_player.trade_offer(board_safety_copy)
+                    if response is not None:
+                        resource_own,\
+                            resource_own_amount,\
+                            target_player_nr,\
+                            resource_target,\
+                            resource_target_amount\
+                            = response
+
+                        answer_target = board.players[target_player_nr].trade_answer(
+                            board_safety_copy, resource_own, resource_target)
+                        if answer_target:
+                            board.trade_offer(
+                                player_nr,
+                                resource_own,
+                                resource_own_amount,
+                                target_player_nr,
+                                resource_target,
+                                resource_target_amount
+                                )
+                        else:
+                            print("The other player did not accept your trade offer.")
 
                 # Increment turns, so that dev_cards' status can be tracked
                 turns += 1

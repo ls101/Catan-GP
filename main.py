@@ -39,7 +39,7 @@ if __name__ == '__main__':
         for player_nr in range(constants.NUM_PLAYERS):
             current_player = board.players[player_nr]
             # print statements for debugging
-            print('It is turn of player number:{0}'.format(
+            print('It is turn of player number: {0}'.format(
                 current_player.player_nr))
             # Each turn starts with rolling the dice
             # roll dice at the start of each turn
@@ -47,16 +47,19 @@ if __name__ == '__main__':
             print('Player #{} - {} rolled a {}'.format(
                 player_nr, constants.PLAYER_COLORS[player_nr], dice_number))
             if dice_number == 7:
+                print('Robber activated!')
                 for p_nr in range(constants.NUM_PLAYERS):
                     p = board.players[p_nr]
-                    resources = p.resource_cards.discard_half()
+                    resources = p.discard_half(p_nr)
                     # The above checks if the player has more than seven
                     # cards. It returns the cards to discard, or None.
                     if resources is not None:
                         board.discard_half(p_nr, resources)
                 # steal resource after everybody discarded cards
-                position, target_player_nr = current_player.steal_card(board_safety_copy)
-                board.steal_card(player_nr, position, target_player_nr)
+                response = current_player.steal_card(board_safety_copy)
+                if response is not None:
+                    position, target_player_nr = response
+                    board.steal_card(player_nr, position, target_player_nr)
             else:
                 # give resources to plyers as per settlements/cities
                 board.get_resources(dice_number)
@@ -65,6 +68,8 @@ if __name__ == '__main__':
             The turn ends when player hits zero. """
             turns = 0  # To keep track if dev_card can be played
             choice = 42  # Sentinel
+            print('Player {0} - {1} player will play now.'.format(
+                player_nr, constants.PLAYER_COLORS[player_nr]))
             while choice > 0:
                 # making safety working copy of board (can be changed in later
                 # implementation to only visible data)
@@ -125,8 +130,11 @@ if __name__ == '__main__':
                         current_player.trade_offer(board_safety_copy)
                     answer_target = board.players[target_player_nr].trade_answer(
                         board_safety_copy, resources_own, resources_target)
-                    board.trade_offer(player_nr, resources_own,
-                        target_player_nr, resources_target, answer_target)
+                    if answer_target:
+                        board.trade_offer(player_nr, resources_own,
+                            target_player_nr, resources_target, answer_target)
+                    else:
+                        print("The other player did not accept your trade offer.")
 
                 # Increment turns, so that dev_cards' status can be tracked
                 turns += 1

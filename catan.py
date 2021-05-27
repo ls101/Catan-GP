@@ -68,11 +68,11 @@ class CatanBoard:
         pass
 
     def get_resources(self, dice_number):
-        for player_nr in self.players:
+        for player in self.players:
             # For each player, check if they have resources with the number
             # of the dice rolled.
             c = {}  # initialize a dict
-            for i in p.resources:
+            for i in player.resources:
                 if i[0] == dice_number:
                     key = RESOURCE_NAMES[i[1]]  # The key for the dict
                     # For each resource, check if there is such a key.
@@ -80,7 +80,7 @@ class CatanBoard:
                     # resource, increment it. Otherwise, add it.
                     c[key] = c.get(key, 0) + 1
                 # the player receives cards from the bank.
-                self.players[player_nr].resource_cards.move_cards(self.bank, c)
+                player.resource_cards.move_cards(self.bank, c)
 
     def place_road(self, player_nr, position):
         # Reassign the road's occupier
@@ -167,8 +167,8 @@ class CatanBoard:
     def buy_dev_card(self, turns, player_nr,):
         player = self.players[player_nr]
         # Check if player has enough resources to buy the card
-        if player.can_buy('dev_card', override=True):
-            print('you are unable to purchase a development card')
+        if not player.can_buy('dev_card', override=True):
+            print('You do not have the required resources to buy a development card.')
         else:
             # pay for the card
             self.bank.move_cards(player.resource_cards, PRICES['dev_card'])
@@ -236,9 +236,9 @@ class CatanBoard:
         can_play, card = player.development_cards.can_play(turns, 'year of plenty')
         if can_play:
             # Initialize a dict with resource1
-            c = {resource1: 1}
+            c = {constants.RESOURCE_NAMES[resource1]: 1}
             # Add resource2; ensure it's added even if both are the same
-            c[resource2] = c.get(resource2, 0) + 1
+            c[constants.RESOURCE_NAMES[resource2]] = c.get(constants.RESOURCE_NAMES[resource2], 0) + 1
             """ check if the bank has it """
             # The player receives cards from the bank.
             player.resource_cards.move_cards(self.bank, c)
@@ -253,12 +253,12 @@ class CatanBoard:
             cards = 0
             # Add everyone's cards of that resource type, and remove from
             # that player.
-            for p in self.players:
-                cards += p.resource_cards[resource]
-                p.resource_cards[resource] = 0
+            for player_nr in self.players:
+                cards += player_nr.resource_cards.resource_cards[constants.RESOURCE_NAMES[resource]]
+                player_nr.resource_cards.resource_cards[constants.RESOURCE_NAMES[resource]] = 0
 
             # Add those cards to the player who plays now
-            player.resource_cards[resource] = cards
+            player.resource_cards.resource_cards[resource] = cards
             # return the card to the game deck
             player.development_cards.return_to_deck(card)
 
@@ -294,41 +294,41 @@ class CatanBoard:
 if __name__ == '__main__':
     b = CatanBoard()
     # print(b)
-    p = player.CatanPlayer(0)
+    player_nr = player.CatanPlayer(0)
     q = player.CatanPlayer(0)
 
-    p.resource_cards = cards.ResourceCards(6)
-    # b.discard_half(p, {'hay':1})
+    player_nr.resource_cards = cards.ResourceCards(6)
+    # b.discard_half(player_nr, {'hay':1})
     # print(b.bank)
-    # print(p.resource_cards)
-    # b.buy_dev_card(p, 3)
+    # print(player_nr.resource_cards)
+    # b.buy_dev_card(player_nr, 3)
     # print(b.bank)
-    # print(p.resource_cards)
-    # b.buy_road(p, 2, 9)
-    # b.buy_road(p, 0, 19)
-    # b.buy_road(p, 3, 29)
-    # b.buy_road(p, 1, 49)
-    # b.buy_settlement(p, 3, 7)
-    # b.buy_settlement(p, 1, 45)
-    # b.buy_settlement(p, 0, 50)
-    # b.buy_settlement(p, 2, 36)
-    # b.buy_city(p, 2, 36)
-    # b.buy_city(p, 1, 29)
-    # b.buy_city(p, 0, 33)
-    # b.buy_city(p, 3, 44)
+    # print(player_nr.resource_cards)
+    # b.buy_road(player_nr, 2, 9)
+    # b.buy_road(player_nr, 0, 19)
+    # b.buy_road(player_nr, 3, 29)
+    # b.buy_road(player_nr, 1, 49)
+    # b.buy_settlement(player_nr, 3, 7)
+    # b.buy_settlement(player_nr, 1, 45)
+    # b.buy_settlement(player_nr, 0, 50)
+    # b.buy_settlement(player_nr, 2, 36)
+    # b.buy_city(player_nr, 2, 36)
+    # b.buy_city(player_nr, 1, 29)
+    # b.buy_city(player_nr, 0, 33)
+    # b.buy_city(player_nr, 3, 44)
     # print(b)
-    # b.start_settelment_second(p, 0, 10, 10)
+    # b.start_settelment_second(player_nr, 0, 10, 10)
     # b.start_settelment_first(0, 20, 20)
-    # b.start_settelment_second(p, 0, 30, 30)
-    # b.trade_bank(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
-    # print(p, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
+    # b.start_settelment_second(player_nr, 0, 30, 30)
+    # b.trade_bank(player_nr, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
+    # print(player_nr, RESOURCE_NAMES[2], RESOURCE_NAMES[3], 4)
     # print(b.bank)
-    # print(p.resource_cards)
+    # print(player_nr.resource_cards)
     # print(b.board.robber)
     # print(b)
-    p.resource_cards.move_cards(b.bank, {})
+    player_nr.resource_cards.move_cards(b.bank, {})
     b.steal_card(0, 1, 0)
     print(q.resource_cards)
-    print(p.resource_cards)
+    print(player_nr.resource_cards)
     b.gui.window.mainloop()
     print('Debug complete')

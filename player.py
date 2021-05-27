@@ -94,7 +94,7 @@ class CatanPlayer:
             # type of resource, they can not buy that type of item
             if self.resource_cards.resource_cards[key] < needed_to_buy[key]:
                 return False
-        if self.unused_items[type_to_buy] <= 0:
+        if override or self.unused_items[type_to_buy] <= 0:
             # Player has a limit on roads, settlements, cities.
             return False
         return True
@@ -157,6 +157,7 @@ class CatanPlayer:
             self.purchase_settlement(position, board, override)
             return position
         else:
+            print('You do not have the required resources to buy a settlement.')
             return None
 
     def set_city(self, board):
@@ -174,6 +175,7 @@ class CatanPlayer:
             self.purchase_city(position, board)
             return position
         else:
+            print('You do not have the required resources to buy a city.')
             return None
 
     def set_road(self, board, override=False, position1=None):
@@ -189,6 +191,7 @@ class CatanPlayer:
             self.purchase_road(position, board, override)
             return position
         else:
+            print('You do not have the required resources to buy a road.')
             return None
 
     def print_menu(self) -> None:
@@ -206,18 +209,19 @@ class CatanPlayer:
         print('10. Target a Player')
 
     def turn_choice(self, board):
-        choice = 0
+        choice = 42
         # Print the menu
         self.print_menu()
 
-        # Get input - must be a number between 1 and 13
-        while choice < 1 or choice > 13:
+        # Get input - must be a number less than 13
+        # (zero or lower ends the turn)
+        while choice > 13:
             try:
                 choice = int(input('Enter Choice: \n'))
-                if choice < 1 or choice > 13:
+                if choice > 13:
                     print('Enter a number between 1 and 13')
             except:
-                print('You must input a numeric value between 1 and 13')
+                print('You must input a numeric value between 0 and 13')
         return choice
 
     def offer_input(self, key, value):
@@ -250,11 +254,12 @@ class CatanPlayer:
                     offering[key] = offer
         return offering
 
-    def discard_half(self):
-        print('Robber activated!')
+    def discard_half(self, player_nr):
         # Get the number of cards to discard. Will be zero if less than 7 cards.
         total = self.resource_cards.get_discard_num()
         if total > 0:
+            print('Player #{} - {}: needs to discard cards'.format(
+                    player_nr, constants.PLAYER_COLORS[player_nr]))
             # Ask player which cards to discard
             offer = self.offer_cards()
             # Make sure the total offer is correct
@@ -264,13 +269,14 @@ class CatanPlayer:
             return offer
         else:
             # If total is 0
+            print('Player #{} - {}: does not need to discard cards now'.format(
+                    player_nr, constants.PLAYER_COLORS[player_nr]))
             print("You don't have to discard cards now.")
             return None
 
     def steal_card(self, board):
-
         # move the robber to a new tile (int between 1-19), not the current
-        # place find who has settlements on that tile (return None if none)
+        # place. Find who has settlements on that tile (return None if none)
         # If occupier is not None and occupier[0] > 0 and not self.player_nr
         # Give list of available players to target (if more than one)
         # Return target player
@@ -286,6 +292,7 @@ class CatanPlayer:
 
         # Return none if no players have settlements on that tile
         if len(affected_players) == 0:
+            print('No one to steal from on this tile.')
             return None
         # Return the one player if only one player has settlements on that tile
         if len(set(affected_players)) == 1:
@@ -366,7 +373,7 @@ class CatanPlayer:
         except:
             print("Invalid input")
             # give the player another chance for proper input
-            return self.trade_bank(self, board)
+            return self.trade_bank(board)
 
     def trade_offer(self, board):
         """
@@ -391,12 +398,12 @@ class CatanPlayer:
                         (resource_target, resource_target_amount))
             else:
                 print("You do not have sufficient {} cards to trade in".format(resource_own))
-                return self.trade_offer(self, board)
+                return self.trade_offer(board)
 
         except:
             print("Invalid input")
             # give the player another chance for proper input
-            return self.trade_offer(self, board)
+            return self.trade_offer(board)
 
     def trade_answer(self, board, resources_offered, resources_asked):
         print("You have been offered the following trade")
@@ -455,11 +462,6 @@ class CatanPlayer:
 
 
 if __name__ == '__main__':
-    """
-    ################################ Insert/Modify Comments HERE ##################################
-    """
-
-    ################################ Insert/Modify CODE HERE ##################################
     p = CatanPlayer(0)
     print(p.player_nr)
     b = board.Board()
@@ -468,8 +470,6 @@ if __name__ == '__main__':
     print(p.resource_cards)
     # print(p.discard_half())
     # test_list = [10,20,30,40,50]
-    # p.get_input_by_index(test_list)
-    # p.get_input_by_value(test_list)
     # p.start_settlement_placement(b)
     # print(p.resource_cards)
     # p.resource_cards = ResourceCards(4)

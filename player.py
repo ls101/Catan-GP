@@ -85,7 +85,7 @@ class CatanPlayer:
                 else:
                     print("Invalid choice, try again")
 
-    def can_buy(self, type_to_buy, override=False):
+    def can_buy(self, type_to_buy):
         # Checks if the player has resources to buy
         # Self.resource_cards is a dictionary of players cards - resource_number : amount_of_resource
         # Find which resources are needed to buy type_to_buy
@@ -96,12 +96,12 @@ class CatanPlayer:
             # type of resource, they can not buy that type of item
             if self.resource_cards.resource_cards[key] < needed_to_buy[key]:
                 return False
-        if override or self.unused_items[type_to_buy] <= 0:
+        if not type_to_buy == 'dev_card' and self.unused_items[type_to_buy] <= 0 :
             # Player has a limit on roads, settlements, cities.
             return False
         return True
 
-    def purchase_settlement(self, position, board, override):
+    def purchase_settlement(self, position, board):
         # Add the position to the players list of settlements
         self.settlements.append(position)
 

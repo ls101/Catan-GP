@@ -1,132 +1,149 @@
 # This is a catan Python script.
 import catan
-import player
 import copy
-"""
-################################ You ar free to modify and add any comments ##################################
+import constants
 
-you can and should change and add print statements
-it would be also usefull to write log of the game in a file
-"""
-# Press Umschalt+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-# the game is played for maximum 30 rounds (30*4 = 120 turns) to prevent infinite loops
+# The game is played for maximum 30 rounds (30*4 = 120 turns) to prevent
+# infinite loops
 MAXIMUM_ROUNDS = 30
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-
     # build catan board
     board = catan.CatanBoard()
 
-    # insert players
-    players = list()
-    num_players=int(input("Number of players: \n"))
-    
-    
-    for player_nr in range(1,num_players) :
-        players.append(player.CatanPlayer(player_nr))
-
     # game set up of the two settlement
     # first settlement with road
-    for player_nr in range(1, num_players):
-        current_player = players[player_nr]
+    for player_nr in range(constants.NUM_PLAYERS):
+        current_player = board.players[player_nr]
         board_safety_copy = copy.deepcopy(board.board)
-        settle_position, road_position = current_player.start_settlement_placement(board_safety_copy)
+        settle_position, road_position \
+            = current_player.start_settlement_placement(board_safety_copy)
         board.start_settelment_first(player_nr, settle_position, road_position)
 
     # second settlement with road
-    for player_nr in range(num_players, 0, -1):
-        current_player = players[player_nr]
+    for player_nr in range(constants.NUM_PLAYERS-1, -1, -1):
+        current_player = board.players[player_nr]
+        print(player_nr)
         board_safety_copy = copy.deepcopy(board.board)
-        settle_position, road_position = current_player.start_settlement_placement(board_safety_copy)
-        board.start_settelment_second(players[player_nr], player_nr, settle_position, road_position)
+        settle_position, road_position \
+            = current_player.start_settlement_placement(board_safety_copy)
+        board.start_settelment_second(player_nr, settle_position, road_position)
 
     # game will be played for maximum MAXIMUM_ROUNDS
     for game_round in range(MAXIMUM_ROUNDS):
         # print statements for debugging
         print(game_round)
         # in each round each player has his turn
-        for player_nr in range(1,num_players):
-            current_player = players[player_nr]
+        for player_nr in range(constants.NUM_PLAYERS):
+            current_player = board.players[player_nr]
             # print statements for debugging
-            print('It is turn of player number:{0}'.format(current_player.player_nr))
-            # choice = menu()
-            
-            winner = False
-            
-            turns = 0
-            while winner is False or turns < 31:
+            print('It is turn of player number: {0}'.format(
+                current_player.player_nr))
+            # Each turn starts with rolling the dice
+            # roll dice at the start of each turn
+            dice_number = board.roll_dice()
+            print('Player #{} - {} rolled a {}'.format(
+                player_nr, constants.PLAYER_COLORS[player_nr], dice_number))
+            if dice_number == 7:
+                print('Robber activated!')
+                for p_nr in range(constants.NUM_PLAYERS):
+                    p = board.players[p_nr]
+                    resources = p.discard_half(p_nr)
+                    # The above checks if the player has more than seven
+                    # cards. It returns the cards to discard, or None.
+                    if resources is not None:
+                        board.discard_half(p_nr, resources)
+                # steal resource after everybody discarded cards
+                response = current_player.steal_card(board_safety_copy)
+                if response is not None:
+                    position, target_player_nr = response
+                    board.steal_card(player_nr, position, target_player_nr)
+            else:
+                # give resources to plyers as per settlements/cities
+                board.get_resources(dice_number)
+
+            """ The player is given option as what to do during the turn.
+            The turn ends when player hits zero. """
+            turns = 0  # To keep track if dev_card can be played
+            choice = 42  # Sentinel
+            print('Player {0} - {1} player will play now.'.format(
+                player_nr, constants.PLAYER_COLORS[player_nr]))
+            while choice > 0:
                 # making safety working copy of board (can be changed in later
                 # implementation to only visible data)
                 board_safety_copy = copy.deepcopy(board.board)
-                # player makes the choice what to do the choices are integers 0 or negative integer is turn finished
+                # player makes the choice what to do.  The choices are
+                # integers. 0 or negative integer ends the turn.
                 choice = current_player.turn_choice(board_safety_copy)
                 # print statements for debugging
-                # print(choice)
-                if choice == 2:
-                    # roll dice
-                    ok, dice_number = board.roll_dice(player_nr)
-                    if dice_number == 7:
-                        for p_nr in range(4):
-                            p = players[p_nr]
-                            resources = p.discard_half()
-                            # The above checks if the player has more than seven cards.
-                            # It returns the cards to discard, or None.
-                            if resource is not None:
-                                board.discard_half(p, resources)
-                        # steal resource after everybody discarded cards
-                        position, target_player_nr = current_player.steal_card(board_safety_copy)
-                        board.steal_card(players[player_nr], position, players{target_player_nr})
-                if choice == 3:
+
+                """ buy roads, settlements, cities """
+                if choice == 1:
                     position = current_player.set_settlement(board_safety_copy)
                     # Check if player chose a position. It will return None if
                     # the player doesn't have the resources to buy the item.
                     if position is not None:
-                        board.buy_settlement(players[player_nr], player_nr, position)
-                if choice == 4:
+                        board.buy_settlement(player_nr, position)
+                elif choice == 2:
                     position = current_player.set_city(board_safety_copy)
                     # Check if player chose a position. It will return None if
                     # the player doesn't have the resources to buy the item.
                     if position is not None:
-                        board.buy_city(players[player_nr], player_nr, position)
-                if choice == 5:
+                        board.buy_city(player_nr, position)
+                elif choice == 3:
                     position = current_player.set_road(board_safety_copy)
                     # Check if player chose a position. It will return None if
                     # the player doesn't have the resources to buy the item.
                     if position is not None:
-                        board.buy_road(players[player_nr], player_nr, position)
-                if choice == 6:
-                    board.buy_dev_card(players[player_nr], turns)
-                if choice == 8:
-                    position, target_player_nr = current_player.steal_card(board_safety_copy)
-                    board.play_knight(player_nr, position, target_player_nr)
-                if choice == 9:
-                    position1, position2 = current_player.play_roads(board_safety_copy)
-                    board.play_roads(player_nr, position1, position2)
-                if choice == 10:
-                    resource1, resource2 = current_player.play_plenty(board_safety_copy)
-                    board.play_plenty(player_nr, resource1, resource2)
-                if choice == 11:
-                    resource = current_player.play_mono(board_safety_copy)
-                    board.play_mono(player_nr, resource)
-                if choice == 12:
-                    resource_own, resource_bank, give = current_player.trade_bank(board_safety_copy)
-                    board.trade_bank(players[player_nr], resource_own, resource_bank, give)
-                if choice == 13:
-                    resources_own, target_player_nr, resources_target = current_player.trade_offer(board_safety_copy)
-                    answer_target = players[target_player_nr].trade_answer(board_safety_copy, resources_own,
-                                                                           resources_target)
-                    board.trade_offer(player_nr, resources_own, target_player_nr, resources_target,
-                                      answer_target)
+                        board.buy_road(player_nr, position)
 
+                    """ buy development card """
+                elif choice == 4:
+                    board.buy_dev_card(turns, player_nr,)
+
+                    """ play development cards """
+                elif choice == 5:
+                    response = current_player.steal_card(board_safety_copy)
+                    if response is not None:
+                        position, target_player_nr = response
+                        board.play_knight(turns, player_nr, position, target_player_nr)
+                elif choice == 6:
+                    position1, position2 = current_player.play_roads(board_safety_copy)
+                    board.play_roads(turns, player_nr, position1, position2)
+                elif choice == 7:
+                    resource1, resource2 = current_player.play_plenty(board_safety_copy)
+                    board.play_plenty(turns, player_nr, resource1, resource2)
+                elif choice == 8:
+                    resource = current_player.play_mono(board_safety_copy)
+                    board.play_mono(turns, player_nr, resource)
+
+                    """ trading """
+                elif choice == 9:
+                    response = current_player.trade_bank(board_safety_copy)
+                    if response is not None:
+                        resource_own, resource_bank, give = response
+                        board.trade_bank(player_nr, resource_own, resource_bank, give)
+                elif choice == 10:
+                    resources_own, target_player_nr, resources_target = \
+                        current_player.trade_offer(board_safety_copy)
+                    answer_target = board.players[target_player_nr].trade_answer(
+                        board_safety_copy, resources_own, resources_target)
+                    if answer_target:
+                        board.trade_offer(player_nr, resources_own,
+                            target_player_nr, resources_target, answer_target)
+                    else:
+                        print("The other player did not accept your trade offer.")
+
+                # Increment turns, so that dev_cards' status can be tracked
+                turns += 1
+                # Check for winner / end game after each round.  Break out
+                # of the loop when game ends.
                 game_end, winner = board.check_points()
                 if game_end:
                     print("player {0} won".format(winner))
                     break
-                turns += 1
 
     print('game ended')
     board.board.gui.window.mainloop()

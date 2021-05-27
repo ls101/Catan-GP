@@ -69,8 +69,32 @@ class DevCards(Cards):
         - add a new card to player list
         - remove that card from game deck
         - ensure this card cannot be used for this turn
-         """ 
+        """
         pass
+
+    def check_victory(self):
+        """
+        - check if the card is a victory points card
+        - return 0 or 1
+        """
+        pass
+
+    def can_play(self, turns, card_type):
+        """
+        - card_type refers to the type of development card
+        - check that the player has the card
+        - check that the card was not bought at this turn
+        - check that the player didn't yet play a development card at this turn
+        - return a tuple: True or False, and the card
+        """
+        return (True, 'demo card')  # temporary for debugging
+
+    def return_to_deck(self, card):
+        """
+        - return a card to the bottom of the deck
+        - when a player picks a card, it should NOT be the one last returned
+        """
+
 
 
 # The resource cards should rather be stored as a dictionary. The resources

@@ -58,9 +58,8 @@ if __name__ == '__main__':
                         board.discard_half(p_nr, resources)
                 # steal resource after everybody discarded cards
                 response = current_player.steal_card(board_safety_copy)
-                if response is not None:
-                    position, target_player_nr = response
-                    board.steal_card(player_nr, position, target_player_nr)
+                position, target_player_nr = response
+                board.steal_card(player_nr, position, target_player_nr)
             else:
                 # give resources to plyers as per settlements/cities
                 board.get_resources(dice_number)
@@ -107,9 +106,8 @@ if __name__ == '__main__':
                     """ play development cards """
                 elif choice == 5:
                     response = current_player.steal_card(board_safety_copy)
-                    if response is not None:
-                        position, target_player_nr = response
-                        board.play_knight(turns, player_nr, position, target_player_nr)
+                    position, target_player_nr = response
+                    board.play_knight(turns, player_nr, position, target_player_nr)
                 elif choice == 6:
                     position1, position2 = current_player.play_roads(board_safety_copy)
                     board.play_roads(turns, player_nr, position1, position2)

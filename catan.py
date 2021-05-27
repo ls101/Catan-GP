@@ -34,6 +34,7 @@ class CatanBoard:
         self.longest_road = -1
         # longest largest_army player_number. Initialization with -1.
         self.largest_army = -1
+        self.largest_army_owner = -1
         # devcards according to dev_dict dictionary
         self.bank_devcards = np.array([
             14*[dev_dict["knight"]]
@@ -61,8 +62,28 @@ class CatanBoard:
     def check_longest_road(self):
         pass
 
-    def check_largest_army(self):
-        pass
+    def get_largest_army(self, player_nr):
+        # army size
+        self.largest_army = self.open_knights[player_nr]
+        # army card owner
+        self.largest_army_owner = player_nr
+        # points for largest army
+        self.player_points[player_nr] += 2
+        print('Player {0} - {1} player has the largest army, size: {2}.'.format(
+            player_nr,
+            constants.PLAYER_COLORS[player_nr],
+            self.largest_army
+        ))
+
+    def check_largest_army(self, player_nr):
+        if self.open_knights[player_nr] >= constants.MIN_LARGEST_ARMY:
+            # check if a player already has the "largest army" card
+            if self.largest_army_owner == -1:
+                self.get_largest_army(player_nr)
+            elif self.open_knights[player_nr] >= self.largest_army:
+                # take away that card, so that player loses the points
+                self.player_points[self.largest_army_owner] -= 2
+                self.get_largest_army(player_nr)
 
     def get_resources(self, dice_number):
         """ check if the bank has it """
@@ -203,21 +224,22 @@ class CatanBoard:
     def steal_card(self, player_nr, position, target_player_nr):
         # Update the robber position
         self.board.robber = position
-        # Check if target player has any cards
-        if self.players[target_player_nr].resource_cards.get_total_cards() == 0:
-            print("Sorry, your target doesn't have any cards")
-        else:
-            # Get a random card and move it to the player who plays robber.
-            steal = self.players[target_player_nr].resource_cards.get_random_card()
-            self.players[player_nr].resource_cards.move_cards(
-                self.players[target_player_nr].resource_cards, steal)
-            print('Player {0} - {1} stole {2} from {3} - {4}'.format(
-                player_nr,
-                constants.PLAYER_COLORS[player_nr],
-                steal,
-                target_player_nr,
-                constants.PLAYER_COLORS[target_player_nr]
-        ))
+        if target_player_nr is not None:
+            # Check if target player has any cards
+            if self.players[target_player_nr].resource_cards.get_total_cards() == 0:
+                print("Sorry, your target doesn't have any cards")
+            else:
+                # Get a random card and move it to the player who plays robber.
+                steal = self.players[target_player_nr].resource_cards.get_random_card()
+                self.players[player_nr].resource_cards.move_cards(
+                    self.players[target_player_nr].resource_cards, steal)
+                print('Player {0} - {1} stole {2} from {3} - {4}'.format(
+                    player_nr,
+                    constants.PLAYER_COLORS[player_nr],
+                    steal,
+                    target_player_nr,
+                    constants.PLAYER_COLORS[target_player_nr]
+                ))
 
     def play_knight(self, turns, player_nr, position, target_player_nr):
         cur_player = self.players[player_nr]
@@ -229,7 +251,7 @@ class CatanBoard:
             # Update the army
             cur_player.army += 1
             self.open_knights[player_nr] += 1
-            self.check_largest_army()
+            self.check_largest_army(player_nr)
             print('Player {0} - {1} played a knight'.format(
                 player_nr, constants.PLAYER_COLORS[player_nr]))
 

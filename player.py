@@ -314,7 +314,7 @@ class CatanPlayer:
         # Return none if no players have settlements on that tile
         if len(affected_players) == 0:
             print('No one to steal from on this tile.')
-            return None
+            return position,  None
         # Return the one player if only one player has settlements on that tile
         # Convert to set to remove duplicate players
         if len(set(affected_players)) == 1:

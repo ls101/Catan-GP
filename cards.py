@@ -1,7 +1,8 @@
 import random
 import constants
 
-
+#import the list of development cards - shuffle it so it is random every game 
+devolpment_cards=constants.DEVELOPMENT_CARD_NAMES.random.shuffle(constants.DEVELOPMENT_CARD_NAMES)
 # create a class for cards and anything card related
 class Cards():
     def __init__(self):
@@ -30,6 +31,11 @@ class Cards():
     # this function removes cards
     def cards_remove(self, *cards_remove):
         pass
+
+    def last_card(self):
+        last=self.cards[-1]
+        return last 
+
 
 
 """ dev cards are the only cards. Not sure why we need inheritance """
@@ -71,14 +77,23 @@ class DevCards(Cards):
         - ensure this card cannot be used for this turn
         - return the card
         """
-        pass
+
+        card=devolpment_cards.pop()
+        Cards.cards_insert(card)
+        return card 
+
 
     def check_victory(self, card):
         """
         - check if the card is a victory points card
         - return 0 or 1
         """
-        pass
+        last=Cards.last_card(self)
+        if last=="victory point":
+            return 1
+        else:
+            return 0
+        
 
     def can_play(self, turns, card_type):
         """
@@ -90,11 +105,19 @@ class DevCards(Cards):
         """
         return (True, 'demo card')  # temporary for debugging
 
+        "not sure why we cant use the method as depicted above.. "
+        if use_dev_card(self):
+            return True 
+        else:
+            return False 
+
     def return_to_deck(self, card):
         """
         - return a card to the bottom of the deck
         - when a player picks a card, it should NOT be the one last returned
         """
+        self.development_cards.insert(0,card)
+
 
 
 

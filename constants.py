@@ -20,7 +20,7 @@ def rp():
 RESOURCES_PRINT = rp()
 
 DEVELOPMENT_CARD_NAMES = [
-    "knight", "victory point", "road building", "year of plenty",  "monopoly"]
+    "knight"*14, "victory point"*5, "road building"*2, "year of plenty"*2,  "monopoly"*2]
 PORTS_NAMES = ["3:1", "2brick:1", "2ore:1", "2hay:1", "2wood:1", "2sheep:1"]
 PLAYER_COLORS = ['red', 'blue', 'white', 'orange']
 
@@ -52,3 +52,5 @@ PRICES = {
         'hay': 2
     }
 }
+
+

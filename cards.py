@@ -1,8 +1,9 @@
 import random
 import constants
+import catan
 
 #import the list of development cards - shuffle it so it is random every game 
-devolpment_cards=constants.DEVELOPMENT_CARD_NAMES.random.shuffle(constants.DEVELOPMENT_CARD_NAMES)
+
 # create a class for cards and anything card related
 class Cards():
     def __init__(self):
@@ -29,8 +30,8 @@ class Cards():
             self.cards.append(self.cards)
 
     # this function removes cards
-    def cards_remove(self, *cards_remove):
-        pass
+    def cards_remove(self, cards_remove):
+        self.cards.remove(cards_remove)
 
     def last_card(self):
         last=self.cards[-1]
@@ -78,8 +79,9 @@ class DevCards(Cards):
         - return the card
         """
 
-        card=devolpment_cards.pop()
-        Cards.cards_insert(card)
+        card=catan.bank_devcards.pop()
+        self.Cards.cards_insert(card)
+        self.turn.turn_setter(turn)
         return card 
 
 
@@ -89,7 +91,7 @@ class DevCards(Cards):
         - return 0 or 1
         """
         last=Cards.last_card(self)
-        if last=="victory point":
+        if last==1:
             return 1
         else:
             return 0
@@ -116,7 +118,17 @@ class DevCards(Cards):
         - return a card to the bottom of the deck
         - when a player picks a card, it should NOT be the one last returned
         """
-        self.development_cards.insert(0,card)
+        index=0
+        #get the index to remove turn 
+        for i in self.Cards:
+            if i==card:
+                index=i
+                break
+        
+        self.Cards.cards_remove(card)
+        self.catan.bank_devcards.insert(0,card)
+        self.turn.pop(index)
+
 
 
 

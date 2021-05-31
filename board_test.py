@@ -1,12 +1,16 @@
 
 import numpy as np 
-from board import *
+# from board import *
 import copy 
 
 
 
-b=Board()
-#print(b.roll_numbers)
+# b=Board()
+#print(roll_numbers)
+# number associated with the desert and 0 can not actually be rolled
+roll_numbers = np.array([0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12])
+# shuffle number options
+np.random.shuffle(roll_numbers)
 
 
 
@@ -63,7 +67,7 @@ def see_problem():
   #this method sees where the problem is at what locations
   for num in six_index:
     for elm in taboo_places[num]:
-        if b.roll_numbers[elm]==8:
+        if roll_numbers[elm]==8:
           #redo()
           #print('6 is next to 8')
           problem_point(num,elm)
@@ -73,18 +77,18 @@ def problem_point(six,eight):
     #we want to make a trade so the 6 and 8 will not be next to each other 
     buffer=19
     for i in range(19):
-        if b.roll_numbers[i] not in taboo_places[six]:
-          buffer=b.roll_numbers[i]
+        if roll_numbers[i] not in taboo_places[six]:
+          buffer=roll_numbers[i]
           i=8
-          b.roll_numbers[eight]=buffer
+          roll_numbers[eight]=buffer
           #print('problem resolved')
-          #print(b.roll_numbers)
+          #print(roll_numbers)
           break
 
 
 
 index=0
-for num in b.roll_numbers:
+for num in roll_numbers:
     if num==6:
       six_index.append(index)
     if num==8:
@@ -98,7 +102,7 @@ see_problem()
 
 """for num in eight_index:
     for elm in taboo_places[num]:
-        if b.roll_numbers[elm]==6:
+        if roll_numbers[elm]==6:
           #redo()
           print('you have 6 next to 8')"""
 

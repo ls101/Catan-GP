@@ -2,6 +2,7 @@ import numpy as np
 from board_specs import *
 from board_components import *
 import constants
+import board_test
 
 
 # List of resources available to be distributed on the board
@@ -33,10 +34,15 @@ class Board:
         )
         # Shuffle the resource array for randomized distribution
         np.random.shuffle(self.board_resources)
+        
+        # replace lines #42 and #44 with the following:
+        # self.roll_numbers = board_test.roll_numbers
+        
         # number associated with the desert and 0 can not actually be rolled
         self.roll_numbers = np.array([0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12])
         # shuffle number options
         np.random.shuffle(self.roll_numbers)
+        
         # Array of the port ids, amount of times each port is available -
         self.ports = np.array(
             [port_dict["3:1"]] * 4
@@ -59,8 +65,8 @@ class Board:
         self.robber = desert_tile_nr[0][0] + 1
         # as the desert tile and replace whatever was already in the desert
         # tile into the empty zero tile
-        self.roll_numbers[zero_tile_nr], self.roll_numbers[desert_tile_nr] =\
-            (self.roll_numbers[desert_tile_nr], self.roll_numbers[zero_tile_nr])
+        self.board_resources[zero_tile_nr], self.board_resources[desert_tile_nr] =\
+            (self.board_resources[desert_tile_nr], self.board_resources[zero_tile_nr])
 
         # The following code create the board objects: terrains, edges, intersections.
 

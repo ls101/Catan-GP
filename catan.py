@@ -243,7 +243,7 @@ class CatanBoard:
 
     def play_knight(self, turns, player_nr, position, target_player_nr):
         cur_player = self.players[player_nr]
-        can_play, card = cur_player.development_cards.can_play(turns, 'knight')
+        can_play, card = cur_player.development_cards.can_play(turns, 0)
         if can_play:
             self.steal_card(player_nr, position, target_player_nr)
             # return the card to the game deck
@@ -257,7 +257,7 @@ class CatanBoard:
 
     def play_roads(self, turns,  player_nr, position1, position2):
         cur_player = self.players[player_nr]
-        can_play, card = cur_player.development_cards.can_play(turns, 'road building')
+        can_play, card = cur_player.development_cards.can_play(turns, 2)
         if can_play:
             # Place the roads: reassign the road's occupier and update the gui.
             # The rest is done in the player class
@@ -270,7 +270,7 @@ class CatanBoard:
 
     def play_plenty(self, turns, player_nr, resource1, resource2):
         cur_player = self.players[player_nr]
-        can_play, card = cur_player.development_cards.can_play(turns, 'year of plenty')
+        can_play, card = cur_player.development_cards.can_play(turns, 3)
         if can_play:
             # Initialize a dict with resource1
             c = {constants.RESOURCE_NAMES[resource1]: 1}
@@ -289,7 +289,7 @@ class CatanBoard:
 
     def play_mono(self, turns, player_nr, resource):
         cur_player = self.players[player_nr]
-        can_play, card = cur_player.development_cards.can_play(turns, 'monopoly')
+        can_play, card = cur_player.development_cards.can_play(turns, 4)
         if can_play:
             # Initialize a counter
             cards = 0

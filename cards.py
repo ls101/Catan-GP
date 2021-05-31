@@ -107,11 +107,24 @@ class DevCards(Cards):
         """
         return (True, 'demo card')  # temporary for debugging
 
-        "not sure why we cant use the method as depicted above.. "
-        if use_dev_card(self):
-            return True 
+        if card_type not in self.Cards:
+            print("you do not have the cards to play this move")
+            return False,""
         else:
-            return False 
+            card_len=self.Cards.length-1
+            index=0
+            card=0
+            for i in range (card_len,-1,-1):
+                if i==card_type:
+                    card=self.cards[i]
+                    index=i
+                    break
+            if self.turn[index]==turns:
+                print("you cannot play a card on the turn you bought it")
+                return False,""
+            else:
+                return True,card
+       
 
     def return_to_deck(self, card):
         """
@@ -200,7 +213,10 @@ class ResourceCards:
         # return the card in dictionary format, to be used in the
         # move_cards method
         return {card: 1}
+   
 
 
 if __name__ == '__main__':
     pass
+
+
